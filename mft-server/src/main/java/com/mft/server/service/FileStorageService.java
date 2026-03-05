@@ -101,4 +101,11 @@ public class FileStorageService {
     public java.util.List<FileMetadata> getAllFiles() {
         return fileMetadataRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
     }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void purgeAllData() {
+        activeTransfers.clear();
+        fileLocks.clear();
+        fileMetadataRepository.deleteAll();
+    }
 }

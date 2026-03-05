@@ -31,7 +31,12 @@ public class ActivityService {
     }
     
     public void pingUser(String username, String ip) {
-        activeUsers.put(username + " [" + ip + "]", LocalDateTime.now());
+        activeUsers.put(username + " (" + ip + ")", LocalDateTime.now());
+    }
+
+    public void purge() {
+        recentEvents.clear();
+        activeUsers.clear();
     }
     
     public List<String> getActiveUsers() {

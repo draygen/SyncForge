@@ -8,9 +8,20 @@ import java.util.Map;
 public class SystemController {
     public static boolean maintenanceMode = false;
     private final com.mft.server.service.ActivityService activityService;
+    private final com.mft.server.service.FileStorageService fileStorageService;
     
-    public SystemController(com.mft.server.service.ActivityService activityService) {
+    public SystemController(com.mft.server.service.ActivityService activityService, 
+                            com.mft.server.service.FileStorageService fileStorageService) {
         this.activityService = activityService;
+        this.fileStorageService = fileStorageService;
+    }
+
+    @PostMapping("/purge")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    public Map<String, String> purgeData() {
+        fileStorageService.purgeAllData();
+        activityService.purge();
+        return Map.of("status", "SUCCESS", "message", "Temple Cleansed. All artifacts and karma records extinguished.");
     }
 
     @GetMapping("/ping")
