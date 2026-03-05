@@ -25,6 +25,7 @@ public class FileStorageService {
     
     // Concurrent cache for rapid chunk processing
     private final java.util.Map<java.util.UUID, FileMetadata> activeTransfers = new java.util.concurrent.ConcurrentHashMap<>();
+    private final java.util.Map<java.util.UUID, java.util.concurrent.locks.ReentrantLock> fileLocks = new java.util.concurrent.ConcurrentHashMap<>();
 
     public FileStorageService(FileMetadataRepository fileMetadataRepository, EncryptionService encryptionService) {
         this.fileMetadataRepository = fileMetadataRepository;
@@ -53,6 +54,7 @@ public class FileStorageService {
 
         FileMetadata saved = fileMetadataRepository.save(metadata);
         activeTransfers.put(saved.getId(), saved);
+        fileLocks.put(saved.getId(), new java.util.concurrent.locks.ReentrantLock());
         return saved;
     }
 
@@ -63,21 +65,28 @@ public class FileStorageService {
                 .orElseThrow(() -> new IllegalArgumentException("File ID not found"));
             activeTransfers.put(fileId, metadata);
         }
+        
+        java.util.concurrent.locks.ReentrantLock lock = fileLocks.computeIfAbsent(fileId, k -> new java.util.concurrent.locks.ReentrantLock());
+        lock.lock();
+        try {
+            String aesKey = encryptionService.decryptAesKeyWithMasterKey(metadata.getEncryptedAesKey());
+            byte[] encryptedChunk = encryptionService.encryptChunk(chunkData, aesKey);
 
-        String aesKey = encryptionService.decryptAesKeyWithMasterKey(metadata.getEncryptedAesKey());
-        byte[] encryptedChunk = encryptionService.encryptChunk(chunkData, aesKey);
+            File file = new File(storagePath, metadata.getStoredFilename());
+            try (FileOutputStream fos = new FileOutputStream(file, true)) {
+                fos.write(encryptedChunk);
+            }
 
-        File file = new File(storagePath, metadata.getStoredFilename());
-        try (FileOutputStream fos = new FileOutputStream(file, true)) {
-            fos.write(encryptedChunk);
+            metadata.setUploadedSize(metadata.getUploadedSize() + chunkData.length);
+            metadata.setStatus("IN_PROGRESS");
+        } finally {
+            lock.unlock();
         }
-
-        metadata.setUploadedSize(metadata.getUploadedSize() + chunkData.length);
-        metadata.setStatus("IN_PROGRESS");
     }
 
     public void completeUpload(java.util.UUID fileId) {
         FileMetadata metadata = activeTransfers.remove(fileId);
+        fileLocks.remove(fileId);
         if (metadata == null) {
             metadata = fileMetadataRepository.findById(fileId).orElse(null);
         }

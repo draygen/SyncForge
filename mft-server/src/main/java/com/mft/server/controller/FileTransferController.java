@@ -60,10 +60,22 @@ public class FileTransferController {
         }
     }
 
+    // High-speed Metadata Cache
+    private volatile java.util.List<com.mft.server.model.FileMetadata> cachedFileList = new java.util.ArrayList<>();
+    private volatile long lastCacheUpdate = 0;
+    private static final long CACHE_TTL = 5000; // 5 seconds
+
     @GetMapping
     public ResponseEntity<java.util.List<com.mft.server.model.FileMetadata>> listFiles(org.springframework.security.core.Authentication auth) {
-        return ResponseEntity.ok(fileStorageService.getAllFiles().stream()
-            .filter(f -> f.getStatus() != null) // Basic filter for now
-            .collect(java.util.stream.Collectors.toList()));
+        long now = System.currentTimeMillis();
+        if (now - lastCacheUpdate > CACHE_TTL) {
+            synchronized (this) {
+                if (System.currentTimeMillis() - lastCacheUpdate > CACHE_TTL) {
+                    cachedFileList = fileStorageService.getAllFiles();
+                    lastCacheUpdate = System.currentTimeMillis();
+                }
+            }
+        }
+        return ResponseEntity.ok(cachedFileList);
     }
 }

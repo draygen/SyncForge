@@ -243,6 +243,7 @@
                         const xhr = new XMLHttpRequest();
                         xhr.open('POST', `/api/files/${fileId}/chunk`, true);
                         xhr.setRequestHeader('Authorization', authHeader);
+                        xhr.timeout = 30000; // 30 second timeout
 
                         let lastLoaded = 0;
                         xhr.upload.onprogress = (e) => {
@@ -276,6 +277,7 @@
 
                         xhr.onload = () => { if (xhr.status >= 200 && xhr.status < 300) resolve(); else reject(xhr.status); };
                         xhr.onerror = () => reject("Network Error");
+                        xhr.ontimeout = () => reject("Request Timeout");
                         
                         const fd = new FormData();
                         fd.append('chunk', file.slice(c.offset, c.offset + c.size));
