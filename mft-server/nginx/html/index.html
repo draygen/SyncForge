@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SyncForge | Enterprise MFT</title>
-    <link rel="icon" type="image/jpeg" href="/avatar.jpg">
+    <link rel="icon" type="image/jpeg" href="/draygen_avatar.jpg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
@@ -14,17 +14,9 @@
             --glass: rgba(15, 23, 42, 0.6); --border: rgba(0, 242, 255, 0.2);
             --primary: #6366f1;
         }
-        body { 
-            background: var(--obsidian); color: #f8fafc; font-family: 'Inter', sans-serif; 
-            margin: 0; min-height: 100vh; overflow-x: hidden;
-        }
+        body { background: var(--obsidian); color: #f8fafc; font-family: 'Inter', sans-serif; margin: 0; min-height: 100vh; overflow-x: hidden; }
         #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100%; }
-        
-        .cyber-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, transparent 0%, var(--obsidian) 90%);
-            pointer-events: none; z-index: -1;
-        }
+        .cyber-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, transparent 0%, var(--obsidian) 90%); pointer-events: none; z-index: -1; }
 
         /* Draygen Brand Banner Header */
         .brand-banner {
@@ -43,61 +35,25 @@
             letter-spacing: 8px; text-shadow: 0 0 15px rgba(0, 242, 255, 0.6);
         }
 
-        /* FitGirl Style Architect Avatar */
-        #architect-avatar {
-            position: fixed; bottom: 0; left: 2%; height: 85vh; max-width: 40vw;
-            object-fit: contain; object-position: bottom left; z-index: 0;
-            pointer-events: none; opacity: 0.65;
-            filter: drop-shadow(0 0 30px rgba(0, 242, 255, 0.3)) contrast(1.1) grayscale(0.2);
-            -webkit-mask-image: linear-gradient(to top, transparent 2%, black 25%);
-            mask-image: linear-gradient(to top, transparent 2%, black 25%);
-            animation: breathe 8s infinite ease-in-out;
-        }
-        @keyframes breathe {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-10px) scale(1.01); }
-        }
-
         h1, h2, h3, .navbar-brand { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
-
-        .form-control { 
-            background: rgba(0, 0, 0, 0.6) !important; border: 1px solid var(--border) !important; 
-            color: #ffffff !important; border-radius: 12px; padding: 15px; transition: 0.3s;
-        }
-        .form-control:focus { 
-            background: rgba(0, 0, 0, 0.8) !important; border-color: var(--neon-blue) !important;
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
-        }
-
-        #sidebar { 
-            position: fixed; top: 0; left: -280px; width: 280px; height: 100%; 
-            background: rgba(2, 6, 23, 0.98); backdrop-filter: blur(20px);
-            border-right: 1px solid var(--border); transition: 0.4s; z-index: 1050; padding: 30px 20px;
-        }
+        .form-control { background: rgba(0, 0, 0, 0.6) !important; border: 1px solid var(--border) !important; color: #ffffff !important; border-radius: 12px; padding: 15px; transition: 0.3s; }
+        .form-control:focus { background: rgba(0, 0, 0, 0.8) !important; border-color: var(--neon-blue) !important; box-shadow: 0 0 15px rgba(0, 242, 255, 0.3); }
+        #sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: rgba(2, 6, 23, 0.98); backdrop-filter: blur(20px); border-right: 1px solid var(--border); transition: 0.4s; z-index: 1050; padding: 30px 20px; }
         #sidebar.active { left: 0; }
         .nav-link { color: #94a3b8; border-radius: 12px; padding: 14px 18px; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
         .nav-link:hover, .nav-link.active { background: rgba(0, 242, 255, 0.05); color: var(--neon-blue); }
-
-        .glass-card { 
-            background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--border); 
-            border-radius: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); position: relative; z-index: 1;
-        }
-
+        .glass-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); position: relative; z-index: 1; }
         #drop-zone { border: 2px dashed var(--border); border-radius: 24px; padding: 60px; text-align: center; transition: 0.4s; cursor: pointer; }
         #drop-zone.dragover { border-color: var(--neon-blue); background: rgba(0, 242, 255, 0.08); }
-
         .btn-neon { background: linear-gradient(45deg, var(--neon-blue), #00a2ff); border: none; color: #000; font-weight: 800; border-radius: 12px; padding: 14px; text-transform: uppercase; transition: 0.3s; }
         .btn-neon:hover { box-shadow: 0 0 30px rgba(0, 242, 255, 0.6); transform: scale(1.02); }
-
         #noc-monitor { position: fixed; bottom: 25px; right: 25px; width: 420px; height: 380px; background: rgba(0,0,0,0.95); border: 1px solid var(--border); border-radius: 16px; display: none; flex-direction: column; z-index: 1000; overflow: hidden; }
         #noc-header { padding: 12px 20px; background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid var(--border); color: var(--neon-blue); font-family: 'Orbitron'; cursor: move; display: flex; justify-content: space-between; align-items: center; }
         #noc-body, #noc-users { flex: 1; padding: 15px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; overflow-y: auto; color: #10b981; }
         .noc-entry { margin-bottom: 8px; border-left: 2px solid var(--neon-blue); padding-left: 12px; }
-
         .view-section { display: none; animation: fadeIn 0.5s ease forwards; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); z-index: 3000; display: flex; justify-content: center; align-items: center; }
         #upload-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: none; flex-direction: column; justify-content: center; align-items: center; }
         #maintenance-alert { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(220, 38, 38, 0.95); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; }
@@ -111,11 +67,9 @@
 <div class="cyber-overlay"></div>
 
 <header class="brand-banner">
-    <img src="/avatar.jpg" class="brand-logo" alt="Logo">
+    <img src="/draygen_avatar.jpg" class="brand-logo" alt="Logo">
     <span class="brand-text">DRAYGEN</span>
 </header>
-
-<img id="architect-avatar" src="/face.jpg" alt="Architect">
 
 <div id="maintenance-alert">
     <i class="fas fa-exclamation-triangle fa-5x mb-4"></i>
@@ -168,7 +122,7 @@
 
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div id="sidebar">
-    <div class="mb-5 px-3"><img src="/avatar.jpg" width="60" style="border-radius:12px; border:2px solid var(--neon-blue);" class="mb-2"><h2 class="fw-bold text-white mb-0">FORGE</h2><small class="text-info">v1.0.4-STABLE</small></div>
+    <div class="mb-5 px-3"><img src="/draygen_avatar.jpg" width="60" style="border-radius:12px; border:2px solid var(--neon-blue);" class="mb-2"><h2 class="fw-bold text-white mb-0">FORGE</h2><small class="text-info">v1.0.4-STABLE</small></div>
     <div class="nav flex-column">
         <div class="nav-link active" onclick="showView('transfers')"><i class="fas fa-tachometer-alt me-3"></i> DASHBOARD</div>
         <div id="admin-menu" style="display:none;">
@@ -221,11 +175,7 @@
     let currentUser = null; let isMaintenanceRedirecting = false;
 
     // --- THREE.JS BACKGROUND ---
-    const canvas = document.getElementById('bg-canvas');
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-    camera.position.z = 5;
+    const canvas = document.getElementById('bg-canvas'); const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); const scene = new THREE.Scene(); const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000); camera.position.z = 5;
     const grid = new THREE.GridHelper(100, 50, 0x00f2ff, 0x020617); grid.position.y = -2; scene.add(grid);
     const pCount = 1500; const pos = new Float32Array(pCount*3); for(let i=0; i<pCount*3; i++) pos[i]=(Math.random()-0.5)*15;
     const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
@@ -236,81 +186,18 @@
     window.addEventListener('resize', resize); resize(); animate3D();
 
     async function safeFetch(url, opts = {}) { const res = await fetch(url, opts); if(!res.ok) throw new Error(res.status); const ct = res.headers.get("content-type"); return (ct && ct.includes("application/json")) ? await res.json() : null; }
-    
-    function login() {
-        const u = document.getElementById('login-user').value; const p = document.getElementById('login-pass').value;
-        authHeader = 'Basic ' + btoa(u + ':' + p);
-        fetch('/api/me', { headers: { 'Authorization': authHeader } }).then(res => { if (res.ok) { sessionStorage.setItem('mft_auth', authHeader); startSession(); } else alert("IDENTITY_DENIED"); });
-    }
-
-    function startSession() {
-        document.getElementById('login-overlay').style.display = 'none'; document.getElementById('dashboard').style.display = 'block';
-        safeFetch('/api/me', { headers: { 'Authorization': authHeader } }).then(user => {
-            currentUser = user; document.getElementById('user-tag').innerText = user.username;
-            if (user.roles.includes('ROLE_ADMIN')) { document.getElementById('admin-menu').style.display = 'block'; document.getElementById('noc-monitor').style.display = 'flex'; makeDraggable(document.getElementById("noc-monitor")); }
-            refresh(); setInterval(refresh, 5000); setInterval(pingSystem, 3000);
-        });
-    }
-
-    function pingSystem() {
-        if(isMaintenanceRedirecting) return;
-        fetch('/api/system/ping', { headers: { 'Authorization': authHeader } }).then(res => res.json()).then(data => {
-            if (data && data.maintenance === true) { isMaintenanceRedirecting = true; document.getElementById('maintenance-alert').style.display = 'flex'; setTimeout(() => window.location.href = '/maintenance.html', 3000); }
-        });
-    }
-
-    function refresh() {
-        safeFetch('/api/files', { headers: { 'Authorization': authHeader } }).then(files => {
-            if(!files) return; const list = document.getElementById('my-file-list'); list.innerHTML = '';
-            document.getElementById('stat-count').innerText = files.length + " ACTIVE_ARTIFACTS";
-            files.forEach(f => { list.innerHTML += `<tr><td><strong class="text-white">${f.originalFilename}</strong><br><small class="text-muted">${f.id}</small></td><td><span class="text-info small font-monospace"><i class="fas fa-shield-alt me-1"></i>${f.status}</span></td><td class="font-monospace text-info">${(f.totalSize/1024/1024).toFixed(2)} MB</td><td class="text-muted small">${new Date(f.createdAt).toLocaleString()}</td></tr>`; });
-        });
-        if(currentUser && currentUser.roles.includes('ROLE_ADMIN')) fetchNoc();
-    }
-
-    function fetchNoc() {
-        safeFetch('/api/admin/activity', { headers: { 'Authorization': authHeader } }).then(events => {
-            if(!events) return; const body = document.getElementById('noc-body'); body.innerHTML = '';
-            events.forEach(e => { const entry = document.createElement('div'); entry.className = 'noc-entry'; if(e.type === 'LOGIN') entry.style.color = '#fff'; entry.innerHTML = `<span class="text-muted small">[${new Date(e.timestamp).toLocaleTimeString()}]</span> <span style="color:#00f2ff">${e.type}</span> ${e.detail}`; body.appendChild(entry); });
-        });
-        safeFetch('/api/admin/activity/active-users', { headers: { 'Authorization': authHeader } }).then(users => {
-            if(!users || !Array.isArray(users)) return;
-            document.getElementById('user-count-badge').innerText = users.length;
-            document.getElementById('noc-users').innerHTML = users.map(u => `<div class="noc-entry text-info"><i class="fas fa-user-circle me-2"></i>${u}</div>`).join('');
-        });
-    }
-
-    async function startSmartUpload(file) {
-        if (!file) return; const overlay = document.getElementById('upload-overlay'); const bar = document.getElementById('upload-bar'); const status = document.getElementById('upload-status'); overlay.style.display = 'flex';
-        const CHUNK_SIZE = 1024 * 1024; const CONCURRENCY = 4;
-        try {
-            const initRes = await fetch('/api/files/init', { method: 'POST', headers: { 'Authorization': authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify({ originalFilename: file.name, totalSize: file.size }) });
-            const meta = await initRes.json(); const fileId = meta.id;
-            let uploaded = 0; const chunks = []; for (let offset = 0; offset < file.size; offset += CHUNK_SIZE) chunks.push({ offset, size: Math.min(CHUNK_SIZE, file.size - offset) });
-            async function worker() { while (chunks.length > 0) { const c = chunks.shift(); if (!c) break; const fd = new FormData(); fd.append('chunk', file.slice(c.offset, c.offset + c.size)); await fetch(`/api/files/${fileId}/chunk`, { method: 'POST', headers: { 'Authorization': authHeader }, body: fd }); uploaded += c.size; const pct = Math.min(Math.round((uploaded / file.size) * 100), 100); bar.style.width = pct + '%'; status.innerText = pct + '%'; } }
-            await Promise.all(Array(CONCURRENCY).fill(0).map(() => worker())); await fetch(`/api/files/${fileId}/complete`, { method: 'POST', headers: { 'Authorization': authHeader } }); overlay.style.display = 'none'; refresh();
-        } catch (err) { alert("Error: " + err); overlay.style.display = 'none'; }
-    }
-
-    function fetchUsers() {
-        safeFetch('/api/admin/users', { headers: { 'Authorization': authHeader } }).then(users => {
-            if(!users) return; const list = document.getElementById('user-list'); list.innerHTML = '';
-            users.forEach(u => { list.innerHTML += `<tr><td>${u.username}</td><td>${u.roles.join(', ')}</td><td><span class="text-success small">ACTIVE</span></td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${u.id}')"><i class="fas fa-trash"></i></button></td></tr>`; });
-        });
-    }
-
-    function fetchConfig() {
-        safeFetch('/api/admin/config', { headers: { 'Authorization': authHeader } }).then(configs => {
-            if(!configs) return; const cont = document.getElementById('config-container'); cont.innerHTML = `<button class="btn btn-danger w-100 mb-4 fw-bold" onclick="toggleMaintenance()"><i class="fas fa-power-off me-2"></i> TOGGLE MAINTENANCE MODE</button>`;
-            configs.forEach(c => { cont.innerHTML += `<div class="mb-4"><label class="text-secondary small fw-bold">${c.configKey}</label><div class="input-group"><input type="text" class="form-control" value="${c.configValue}" id="cfg-${c.configKey}"><button class="btn btn-outline-primary" onclick="saveConfig('${c.configKey}')">Update</button></div></div>`; });
-        });
-    }
-
+    function login() { const u = document.getElementById('login-user').value; const p = document.getElementById('login-pass').value; authHeader = 'Basic ' + btoa(u + ':' + p); fetch('/api/me', { headers: { 'Authorization': authHeader } }).then(res => { if (res.ok) { sessionStorage.setItem('mft_auth', authHeader); startSession(); } else alert("IDENTITY_DENIED"); }); }
+    function startSession() { document.getElementById('login-overlay').style.display = 'none'; document.getElementById('dashboard').style.display = 'block'; safeFetch('/api/me', { headers: { 'Authorization': authHeader } }).then(user => { currentUser = user; document.getElementById('user-tag').innerText = user.username; if (user.roles.includes('ROLE_ADMIN')) { document.getElementById('admin-menu').style.display = 'block'; document.getElementById('noc-monitor').style.display = 'flex'; makeDraggable(document.getElementById("noc-monitor")); } refresh(); setInterval(refresh, 5000); setInterval(pingSystem, 3000); }); }
+    function pingSystem() { if(isMaintenanceRedirecting) return; fetch('/api/system/ping', { headers: { 'Authorization': authHeader } }).then(res => res.json()).then(data => { if (data && data.maintenance === true) { isMaintenanceRedirecting = true; document.getElementById('maintenance-alert').style.display = 'flex'; setTimeout(() => window.location.href = '/maintenance.html', 3000); } }); }
+    function refresh() { safeFetch('/api/files', { headers: { 'Authorization': authHeader } }).then(files => { if(!files) return; const list = document.getElementById('my-file-list'); list.innerHTML = ''; document.getElementById('stat-count').innerText = files.length + " ACTIVE_ARTIFACTS"; files.forEach(f => { list.innerHTML += `<tr><td><strong class="text-white">${f.originalFilename}</strong><br><small class="text-muted">${f.id}</small></td><td><span class="text-info small font-monospace"><i class="fas fa-shield-alt me-1"></i>${f.status}</span></td><td class="font-monospace text-info">${(f.totalSize/1024/1024).toFixed(2)} MB</td><td class="text-muted small">${new Date(f.createdAt).toLocaleString()}</td></tr>`; }); }); if(currentUser && currentUser.roles.includes('ROLE_ADMIN')) fetchNoc(); }
+    function fetchNoc() { safeFetch('/api/admin/activity', { headers: { 'Authorization': authHeader } }).then(events => { if(!events) return; const body = document.getElementById('noc-body'); body.innerHTML = ''; events.forEach(e => { const entry = document.createElement('div'); entry.className = 'noc-entry'; if(e.type === 'LOGIN') entry.style.color = '#fff'; entry.innerHTML = `<span class="text-muted small">[${new Date(e.timestamp).toLocaleTimeString()}]</span> <span style="color:#00f2ff">${e.type}</span> ${e.detail}`; body.appendChild(entry); }); }); safeFetch('/api/admin/activity/active-users', { headers: { 'Authorization': authHeader } }).then(users => { if(!users || !Array.isArray(users)) return; document.getElementById('user-count-badge').innerText = users.length; document.getElementById('noc-users').innerHTML = users.map(u => `<div class="noc-entry text-info"><i class="fas fa-user-circle me-2"></i>${u}</div>`).join(''); }); }
+    async function startSmartUpload(file) { if (!file) return; const overlay = document.getElementById('upload-overlay'); const bar = document.getElementById('upload-bar'); const status = document.getElementById('upload-status'); overlay.style.display = 'flex'; const CHUNK_SIZE = 1024 * 1024; const CONCURRENCY = 4; try { const initRes = await fetch('/api/files/init', { method: 'POST', headers: { 'Authorization': authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify({ originalFilename: file.name, totalSize: file.size }) }); const meta = await initRes.json(); const fileId = meta.id; let uploaded = 0; const chunks = []; for (let offset = 0; offset < file.size; offset += CHUNK_SIZE) chunks.push({ offset, size: Math.min(CHUNK_SIZE, file.size - offset) }); async function worker() { while (chunks.length > 0) { const c = chunks.shift(); if (!c) break; const fd = new FormData(); fd.append('chunk', file.slice(c.offset, c.offset + c.size)); await fetch(`/api/files/${fileId}/chunk`, { method: 'POST', headers: { 'Authorization': authHeader }, body: fd }); uploaded += c.size; const pct = Math.min(Math.round((uploaded / file.size) * 100), 100); bar.style.width = pct + '%'; status.innerText = pct + '%'; } } await Promise.all(Array(CONCURRENCY).fill(0).map(() => worker())); await fetch(`/api/files/${fileId}/complete`, { method: 'POST', headers: { 'Authorization': authHeader } }); overlay.style.display = 'none'; refresh(); } catch (err) { alert("Error: " + err); overlay.style.display = 'none'; } }
+    function fetchUsers() { safeFetch('/api/admin/users', { headers: { 'Authorization': authHeader } }).then(users => { if(!users) return; const list = document.getElementById('user-list'); list.innerHTML = ''; users.forEach(u => { list.innerHTML += `<tr><td>${u.username}</td><td>${u.roles.join(', ')}</td><td><span class="text-success small">ACTIVE</span></td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${u.id}')"><i class="fas fa-trash"></i></button></td></tr>`; }); }); }
+    function fetchConfig() { safeFetch('/api/admin/config', { headers: { 'Authorization': authHeader } }).then(configs => { if(!configs) return; const cont = document.getElementById('config-container'); cont.innerHTML = `<button class="btn btn-danger w-100 mb-4 fw-bold" onclick="toggleMaintenance()"><i class="fas fa-power-off me-2"></i> TOGGLE MAINTENANCE MODE</button>`; configs.forEach(c => { cont.innerHTML += `<div class="mb-4"><label class="text-secondary small fw-bold">${c.configKey}</label><div class="input-group"><input type="text" class="form-control" value="${c.configValue}" id="cfg-${c.configKey}"><button class="btn btn-outline-primary" onclick="saveConfig('${c.configKey}')">Update</button></div></div>`; }); }); }
     function toggleMaintenance() { fetch('/api/admin/config/maintenance', { method: 'POST', headers: { 'Authorization': authHeader } }).then(res => res.json()).then(data => alert("Maintenance: " + (data.maintenance ? "ON" : "OFF"))); }
     function saveConfig(key) { const val = document.getElementById('cfg-'+key).value; fetch('/api/admin/config', { method: 'POST', headers: { 'Authorization': authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify({ configKey: key, configValue: val }) }).then(() => alert("Saved")); }
     function createUser() { const n = document.getElementById('new-user-name').value; const p = document.getElementById('new-user-pass').value; const r = document.getElementById('new-user-role').value; fetch('/api/admin/users', { method: 'POST', headers: { 'Authorization': authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify({ username: n, password: p, roles: r.split(',') }) }).then(() => { bootstrap.Modal.getInstance(document.getElementById('userModal')).hide(); refresh(); }); }
     function deleteUser(id) { if(confirm("Delete?")) fetch('/api/admin/users/'+id, { method: 'DELETE', headers: { 'Authorization': authHeader } }).then(refresh); }
-
     function switchNocTab(t) { document.getElementById('noc-body').style.display=t==='feed'?'block':'none'; document.getElementById('noc-users').style.display=t==='users'?'block':'none'; document.getElementById('tab-feed-btn').classList.toggle('text-info', t==='feed'); document.getElementById('tab-users-btn').classList.toggle('text-info', t==='users'); }
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('sidebar-overlay').classList.toggle('active'); }
     function showView(v) { document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); document.getElementById('view-'+v).classList.add('active'); document.getElementById('view-title').innerText = '| ' + v.toUpperCase(); if(window.innerWidth < 992 && document.getElementById('sidebar').classList.contains('active')) toggleSidebar(); }
