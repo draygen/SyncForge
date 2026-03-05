@@ -238,30 +238,49 @@
             async function worker() {
                 while (chunks.length > 0) {
                     const c = chunks.shift(); if (!c) break;
-                    const fd = new FormData(); fd.append('chunk', file.slice(c.offset, c.offset + c.size));
-                    await fetch(`/api/files/${fileId}/chunk`, { method: 'POST', headers: { 'Authorization': authHeader }, body: fd });
+                    
+                    await new Promise((resolve, reject) => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('POST', `/api/files/${fileId}/chunk`, true);
+                        xhr.setRequestHeader('Authorization', authHeader);
 
-                    uploaded += c.size;
-                    const pct = Math.min(Math.round((uploaded / file.size) * 100), 100);
-                    const now = Date.now();
-                    const duration = (now - startTime) / 1000;
-                    const speedBps = (uploaded * 8) / duration; // bits per second
-                    const mbps = speedBps / 1000000;
-                    const remainingBytes = file.size - uploaded;
-                    const etaSeconds = mbps > 0 ? (remainingBytes * 8) / speedBps : 0;
+                        let lastLoaded = 0;
+                        xhr.upload.onprogress = (e) => {
+                            if (e.lengthComputable) {
+                                const diff = e.loaded - lastLoaded;
+                                uploaded += diff;
+                                lastLoaded = e.loaded;
 
-                    bar.style.width = pct + '%';
-                    status.innerText = pct + '%';
-                    speedText.innerText = mbps.toFixed(2);
-                    bytesText.innerText = `${(uploaded/1024/1024).toFixed(1)} / ${(file.size/1024/1024).toFixed(1)} MB`;
+                                const pct = Math.min(Math.round((uploaded / file.size) * 100), 100);
+                                const now = Date.now();
+                                const duration = (now - startTime) / 1000;
+                                const speedBps = (uploaded * 8) / duration;
+                                const mbps = speedBps / 1000000;
+                                const remainingBytes = file.size - uploaded;
+                                const etaSeconds = mbps > 0 ? (remainingBytes * 8) / speedBps : 0;
 
-                    if (etaSeconds > 0) {
-                        const m = Math.floor(etaSeconds / 60);
-                        const s = Math.floor(etaSeconds % 60);
-                        etaText.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-                    } else {
-                        etaText.innerText = "0:00";
-                    }
+                                bar.style.width = pct + '%';
+                                status.innerText = pct + '%';
+                                speedText.innerText = mbps.toFixed(2);
+                                bytesText.innerText = `${(uploaded/1024/1024).toFixed(1)} / ${(file.size/1024/1024).toFixed(1)} MB`;
+                                
+                                if (etaSeconds > 0) {
+                                    const m = Math.floor(etaSeconds / 60);
+                                    const s = Math.floor(etaSeconds % 60);
+                                    etaText.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+                                } else {
+                                    etaText.innerText = "0:00";
+                                }
+                            }
+                        };
+
+                        xhr.onload = () => { if (xhr.status >= 200 && xhr.status < 300) resolve(); else reject(xhr.status); };
+                        xhr.onerror = () => reject("Network Error");
+                        
+                        const fd = new FormData();
+                        fd.append('chunk', file.slice(c.offset, c.offset + c.size));
+                        xhr.send(fd);
+                    });
                 }
             }
             await Promise.all(Array(CONCURRENCY).fill(0).map(() => worker()));
