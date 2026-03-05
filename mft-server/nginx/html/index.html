@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SyncForge | Enterprise MFT</title>
+    <link rel="icon" type="image/jpeg" href="/avatar.jpg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
@@ -23,6 +24,19 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at 50% 50%, transparent 0%, var(--obsidian) 90%);
             pointer-events: none; z-index: -1;
+        }
+
+        /* Top Header Avatar Centerpiece */
+        .top-brand-avatar {
+            display: block; margin: 25px auto 10px; width: 110px; height: 110px;
+            border-radius: 50%; border: 3px solid var(--neon-blue);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.5);
+            object-fit: cover; z-index: 1060; position: relative;
+            animation: glow-pulse 4s infinite alternate;
+        }
+        @keyframes glow-pulse {
+            from { box-shadow: 0 0 20px rgba(0, 242, 255, 0.3); }
+            to { box-shadow: 0 0 40px rgba(0, 242, 255, 0.6); }
         }
 
         /* FitGirl Style Architect Avatar */
@@ -101,9 +115,9 @@
 
 <div id="login-overlay">
     <div class="glass-card p-5 text-center" style="max-width: 450px; width: 100%;">
+        <img class="top-brand-avatar" src="/avatar.jpg" alt="SyncForge Logo">
         <form onsubmit="event.preventDefault(); login();">
             <div class="mb-4">
-                <i class="fas fa-microchip fa-4x mb-3" style="color: var(--neon-blue);"></i>
                 <h2 class="fw-bold text-white">SYNCFORGE</h2>
                 <p class="text-muted small">SECURE MULTI-THREADED ARTIFACT FORGE</p>
             </div>
@@ -124,6 +138,7 @@
     </nav>
 
     <main class="container py-5">
+        <img class="top-brand-avatar" src="/avatar.jpg" alt="SyncForge Architecture">
         <div id="view-transfers" class="view-section active">
             <section class="row mb-5"><div class="col-12"><div id="drop-zone" onclick="document.getElementById('file-input').click()"><i class="fas fa-atom fa-4x mb-3" style="color: var(--neon-blue);"></i><h3 class="fw-bold">DROP ARTIFACTS HERE</h3><p class="text-muted">ENCRYPTED PARALLEL STREAMING ENABLED</p><input type="file" id="file-input" style="display:none;" onchange="startSmartUpload(this.files[0])"></div></div></section>
             <section class="glass-card p-4">
@@ -144,7 +159,7 @@
 
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div id="sidebar">
-    <div class="mb-5 px-3"><h2 class="fw-bold text-white mb-0">FORGE</h2><small class="text-info">v1.0.4-STABLE</small></div>
+    <div class="mb-5 px-3"><img src="/avatar.jpg" width="60" style="border-radius:50%; border:2px solid var(--neon-blue);" class="mb-2"><h2 class="fw-bold text-white mb-0">FORGE</h2><small class="text-info">v1.0.4-STABLE</small></div>
     <div class="nav flex-column">
         <div class="nav-link active" onclick="showView('transfers')"><i class="fas fa-tachometer-alt me-3"></i> DASHBOARD</div>
         <div id="admin-menu" style="display:none;">
@@ -267,6 +282,25 @@
             await Promise.all(Array(CONCURRENCY).fill(0).map(() => worker())); await fetch(`/api/files/${fileId}/complete`, { method: 'POST', headers: { 'Authorization': authHeader } }); overlay.style.display = 'none'; refresh();
         } catch (err) { alert("Error: " + err); overlay.style.display = 'none'; }
     }
+
+    function fetchUsers() {
+        safeFetch('/api/admin/users', { headers: { 'Authorization': authHeader } }).then(users => {
+            if(!users) return; const list = document.getElementById('user-list'); list.innerHTML = '';
+            users.forEach(u => { list.innerHTML += `<tr><td>${u.username}</td><td>${u.roles.join(', ')}</td><td><span class="text-success small">ACTIVE</span></td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${u.id}')"><i class="fas fa-trash"></i></button></td></tr>`; });
+        });
+    }
+
+    function fetchConfig() {
+        safeFetch('/api/admin/config', { headers: { 'Authorization': authHeader } }).then(configs => {
+            if(!configs) return; const cont = document.getElementById('config-container'); cont.innerHTML = `<button class="btn btn-danger w-100 mb-4 fw-bold" onclick="toggleMaintenance()"><i class="fas fa-power-off me-2"></i> TOGGLE MAINTENANCE MODE</button>`;
+            configs.forEach(c => { cont.innerHTML += `<div class="mb-4"><label class="text-secondary small fw-bold">${c.configKey}</label><div class="input-group"><input type="text" class="form-control" value="${c.configValue}" id="cfg-${c.configKey}"><button class="btn btn-outline-primary" onclick="saveConfig('${c.configKey}')">Update</button></div></div>`; });
+        });
+    }
+
+    function toggleMaintenance() { fetch('/api/admin/config/maintenance', { method: 'POST', headers: { 'Authorization': authHeader } }).then(res => res.json()).then(data => alert("Maintenance: " + (data.maintenance ? "ON" : "OFF"))); }
+    function saveConfig(key) { const val = document.getElementById('cfg-'+key).value; fetch('/api/admin/config', { method: 'POST', headers: { 'Authorization': authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify({ configKey: key, configValue: val }) }).then(() => alert("Saved")); }
+    function createUser() { const n = document.getElementById('new-user-name').value; const p = document.getElementById('new-user-pass').value; const r = document.getElementById('new-user-role').value; fetch('/api/admin/users', { method: 'POST', headers: { 'Authorization': authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify({ username: n, password: p, roles: r.split(',') }) }).then(() => { bootstrap.Modal.getInstance(document.getElementById('userModal')).hide(); refresh(); }); }
+    function deleteUser(id) { if(confirm("Delete?")) fetch('/api/admin/users/'+id, { method: 'DELETE', headers: { 'Authorization': authHeader } }).then(refresh); }
 
     function switchNocTab(t) { document.getElementById('noc-body').style.display=t==='feed'?'block':'none'; document.getElementById('noc-users').style.display=t==='users'?'block':'none'; document.getElementById('tab-feed-btn').classList.toggle('text-info', t==='feed'); document.getElementById('tab-users-btn').classList.toggle('text-info', t==='users'); }
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('sidebar-overlay').classList.toggle('active'); }
