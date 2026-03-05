@@ -7,7 +7,7 @@
     <link rel="icon" type="image/jpeg" href="/avatar.jpg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
             --neon-blue: #00f2ff; --neon-purple: #7000ff; --obsidian: #020617;
@@ -26,17 +26,21 @@
             pointer-events: none; z-index: -1;
         }
 
-        /* Top Header Avatar Centerpiece */
-        .top-brand-avatar {
-            display: block; margin: 25px auto 10px; width: 110px; height: 110px;
-            border-radius: 50%; border: 3px solid var(--neon-blue);
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.5);
-            object-fit: cover; z-index: 1060; position: relative;
-            animation: glow-pulse 4s infinite alternate;
+        /* Draygen Brand Banner Header */
+        .brand-banner {
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; z-index: 1060; position: relative;
+            background: linear-gradient(90deg, transparent, rgba(0, 242, 255, 0.05), transparent);
+            border-bottom: 1px solid rgba(0, 242, 255, 0.15);
+            backdrop-filter: blur(5px);
         }
-        @keyframes glow-pulse {
-            from { box-shadow: 0 0 20px rgba(0, 242, 255, 0.3); }
-            to { box-shadow: 0 0 40px rgba(0, 242, 255, 0.6); }
+        .brand-logo {
+            width: 60px; height: 60px; border-radius: 12px; border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); object-fit: cover; margin-right: 20px;
+        }
+        .brand-text {
+            font-family: 'Orbitron'; font-size: 2.2rem; font-weight: 900; color: #fff;
+            letter-spacing: 8px; text-shadow: 0 0 15px rgba(0, 242, 255, 0.6);
         }
 
         /* FitGirl Style Architect Avatar */
@@ -105,6 +109,12 @@
 
 <canvas id="bg-canvas"></canvas>
 <div class="cyber-overlay"></div>
+
+<header class="brand-banner">
+    <img src="/avatar.jpg" class="brand-logo" alt="Logo">
+    <span class="brand-text">DRAYGEN</span>
+</header>
+
 <img id="architect-avatar" src="/face.jpg" alt="Architect">
 
 <div id="maintenance-alert">
@@ -115,9 +125,9 @@
 
 <div id="login-overlay">
     <div class="glass-card p-5 text-center" style="max-width: 450px; width: 100%;">
-        <img class="top-brand-avatar" src="/avatar.jpg" alt="SyncForge Logo">
         <form onsubmit="event.preventDefault(); login();">
             <div class="mb-4">
+                <i class="fas fa-microchip fa-4x mb-3" style="color: var(--neon-blue);"></i>
                 <h2 class="fw-bold text-white">SYNCFORGE</h2>
                 <p class="text-muted small">SECURE MULTI-THREADED ARTIFACT FORGE</p>
             </div>
@@ -138,7 +148,6 @@
     </nav>
 
     <main class="container py-5">
-        <img class="top-brand-avatar" src="/avatar.jpg" alt="SyncForge Architecture">
         <div id="view-transfers" class="view-section active">
             <section class="row mb-5"><div class="col-12"><div id="drop-zone" onclick="document.getElementById('file-input').click()"><i class="fas fa-atom fa-4x mb-3" style="color: var(--neon-blue);"></i><h3 class="fw-bold">DROP ARTIFACTS HERE</h3><p class="text-muted">ENCRYPTED PARALLEL STREAMING ENABLED</p><input type="file" id="file-input" style="display:none;" onchange="startSmartUpload(this.files[0])"></div></div></section>
             <section class="glass-card p-4">
@@ -159,7 +168,7 @@
 
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div id="sidebar">
-    <div class="mb-5 px-3"><img src="/avatar.jpg" width="60" style="border-radius:50%; border:2px solid var(--neon-blue);" class="mb-2"><h2 class="fw-bold text-white mb-0">FORGE</h2><small class="text-info">v1.0.4-STABLE</small></div>
+    <div class="mb-5 px-3"><img src="/avatar.jpg" width="60" style="border-radius:12px; border:2px solid var(--neon-blue);" class="mb-2"><h2 class="fw-bold text-white mb-0">FORGE</h2><small class="text-info">v1.0.4-STABLE</small></div>
     <div class="nav flex-column">
         <div class="nav-link active" onclick="showView('transfers')"><i class="fas fa-tachometer-alt me-3"></i> DASHBOARD</div>
         <div id="admin-menu" style="display:none;">
