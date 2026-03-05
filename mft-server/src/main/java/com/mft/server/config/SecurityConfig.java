@@ -27,7 +27,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/public/**", "/api/system/public/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
@@ -38,16 +38,6 @@ public class SecurityConfig {
             .authenticationProvider(dbAuthenticationProvider());
 
         return http.build();
-    }
-
-    @Bean
-    public org.springframework.security.provisioning.InMemoryUserDetailsManager inMemoryUserDetailsManager() {
-        org.springframework.security.core.userdetails.UserDetails admin = org.springframework.security.core.userdetails.User.builder()
-            .username("admin")
-            .password(passwordEncoder().encode("Renoise28!"))
-            .roles("ADMIN", "USER")
-            .build();
-        return new org.springframework.security.provisioning.InMemoryUserDetailsManager(admin);
     }
 
     @Bean

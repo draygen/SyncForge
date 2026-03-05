@@ -35,7 +35,7 @@ public class ActivityService {
     }
 
     public void purge() {
-        recentEvents.clear();
+        events.clear();
         activeUsers.clear();
     }
     

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin/users")
@@ -22,18 +24,26 @@ public class UserController {
         this.passwordEncoder = passwordEncoder;
     }
 
+    private record UserDTO(UUID id, String username, boolean enabled, Set<String> roles) {
+        static UserDTO from(User u) {
+            return new UserDTO(u.getId(), u.getUsername(), u.isEnabled(), u.getRoles());
+        }
+    }
+
     @GetMapping
-    public List<User> listUsers() {
-        return userRepository.findAll();
+    public List<UserDTO> listUsers() {
+        return userRepository.findAll().stream()
+                .map(UserDTO::from)
+                .collect(Collectors.toList());
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<UserDTO> createUser(@RequestBody User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
             user.setRoles(Set.of("USER"));
         }
-        return ResponseEntity.ok(userRepository.save(user));
+        return ResponseEntity.ok(UserDTO.from(userRepository.save(user)));
     }
 
     @DeleteMapping("/{id}")

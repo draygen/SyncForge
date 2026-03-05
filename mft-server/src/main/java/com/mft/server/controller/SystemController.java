@@ -24,6 +24,25 @@ public class SystemController {
         return Map.of("status", "SUCCESS", "message", "Temple Cleansed. All artifacts and karma records extinguished.");
     }
 
+    @GetMapping("/public/health")
+    public Map<String, Object> health() {
+        long totalFiles = 0;
+        long totalBytes = 0;
+        try {
+            var files = fileStorageService.getAllFiles();
+            totalFiles = files.stream().filter(f -> "COMPLETED".equals(f.getStatus())).count();
+            totalBytes = files.stream().filter(f -> "COMPLETED".equals(f.getStatus()))
+                    .mapToLong(f -> f.getTotalSize() != null ? f.getTotalSize() : 0L).sum();
+        } catch (Exception ignored) {}
+        return Map.of(
+            "status", "UP",
+            "maintenance", maintenanceMode,
+            "totalFiles", totalFiles,
+            "totalStorageBytes", totalBytes,
+            "version", "1.0.5"
+        );
+    }
+
     @GetMapping("/ping")
     public Map<String, Object> ping(org.springframework.security.core.Authentication auth, jakarta.servlet.http.HttpServletRequest request) {
         if (auth != null) {

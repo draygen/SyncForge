@@ -28,6 +28,9 @@ public class FileMetadata {
     @Column(nullable = false)
     private String encryptedAesKey; // The AES key used for this file, encrypted by the Master RSA Key
 
+    @Column(nullable = false)
+    private String cipherMode = "AES_GCM"; // AES_ECB (legacy) or AES_GCM
+
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
 
@@ -53,6 +56,9 @@ public class FileMetadata {
 
     public String getEncryptedAesKey() { return encryptedAesKey; }
     public void setEncryptedAesKey(String encryptedAesKey) { this.encryptedAesKey = encryptedAesKey; }
+
+    public String getCipherMode() { return cipherMode; }
+    public void setCipherMode(String cipherMode) { this.cipherMode = cipherMode; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

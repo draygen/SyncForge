@@ -3,9 +3,12 @@ package com.mft.server.controller;
 import com.mft.server.model.FileMetadata;
 import com.mft.server.model.InitUploadRequest;
 import com.mft.server.service.FileStorageService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.util.UUID;
 
@@ -63,6 +66,60 @@ public class FileTransferController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Failed to complete upload: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/{fileId}/download")
+    public ResponseEntity<StreamingResponseBody> downloadFile(
+            @PathVariable UUID fileId,
+            org.springframework.security.core.Authentication auth) {
+        try {
+            // Resolve metadata first to get filename before streaming
+            com.mft.server.model.FileMetadata meta = fileStorageService.getAllFiles().stream()
+                    .filter(f -> f.getId().equals(fileId))
+                    .findFirst()
+                    .orElse(null);
+            if (meta == null) return ResponseEntity.notFound().build();
+
+            String filename = meta.getOriginalFilename();
+            activityService.log("DOWNLOAD", auth.getName(), "Downloaded: " + filename);
+
+            StreamingResponseBody stream = out -> {
+                try { fileStorageService.downloadFile(fileId, out); }
+                catch (Exception e) { throw new java.io.IOException(e); }
+            };
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(stream);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @DeleteMapping("/{fileId}")
+    public ResponseEntity<String> deleteFile(
+            @PathVariable UUID fileId,
+            org.springframework.security.core.Authentication auth) {
+        try {
+            fileStorageService.deleteFile(fileId);
+            activityService.log("DELETE", auth.getName(), "Deleted file: " + fileId);
+            lastCacheUpdate = 0;
+            return ResponseEntity.ok("Deleted");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Delete failed: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{fileId}")
+    public ResponseEntity<com.mft.server.model.FileMetadata> getFile(@PathVariable UUID fileId) {
+        return fileStorageService.getAllFiles().stream()
+                .filter(f -> f.getId().equals(fileId))
+                .findFirst()
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     // High-speed Metadata Cache
