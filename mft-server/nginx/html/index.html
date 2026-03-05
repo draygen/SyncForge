@@ -147,12 +147,34 @@
 </div>
 
 <div id="upload-overlay">
-    <div class="text-center" style="max-width: 400px; width: 90%;">
-        <div class="mb-4"><i class="fas fa-project-diagram fa-4x text-info fa-spin"></i></div>
-        <h3 class="fw-bold text-white mb-2">FORGING ARTIFACT</h3>
-        <p class="text-info small mb-4 font-monospace">ENCRYPTING & STREAMING PARALLEL CHUNKS</p>
-        <div class="progress mb-3" style="height: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 20px;"><div id="upload-bar" class="progress-bar bg-info" style="width: 0%"></div></div>
-        <h2 id="upload-status" class="text-white font-monospace mb-0">0%</h2>
+    <div class="glass-card p-5 text-center" style="max-width: 500px; width: 95%;">
+        <div class="mb-4"><i class="fas fa-microchip fa-4x text-info fa-spin"></i></div>
+        <h3 class="fw-bold text-white mb-2">FORGE_INGESTION_ACTIVE</h3>
+        <p id="upload-filename" class="text-secondary small mb-4 font-monospace"></p>
+        
+        <div class="row g-3 mb-4">
+            <div class="col-6">
+                <div class="p-3 border border-secondary rounded bg-dark">
+                    <small class="text-muted d-block uppercase mb-1">Velocity</small>
+                    <span id="upload-speed" class="h4 fw-bold text-info">0.00</span> <small class="text-info">Mbps</small>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="p-3 border border-secondary rounded bg-dark">
+                    <small class="text-muted d-block uppercase mb-1">Time Remaining</small>
+                    <span id="upload-eta" class="h4 fw-bold text-white">--:--</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress mb-3" style="height: 20px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 10px;">
+            <div id="upload-bar" class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width: 0%"></div>
+        </div>
+        
+        <div class="d-flex justify-content-between font-monospace">
+            <span id="upload-status" class="text-info h2 mb-0">0%</span>
+            <span id="upload-bytes" class="text-secondary small align-self-end">0 / 0 MB</span>
+        </div>
     </div>
 </div>
 
@@ -191,7 +213,62 @@
     function pingSystem() { if(isMaintenanceRedirecting) return; fetch('/api/system/ping', { headers: { 'Authorization': authHeader } }).then(res => res.json()).then(data => { if (data && data.maintenance === true) { isMaintenanceRedirecting = true; document.getElementById('maintenance-alert').style.display = 'flex'; setTimeout(() => window.location.href = '/maintenance.html', 3000); } }); }
     function refresh() { safeFetch('/api/files', { headers: { 'Authorization': authHeader } }).then(files => { if(!files) return; const list = document.getElementById('my-file-list'); list.innerHTML = ''; document.getElementById('stat-count').innerText = files.length + " ACTIVE_ARTIFACTS"; files.forEach(f => { list.innerHTML += `<tr><td><strong class="text-white">${f.originalFilename}</strong><br><small class="text-muted">${f.id}</small></td><td><span class="text-info small font-monospace"><i class="fas fa-shield-alt me-1"></i>${f.status}</span></td><td class="font-monospace text-info">${(f.totalSize/1024/1024).toFixed(2)} MB</td><td class="text-muted small">${new Date(f.createdAt).toLocaleString()}</td></tr>`; }); }); if(currentUser && currentUser.roles.includes('ROLE_ADMIN')) fetchNoc(); }
     function fetchNoc() { safeFetch('/api/admin/activity', { headers: { 'Authorization': authHeader } }).then(events => { if(!events) return; const body = document.getElementById('noc-body'); body.innerHTML = ''; events.forEach(e => { const entry = document.createElement('div'); entry.className = 'noc-entry'; if(e.type === 'LOGIN') entry.style.color = '#fff'; entry.innerHTML = `<span class="text-muted small">[${new Date(e.timestamp).toLocaleTimeString()}]</span> <span style="color:#00f2ff">${e.type}</span> ${e.detail}`; body.appendChild(entry); }); }); safeFetch('/api/admin/activity/active-users', { headers: { 'Authorization': authHeader } }).then(users => { if(!users || !Array.isArray(users)) return; document.getElementById('user-count-badge').innerText = users.length; document.getElementById('noc-users').innerHTML = users.map(u => `<div class="noc-entry text-info"><i class="fas fa-user-circle me-2"></i>${u}</div>`).join(''); }); }
-    async function startSmartUpload(file) { if (!file) return; const overlay = document.getElementById('upload-overlay'); const bar = document.getElementById('upload-bar'); const status = document.getElementById('upload-status'); overlay.style.display = 'flex'; const CHUNK_SIZE = 1024 * 1024; const CONCURRENCY = 4; try { const initRes = await fetch('/api/files/init', { method: 'POST', headers: { 'Authorization': authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify({ originalFilename: file.name, totalSize: file.size }) }); const meta = await initRes.json(); const fileId = meta.id; let uploaded = 0; const chunks = []; for (let offset = 0; offset < file.size; offset += CHUNK_SIZE) chunks.push({ offset, size: Math.min(CHUNK_SIZE, file.size - offset) }); async function worker() { while (chunks.length > 0) { const c = chunks.shift(); if (!c) break; const fd = new FormData(); fd.append('chunk', file.slice(c.offset, c.offset + c.size)); await fetch(`/api/files/${fileId}/chunk`, { method: 'POST', headers: { 'Authorization': authHeader }, body: fd }); uploaded += c.size; const pct = Math.min(Math.round((uploaded / file.size) * 100), 100); bar.style.width = pct + '%'; status.innerText = pct + '%'; } } await Promise.all(Array(CONCURRENCY).fill(0).map(() => worker())); await fetch(`/api/files/${fileId}/complete`, { method: 'POST', headers: { 'Authorization': authHeader } }); overlay.style.display = 'none'; refresh(); } catch (err) { alert("Error: " + err); overlay.style.display = 'none'; } }
+    async function startSmartUpload(file) {
+        if (!file) return;
+        const overlay = document.getElementById('upload-overlay');
+        const bar = document.getElementById('upload-bar');
+        const status = document.getElementById('upload-status');
+        const speedText = document.getElementById('upload-speed');
+        const etaText = document.getElementById('upload-eta');
+        const bytesText = document.getElementById('upload-bytes');
+        const nameText = document.getElementById('upload-filename');
+
+        overlay.style.display = 'flex';
+        nameText.innerText = file.name.toUpperCase();
+
+        const CHUNK_SIZE = 1024 * 1024;
+        const CONCURRENCY = 4;
+        const startTime = Date.now();
+
+        try {
+            const initRes = await fetch('/api/files/init', { method: 'POST', headers: { 'Authorization': authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify({ originalFilename: file.name, totalSize: file.size }) });
+            const meta = await initRes.json(); const fileId = meta.id;
+            let uploaded = 0; const chunks = []; for (let offset = 0; offset < file.size; offset += CHUNK_SIZE) chunks.push({ offset, size: Math.min(CHUNK_SIZE, file.size - offset) });
+
+            async function worker() {
+                while (chunks.length > 0) {
+                    const c = chunks.shift(); if (!c) break;
+                    const fd = new FormData(); fd.append('chunk', file.slice(c.offset, c.offset + c.size));
+                    await fetch(`/api/files/${fileId}/chunk`, { method: 'POST', headers: { 'Authorization': authHeader }, body: fd });
+
+                    uploaded += c.size;
+                    const pct = Math.min(Math.round((uploaded / file.size) * 100), 100);
+                    const now = Date.now();
+                    const duration = (now - startTime) / 1000;
+                    const speedBps = (uploaded * 8) / duration; // bits per second
+                    const mbps = speedBps / 1000000;
+                    const remainingBytes = file.size - uploaded;
+                    const etaSeconds = mbps > 0 ? (remainingBytes * 8) / speedBps : 0;
+
+                    bar.style.width = pct + '%';
+                    status.innerText = pct + '%';
+                    speedText.innerText = mbps.toFixed(2);
+                    bytesText.innerText = `${(uploaded/1024/1024).toFixed(1)} / ${(file.size/1024/1024).toFixed(1)} MB`;
+
+                    if (etaSeconds > 0) {
+                        const m = Math.floor(etaSeconds / 60);
+                        const s = Math.floor(etaSeconds % 60);
+                        etaText.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+                    } else {
+                        etaText.innerText = "0:00";
+                    }
+                }
+            }
+            await Promise.all(Array(CONCURRENCY).fill(0).map(() => worker()));
+            await fetch(`/api/files/${fileId}/complete`, { method: 'POST', headers: { 'Authorization': authHeader } });
+            setTimeout(() => { overlay.style.display = 'none'; refresh(); }, 500);
+        } catch (err) { alert("Error: " + err); overlay.style.display = 'none'; }
+    }
     function fetchUsers() { safeFetch('/api/admin/users', { headers: { 'Authorization': authHeader } }).then(users => { if(!users) return; const list = document.getElementById('user-list'); list.innerHTML = ''; users.forEach(u => { list.innerHTML += `<tr><td>${u.username}</td><td>${u.roles.join(', ')}</td><td><span class="text-success small">ACTIVE</span></td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${u.id}')"><i class="fas fa-trash"></i></button></td></tr>`; }); }); }
     function fetchConfig() { safeFetch('/api/admin/config', { headers: { 'Authorization': authHeader } }).then(configs => { if(!configs) return; const cont = document.getElementById('config-container'); cont.innerHTML = `<button class="btn btn-danger w-100 mb-4 fw-bold" onclick="toggleMaintenance()"><i class="fas fa-power-off me-2"></i> TOGGLE MAINTENANCE MODE</button>`; configs.forEach(c => { cont.innerHTML += `<div class="mb-4"><label class="text-secondary small fw-bold">${c.configKey}</label><div class="input-group"><input type="text" class="form-control" value="${c.configValue}" id="cfg-${c.configKey}"><button class="btn btn-outline-primary" onclick="saveConfig('${c.configKey}')">Update</button></div></div>`; }); }); }
     function toggleMaintenance() { fetch('/api/admin/config/maintenance', { method: 'POST', headers: { 'Authorization': authHeader } }).then(res => res.json()).then(data => alert("Maintenance: " + (data.maintenance ? "ON" : "OFF"))); }
