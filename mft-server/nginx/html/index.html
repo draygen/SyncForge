@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MFT Server Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .navbar { background-color: #003366; }
+        .card { border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: none; }
+        .status-completed { color: #198754; font-weight: bold; }
+        .status-in-progress { color: #ffc107; font-weight: bold; }
+        .status-initiated { color: #0dcaf0; font-weight: bold; }
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 1000;
+            display: flex; justify-content: center; align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Login Overlay -->
+<div id="login-overlay">
+    <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
+        <h3 class="text-center mb-3">MFT Login</h3>
+        <input type="text" id="username" class="form-control mb-2" placeholder="Username">
+        <input type="password" id="password" class="form-control mb-3" placeholder="Password">
+        <button class="btn btn-primary w-100" onclick="login()">Login</button>
+        <div id="login-error" class="text-danger mt-2 text-center" style="display:none;">Invalid credentials</div>
+    </div>
+</div>
+
+<!-- Main Dashboard -->
+<div id="dashboard" style="display:none;">
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4 p-3">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><i class="fas fa-server"></i> Enterprise MFT</a>
+            <button class="btn btn-outline-light btn-sm" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="card p-3 text-center text-white bg-primary">
+                    <i class="fas fa-file-upload fa-2x mb-2"></i>
+                    <h5 id="total-files">0</h5>
+                    <small>Total Files Managed</small>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card p-3 text-center text-white bg-success">
+                    <i class="fas fa-hdd fa-2x mb-2"></i>
+                    <h5 id="total-data">0 MB</h5>
+                    <small>Total Data Transferred</small>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card p-3 text-center text-white bg-info">
+                    <i class="fas fa-network-wired fa-2x mb-2"></i>
+                    <h5>ONLINE</h5>
+                    <small>System Status</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4><i class="fas fa-list"></i> Recent Transfers</h4>
+                <button class="btn btn-sm btn-outline-secondary" onclick="fetchFiles()"><i class="fas fa-sync-alt"></i> Refresh</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>File Name</th>
+                            <th>Status</th>
+                            <th>Progress</th>
+                            <th>Size</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="file-list">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let authHeader = sessionStorage.getItem('mft_auth');
+
+    if (authHeader) {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        fetchFiles();
+        setInterval(fetchFiles, 5000); // Auto refresh every 5s
+    }
+
+    function login() {
+        const user = document.getElementById('username').value;
+        const pass = document.getElementById('password').value;
+        const token = btoa(user + ':' + pass);
+        authHeader = 'Basic ' + token;
+        
+        fetch('/api/files', { headers: { 'Authorization': authHeader } })
+            .then(res => {
+                if (res.ok) {
+                    sessionStorage.setItem('mft_auth', authHeader);
+                    document.getElementById('login-overlay').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    document.getElementById('login-error').style.display = 'none';
+                    fetchFiles();
+                    setInterval(fetchFiles, 5000);
+                } else {
+                    document.getElementById('login-error').style.display = 'block';
+                }
+            })
+            .catch(() => document.getElementById('login-error').style.display = 'block');
+    }
+
+    function logout() {
+        sessionStorage.removeItem('mft_auth');
+        location.reload();
+    }
+
+    function formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function fetchFiles() {
+        fetch('/api/files', { headers: { 'Authorization': authHeader } })
+            .then(res => {
+                if(res.status === 401) logout();
+                return res.json();
+            })
+            .then(data => {
+                const tbody = document.getElementById('file-list');
+                tbody.innerHTML = '';
+                
+                document.getElementById('total-files').innerText = data.length;
+                let totalBytes = data.reduce((acc, file) => acc + (file.uploadedSize || 0), 0);
+                document.getElementById('total-data').innerText = formatBytes(totalBytes);
+
+                data.forEach(file => {
+                    const progress = file.totalSize > 0 ? Math.round((file.uploadedSize / file.totalSize) * 100) : 0;
+                    let statusClass = 'status-initiated';
+                    if (file.status === 'COMPLETED') statusClass = 'status-completed';
+                    if (file.status === 'IN_PROGRESS') statusClass = 'status-in-progress';
+
+                    const row = `<tr>
+                        <td><strong>${file.originalFilename}</strong><br><small class="text-muted">${file.id}</small></td>
+                        <td class="${statusClass}">${file.status}</td>
+                        <td>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar ${progress === 100 ? 'bg-success' : 'progress-bar-striped progress-bar-animated'}" 
+                                     role="progressbar" style="width: ${progress}%" aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <small>${progress}%</small>
+                        </td>
+                        <td>${formatBytes(file.uploadedSize)} / ${formatBytes(file.totalSize)}</td>
+                        <td>${new Date(file.createdAt).toLocaleString()}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            })
+            .catch(err => console.error("Error fetching files", err));
+    }
+</script>
+</body>
+</html>

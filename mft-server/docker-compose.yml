@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # ====================================================================
+  # TIER 3: The Database Tier
+  # To use a separate remote database cluster (e.g., AWS RDS or an HA Patroni cluster), 
+  # simply comment out this block and update the SPRING_DATASOURCE_URL in the server block.
+  # ====================================================================
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: mft_user
+      POSTGRES_PASSWORD: mft_password
+      POSTGRES_DB: mft_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      
+  # ====================================================================
+  # TIER 2: The Application Tier (Spring Boot / Apache Tomcat)
+  # Notice that we no longer expose port 8080 to the host. The outside world 
+  # MUST go through Nginx. You can scale this by running `docker-compose up --scale server=3`
+  # ====================================================================
+  server:
+    build: .
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/mft_db
+      - SPRING_DATASOURCE_USERNAME=mft_user
+      - SPRING_DATASOURCE_PASSWORD=mft_password
+    depends_on:
+      - db
+    volumes:
+      - ./storage:/app/storage
+
+  # ====================================================================
+  # TIER 1: The Web Server / Reverse Proxy Tier (Nginx)
+  # Handles client connections, future TLS termination, and routes to Tomcat.
+  # ====================================================================
+  proxy:
+    image: nginx:alpine
+    ports:
+      - "8888:80"
+      - "4443:443" # Ready for TLS configuration
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/html:/usr/share/nginx/html:ro
+    depends_on:
+      - server
+
+volumes:
+  pgdata:
