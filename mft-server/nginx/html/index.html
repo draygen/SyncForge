@@ -1,102 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SyncForge | Neo-Vedic MFT</title>
+    <link rel="icon" type="image/jpeg" href="/draygen_avatar.jpg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
-            --neon-cyan: #00f2ff; 
-            --neon-magenta: #ff00ff; 
-            --neon-lime: #39ff14;
-            --obsidian: #050505;
-            --void: #000000;
-            --glass-bg: rgba(10, 15, 25, 0.85);
-            --glass-border: rgba(0, 242, 255, 0.4);
-            --text-primary: #e0f7fa;
-            --text-muted: #64748b;
+            --jade: #00ffa2; 
+            --gold: #ffd700; 
+            --vermilion: #ff4d00;
+            --deep-temple: #050510;
+            --amber-glow: rgba(255, 191, 0, 0.4);
+            --glass-jade: rgba(0, 40, 30, 0.85);
+            --border-gold: rgba(255, 215, 0, 0.3);
+            --text-gold: #ffec85;
+            --text-jade: #aaffec;
         }
         body { 
-            background-color: var(--void); 
-            color: var(--text-primary); 
+            background-color: var(--deep-temple); 
+            color: var(--text-jade); 
             font-family: 'Inter', sans-serif; 
             margin: 0; 
             min-height: 100vh; 
             overflow-x: hidden; 
+            /* Yantra Pattern Background */
             background-image: 
-                linear-gradient(rgba(0, 242, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
+                radial-gradient(circle at 2px 2px, rgba(0, 255, 162, 0.05) 1px, transparent 0);
+            background-size: 40px 40px;
         }
-        #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; opacity: 0.6; }
-        .cyber-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, transparent 0%, var(--void) 100%); pointer-events: none; z-index: -1; }
+        #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; opacity: 0.4; }
+        .cyber-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, transparent 0%, var(--deep-temple) 100%); pointer-events: none; z-index: -1; }
 
-        /* Draygen Brand Banner Header */
+        /* Draygen Brand Banner - Temple Style */
         .brand-banner {
             display: flex; align-items: center; justify-content: center;
-            padding: 25px; z-index: 1060; position: relative;
-            background: linear-gradient(90deg, rgba(0,0,0,0.9), rgba(0, 242, 255, 0.1), rgba(0,0,0,0.9));
-            border-bottom: 2px solid var(--neon-cyan);
-            box-shadow: 0 5px 30px rgba(0, 242, 255, 0.2);
-            backdrop-filter: blur(10px);
+            padding: 30px; z-index: 1060; position: relative;
+            background: linear-gradient(90deg, rgba(0,0,0,0.9), rgba(255, 215, 0, 0.05), rgba(0,0,0,0.9));
+            border-bottom: 3px solid var(--gold);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
+            backdrop-filter: blur(15px);
         }
         .brand-logo {
-            width: 70px; height: 70px; border-radius: 16px; border: 2px solid var(--neon-cyan);
-            box-shadow: 0 0 25px var(--neon-cyan); object-fit: cover; margin-right: 25px;
+            width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--gold);
+            box-shadow: 0 0 30px var(--gold); object-fit: cover; margin-right: 30px;
+            filter: sepia(1) saturate(5) hue-rotate(-50deg); /* Gold effect */
         }
         .brand-text {
-            font-family: 'Orbitron'; font-size: 2.8rem; font-weight: 900; color: #fff;
-            letter-spacing: 12px; text-shadow: 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-magenta);
+            font-family: 'Orbitron'; font-size: 3.2rem; font-weight: 900; color: var(--gold);
+            letter-spacing: 15px; text-shadow: 0 0 20px var(--gold), 0 0 40px var(--vermilion);
         }
 
-        h1, h2, h3, h4, h5, .navbar-brand { font-family: 'Orbitron', sans-serif; letter-spacing: 3px; color: var(--neon-cyan); text-transform: uppercase; }
+        h1, h2, h3, h4, h5, .navbar-brand { font-family: 'Orbitron', sans-serif; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
         
-        .form-control { background: rgba(0, 0, 0, 0.8) !important; border: 1px solid var(--neon-cyan) !important; color: var(--neon-cyan) !important; border-radius: 8px; padding: 15px; font-family: 'JetBrains Mono', monospace; transition: all 0.3s ease; }
-        .form-control::placeholder { color: rgba(0, 242, 255, 0.3); }
-        .form-control:focus { background: var(--void) !important; border-color: var(--neon-magenta) !important; box-shadow: 0 0 20px rgba(255, 0, 255, 0.4); color: var(--neon-magenta) !important; }
+        .form-control { background: rgba(0, 10, 5, 0.8) !important; border: 1px solid var(--jade) !important; color: var(--jade) !important; border-radius: 4px; padding: 15px; font-family: 'JetBrains Mono', monospace; transition: all 0.3s ease; }
+        .form-control:focus { background: var(--deep-temple) !important; border-color: var(--gold) !important; box-shadow: 0 0 25px rgba(255, 215, 0, 0.3); color: var(--gold) !important; }
         
-        #sidebar { position: fixed; top: 0; left: -320px; width: 320px; height: 100%; background: rgba(5, 5, 10, 0.95); backdrop-filter: blur(20px); border-right: 2px solid var(--neon-cyan); box-shadow: 5px 0 30px rgba(0, 242, 255, 0.2); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1050; padding: 40px 20px; }
+        #sidebar { position: fixed; top: 0; left: -340px; width: 340px; height: 100%; background: rgba(2, 10, 5, 0.98); backdrop-filter: blur(25px); border-right: 3px solid var(--gold); box-shadow: 10px 0 50px rgba(0,0,0,0.9); transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); z-index: 1050; padding: 50px 20px; }
         #sidebar.active { left: 0; }
-        .nav-link { color: var(--text-muted); border-radius: 8px; padding: 16px 20px; margin-bottom: 10px; cursor: pointer; transition: 0.3s; font-family: 'Orbitron'; font-size: 0.9rem; letter-spacing: 1px; }
-        .nav-link:hover, .nav-link.active { background: rgba(0, 242, 255, 0.1); color: var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan); border-left: 4px solid var(--neon-cyan); }
+        .nav-link { color: rgba(0, 255, 162, 0.5); border-radius: 4px; padding: 18px 25px; margin-bottom: 12px; cursor: pointer; transition: 0.3s; font-family: 'Orbitron'; font-size: 0.85rem; border: 1px solid transparent; }
+        .nav-link:hover, .nav-link.active { background: rgba(0, 255, 162, 0.05); color: var(--gold); text-shadow: 0 0 15px var(--gold); border: 1px solid var(--gold); }
         
-        .glass-card { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 0 20px rgba(0, 242, 255, 0.05); position: relative; z-index: 1; }
+        .glass-card { background: var(--glass-jade); backdrop-filter: blur(20px); border: 1px solid var(--border-gold); border-radius: 4px; box-shadow: 0 20px 60px rgba(0,0,0,0.8); position: relative; }
         
-        #drop-zone { border: 2px dashed var(--neon-cyan); border-radius: 16px; padding: 70px; text-align: center; transition: all 0.4s ease; cursor: pointer; background: rgba(0,0,0,0.4); }
-        #drop-zone:hover, #drop-zone.dragover { border-color: var(--neon-magenta); background: rgba(255, 0, 255, 0.1); box-shadow: 0 0 30px rgba(255, 0, 255, 0.2); }
-        #drop-zone h3 { color: var(--text-primary); text-shadow: none; }
+        #drop-zone { border: 2px dashed var(--jade); border-radius: 8px; padding: 80px; text-align: center; transition: all 0.4s ease; cursor: pointer; background: rgba(0,0,0,0.5); position: relative; overflow: hidden; }
+        #drop-zone::before { content: '☸'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 15rem; color: rgba(0, 255, 162, 0.03); pointer-events: none; }
+        #drop-zone:hover, #drop-zone.dragover { border-color: var(--gold); background: rgba(255, 215, 0, 0.05); box-shadow: 0 0 40px rgba(255, 215, 0, 0.1); }
         
-        .btn-neon { background: transparent; border: 2px solid var(--neon-cyan); color: var(--neon-cyan); font-family: 'Orbitron'; font-weight: 800; border-radius: 8px; padding: 15px 30px; text-transform: uppercase; transition: all 0.3s ease; position: relative; overflow: hidden; }
-        .btn-neon:hover { background: var(--neon-cyan); color: var(--void); box-shadow: 0 0 30px var(--neon-cyan); transform: translateY(-2px); }
-        .btn-neon-magenta { border-color: var(--neon-magenta); color: var(--neon-magenta); }
-        .btn-neon-magenta:hover { background: var(--neon-magenta); color: var(--void); box-shadow: 0 0 30px var(--neon-magenta); }
+        .btn-neon { background: transparent; border: 2px solid var(--gold); color: var(--gold); font-family: 'Orbitron'; font-weight: 800; border-radius: 4px; padding: 18px 35px; text-transform: uppercase; transition: all 0.4s ease; letter-spacing: 2px; }
+        .btn-neon:hover { background: var(--gold); color: var(--deep-temple); box-shadow: 0 0 40px var(--gold); transform: scale(1.02); }
         
-        /* High Contrast Tables */
-        .table { color: var(--text-primary); }
-        .table thead th { border-bottom: 2px solid var(--neon-cyan); color: var(--neon-cyan); font-family: 'Orbitron'; letter-spacing: 2px; background: rgba(0,0,0,0.5); padding: 15px; }
-        .table tbody tr { border-bottom: 1px solid rgba(0, 242, 255, 0.1); transition: 0.2s; }
-        .table tbody tr:hover { background-color: rgba(0, 242, 255, 0.05); }
-        .table tbody td { padding: 15px; vertical-align: middle; }
-        .artifact-name { font-size: 1.1rem; font-weight: 700; color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.5); letter-spacing: 1px; }
-        .status-badge { font-family: 'JetBrains Mono'; font-size: 0.8rem; padding: 5px 10px; border-radius: 4px; border: 1px solid; }
-        .status-completed { color: var(--neon-lime); border-color: var(--neon-lime); background: rgba(57, 255, 20, 0.1); }
-        .status-progress { color: var(--neon-cyan); border-color: var(--neon-cyan); background: rgba(0, 242, 255, 0.1); }
-        .status-initiated { color: var(--neon-magenta); border-color: var(--neon-magenta); background: rgba(255, 0, 255, 0.1); }
+        /* High-Visibility Mythic Table */
+        .table { color: var(--text-jade); }
+        .table thead th { border-bottom: 3px solid var(--gold); color: var(--gold); font-family: 'Orbitron'; font-size: 0.9rem; background: rgba(0,0,0,0.7); padding: 20px; text-transform: uppercase; }
+        .table tbody tr { border-bottom: 1px solid rgba(255, 215, 0, 0.1); transition: 0.3s; background: rgba(0,0,0,0.2); }
+        .table tbody tr:hover { background-color: rgba(0, 255, 162, 0.05); }
+        .table tbody td { padding: 20px; vertical-align: middle; }
+        
+        .artifact-name { font-family: 'Orbitron'; font-size: 1.2rem; font-weight: 700; color: var(--text-gold); text-shadow: 0 0 10px rgba(255, 236, 133, 0.4); letter-spacing: 2px; }
+        .status-badge { font-family: 'JetBrains Mono'; font-size: 0.75rem; padding: 6px 12px; border-radius: 2px; border: 1px solid; text-transform: uppercase; letter-spacing: 1px; }
+        .status-completed { color: #00ff88; border-color: #00ff88; background: rgba(0, 255, 136, 0.1); box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
+        .status-progress { color: var(--jade); border-color: var(--jade); background: rgba(0, 255, 162, 0.1); }
+        .status-initiated { color: var(--vermilion); border-color: var(--vermilion); background: rgba(255, 77, 0, 0.1); }
 
-        #noc-monitor { position: fixed; bottom: 30px; right: 30px; width: 450px; height: 400px; background: rgba(5, 5, 10, 0.98); border: 2px solid var(--neon-cyan); border-radius: 12px; display: none; flex-direction: column; z-index: 1000; box-shadow: 0 0 40px rgba(0, 242, 255, 0.15); }
-        #noc-header { padding: 15px 20px; background: rgba(0, 242, 255, 0.1); border-bottom: 1px solid var(--neon-cyan); color: var(--neon-cyan); font-family: 'Orbitron'; cursor: move; display: flex; justify-content: space-between; align-items: center; letter-spacing: 2px; }
-        #noc-body, #noc-users { flex: 1; padding: 20px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; overflow-y: auto; color: var(--text-primary); }
-        .noc-entry { margin-bottom: 10px; border-left: 3px solid var(--neon-magenta); padding-left: 15px; background: rgba(255,0,255,0.03); padding-top: 5px; padding-bottom: 5px; }
+        #noc-monitor { position: fixed; bottom: 40px; right: 40px; width: 480px; height: 450px; background: rgba(2, 8, 5, 0.98); border: 2px solid var(--gold); border-radius: 4px; display: none; flex-direction: column; z-index: 1000; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+        #noc-header { padding: 18px 25px; background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent); border-bottom: 1px solid var(--gold); color: var(--gold); font-family: 'Orbitron'; cursor: move; display: flex; justify-content: space-between; align-items: center; letter-spacing: 3px; }
+        #noc-body, #noc-users { flex: 1; padding: 25px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; overflow-y: auto; color: var(--text-jade); }
+        .noc-entry { margin-bottom: 12px; border-left: 4px solid var(--vermilion); padding-left: 20px; background: rgba(255, 77, 0, 0.03); padding-top: 8px; padding-bottom: 8px; border-radius: 0 4px 4px 0; }
         
-        .view-section { display: none; animation: cyberFadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
-        .view-section.active { display: block; }
-        @keyframes cyberFadeIn { from { opacity: 0; transform: scale(0.98) translateY(20px); filter: blur(5px); } to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); } }
+        #upload-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,5,2,0.95); backdrop-filter: blur(15px); z-index: 2000; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        .progress-container { width: 100%; height: 12px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden; margin-bottom: 25px; border: 1px solid var(--border-gold); }
+        .progress-bar-cyber { height: 100%; background: linear-gradient(90deg, var(--vermilion), var(--gold), var(--jade)); box-shadow: 0 0 25px var(--gold); transition: width 0.2s ease; }
         
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--void); z-index: 3000; display: flex; justify-content: center; align-items: center; }
-        #upload-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index: 2000; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        
-        .progress-container { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-bottom: 20px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
-        .progress-bar-cyber { height: 100%; background: linear-gradient(90deg, var(--neon-magenta), var(--neon-cyan)); box-shadow: 0 0 20px var(--neon-cyan); transition: width 0.2s ease; }
-        
-        .telemetry-box { background: rgba(0,0,0,0.6); border: 1px solid var(--neon-cyan); border-radius: 8px; padding: 20px; box-shadow: inset 0 0 20px rgba(0, 242, 255, 0.05); }
-        
-        .modal-content.glass-card { border-color: var(--neon-magenta); box-shadow: 0 0 50px rgba(255,0,255,0.2); }
-        .modal-header { border-bottom: 1px solid rgba(255,0,255,0.3); }
-        .modal-footer { border-top: 1px solid rgba(255,0,255,0.3); }
+        .telemetry-box { background: rgba(0,0,0,0.5); border: 1px solid var(--jade); border-radius: 4px; padding: 25px; box-shadow: inset 0 0 30px rgba(0, 255, 162, 0.05); }
+        .telemetry-box h2 { text-shadow: 0 0 15px white; }
     </style>
 </head>
 <body>
@@ -109,48 +109,48 @@
     <span class="brand-text">DRAYGEN</span>
 </header>
 
-<div id="maintenance-alert" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,0,0,0.9); z-index:9999; flex-direction:column; justify-content:center; align-items:center; color:white; font-family:'Orbitron';">
-    <i class="fas fa-radiation fa-5x mb-4 fa-spin"></i>
-    <h1 style="color:white; text-shadow: 0 0 20px black;">SYSTEM UPDATE IN PROGRESS</h1>
-    <p class="font-monospace">Hold please... redirecting to maintenance portal.</p>
+<div id="maintenance-alert" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(20,0,0,0.98); z-index:9999; flex-direction:column; justify-content:center; align-items:center; color:var(--gold); font-family:'Orbitron';">
+    <i class="fas fa-dharmachakra fa-7x mb-5 fa-spin" style="color: var(--vermilion);"></i>
+    <h1 style="font-size: 3rem; color: var(--gold);">SYSTEM REINCARNATION IN PROGRESS</h1>
+    <p class="font-monospace" style="letter-spacing: 5px;">MANTRA_UPGRADE_ACTIVE ... HOLD FAST</p>
 </div>
 
 <div id="login-overlay">
-    <div class="glass-card p-5 text-center" style="max-width: 480px; width: 100%;">
+    <div class="glass-card p-5 text-center" style="max-width: 520px; width: 100%; border-color: var(--jade); box-shadow: 0 0 50px rgba(0, 255, 162, 0.1);">
         <form onsubmit="event.preventDefault(); login();">
             <div class="mb-5">
-                <i class="fas fa-network-wired fa-5x mb-4" style="color: var(--neon-cyan); filter: drop-shadow(0 0 15px var(--neon-cyan));"></i>
+                <i class="fas fa-gopuram fa-6x mb-4" style="color: var(--gold); filter: drop-shadow(0 0 20px var(--gold));"></i>
                 <h2 class="fw-bold mb-2">SYNCFORGE</h2>
-                <p class="text-info font-monospace small tracking-widest">SECURE DATA INGESTION MATRIX</p>
+                <p class="text-jade font-monospace small tracking-widest" style="letter-spacing: 6px;">NEO-VEDIC DATA SANCTUARY</p>
             </div>
-            <div class="mb-4 text-start"><label class="small mb-2 text-info font-monospace">CORE IDENTITY</label><input type="text" id="login-user" class="form-control" placeholder="ACCESS_ID" required></div>
-            <div class="mb-5 text-start"><label class="small mb-2 text-info font-monospace">SECURITY KEY</label><input type="password" id="login-pass" class="form-control" placeholder="••••••••" required></div>
-            <button type="submit" class="btn btn-neon w-100 p-3">INITIATE CONNECTION</button>
+            <div class="mb-4 text-start"><label class="small mb-2 text-gold font-monospace">CORE IDENTITY</label><input type="text" id="login-user" class="form-control" placeholder="SOUL_ID" required></div>
+            <div class="mb-5 text-start"><label class="small mb-2 text-gold font-monospace">SECRET MANTRA</label><input type="password" id="login-pass" class="form-control" placeholder="••••••••" required></div>
+            <button type="submit" class="btn btn-neon w-100 p-3">INITIATE ASCENSION</button>
         </form>
     </div>
 </div>
 
 <div id="dashboard" style="display:none;">
-    <nav class="navbar p-4 sticky-top" style="background: rgba(0,0,0,0.8); border-bottom: 1px solid var(--neon-cyan); backdrop-filter: blur(10px);">
+    <nav class="navbar p-4 sticky-top" style="background: rgba(0,10,5,0.9); border-bottom: 2px solid var(--gold); backdrop-filter: blur(15px);">
         <div class="container-fluid">
-            <button class="btn btn-link text-info me-4 p-0" onclick="toggleSidebar()"><i class="fas fa-bars fa-2x"></i></button>
-            <span class="navbar-brand fw-bold mb-0 h1" style="font-size: 1.5rem;">SYNCFORGE <span id="view-title" class="ms-3 small fw-light" style="color: var(--neon-magenta);">| OMEGA PROTOCOL</span></span>
-            <div class="ms-auto"><span id="user-tag" class="badge bg-dark border border-info text-info rounded-pill px-4 py-2 font-monospace" style="font-size: 1rem; box-shadow: 0 0 10px rgba(0,242,255,0.3);"></span></div>
+            <button class="btn btn-link text-gold me-4 p-0" onclick="toggleSidebar()"><i class="fas fa-dharmachakra fa-3x"></i></button>
+            <span class="navbar-brand fw-bold mb-0 h1" style="font-size: 1.8rem; color: var(--gold);">SYNCFORGE <span id="view-title" class="ms-3 small fw-light" style="color: var(--jade);">| GARUDA_ARRAY</span></span>
+            <div class="ms-auto"><span id="user-tag" class="badge bg-dark border border-gold text-gold rounded-pill px-4 py-2 font-monospace" style="font-size: 1.1rem; box-shadow: 0 0 20px rgba(255,215,0,0.2);"></span></div>
         </div>
     </nav>
 
     <main class="container py-5">
         <div id="view-transfers" class="view-section active">
-            <section class="row mb-5"><div class="col-12"><div id="drop-zone" onclick="document.getElementById('file-input').click()"><i class="fas fa-upload fa-5x mb-4" style="color: var(--neon-cyan);"></i><h3 class="fw-bold mb-3">DROP ARTIFACTS TO FORGE</h3><p class="text-info font-monospace">AES-256 PARALLEL STREAMING ENABLED</p><input type="file" id="file-input" style="display:none;" onchange="startSmartUpload(this.files[0])"></div></div></section>
+            <section class="row mb-5"><div class="col-12"><div id="drop-zone" onclick="document.getElementById('file-input').click()"><i class="fas fa-dragon fa-6x mb-4" style="color: var(--jade); filter: drop-shadow(0 0 20px var(--jade));"></i><h3 class="fw-bold mb-3" style="color: var(--text-jade);">FEED ARTIFACTS TO THE NAGA</h3><p class="text-gold font-monospace" style="letter-spacing: 3px;">SACRED AES-256 PARALLEL CHURNING</p><input type="file" id="file-input" style="display:none;" onchange="startSmartUpload(this.files[0])"></div></div></section>
             
-            <section class="glass-card p-0 overflow-hidden">
-                <div class="d-flex justify-content-between align-items-center p-4" style="background: rgba(0,242,255,0.05); border-bottom: 1px solid var(--neon-cyan);">
-                    <h4 class="fw-bold mb-0"><i class="fas fa-server me-3 text-info"></i> SECURED VOLUMES</h4>
-                    <span id="stat-count" class="badge bg-info text-dark font-monospace px-3 py-2" style="font-size:1rem; font-weight:bold;">0 ARTIFACTS</span>
+            <section class="glass-card p-0 overflow-hidden" style="border-color: var(--jade);">
+                <div class="d-flex justify-content-between align-items-center p-4" style="background: rgba(0,255,162,0.05); border-bottom: 2px solid var(--jade);">
+                    <h4 class="fw-bold mb-0" style="color: var(--jade);"><i class="fas fa-scroll me-3"></i> CONSECRATED VOLUMES</h4>
+                    <span id="stat-count" class="badge bg-jade text-dark font-monospace px-4 py-2" style="font-size:1.1rem; background: var(--jade);">0 ARTIFACTS</span>
                 </div>
                 <div class="table-responsive p-4">
                     <table class="table table-borderless align-middle mb-0">
-                        <thead><tr><th>ARTIFACT DESIGNATION</th><th>INGESTION STATUS</th><th>DATA VOLUME</th><th>TIME_STAMP</th></tr></thead>
+                        <thead><tr><th>ARTIFACT DESIGNATION</th><th>ZENITH STATUS</th><th>DATA VOLUME</th><th>ETERNAL_TIMESTAMP</th></tr></thead>
                         <tbody id="my-file-list"></tbody>
                     </table>
                 </div>
@@ -158,40 +158,40 @@
         </div>
         
         <div id="view-users" class="view-section">
-            <div class="d-flex justify-content-between align-items-center mb-5"><h2 class="fw-bold">IDENTITY MATRIX</h2><button class="btn btn-neon btn-neon-magenta px-5" data-bs-toggle="modal" data-bs-target="#userModal"><i class="fas fa-plus me-2"></i> NEW IDENTITY</button></div>
-            <div class="glass-card p-4"><table class="table table-borderless align-middle"><thead><tr><th>IDENTITY</th><th>PERMISSIONS</th><th>STATUS</th><th>OVERRIDE</th></tr></thead><tbody id="user-list"></tbody></table></div>
+            <div class="d-flex justify-content-between align-items-center mb-5"><h2 class="fw-bold" style="color: var(--gold);">IDENTITY KARMA MATRIX</h2><button class="btn btn-neon px-5" data-bs-toggle="modal" data-bs-target="#userModal"><i class="fas fa-plus-circle me-2"></i> INVOKE IDENTITY</button></div>
+            <div class="glass-card p-4"><table class="table table-borderless align-middle"><thead><tr><th>IDENTITY</th><th>PERMISSIONS</th><th>STATUS</th><th>EXTINGUISH</th></tr></thead><tbody id="user-list"></tbody></table></div>
         </div>
         
         <div id="view-config" class="view-section">
-            <h2 class="mb-5 fw-bold text-center">CORE SYSTEM PARAMETERS</h2>
-            <div class="glass-card p-5" id="config-container" style="max-width: 800px; margin: 0 auto;"></div>
+            <h2 class="mb-5 fw-bold text-center" style="color: var(--gold);">TEMPLE CORE PARAMETERS</h2>
+            <div class="glass-card p-5" id="config-container" style="max-width: 900px; margin: 0 auto; border-color: var(--gold);"></div>
         </div>
     </main>
 </div>
 
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div id="sidebar">
-    <div class="text-center mb-5 pb-4" style="border-bottom: 1px solid rgba(0,242,255,0.2);">
-        <img src="/draygen_avatar.jpg" width="80" style="border-radius:20px; border:2px solid var(--neon-cyan); box-shadow: 0 0 20px rgba(0,242,255,0.4);" class="mb-3">
-        <h3 class="fw-bold mb-1" style="letter-spacing: 5px;">FORGE</h3>
-        <span class="badge bg-dark border border-magenta text-magenta font-monospace" style="color: var(--neon-magenta); border-color: var(--neon-magenta) !important;">v1.0.5-OMEGA</span>
+    <div class="text-center mb-5 pb-4" style="border-bottom: 2px solid var(--jade);">
+        <img src="/draygen_avatar.jpg" width="100" style="border-radius:50%; border:3px solid var(--gold); box-shadow: 0 0 30px rgba(255,215,0,0.4);" class="mb-4">
+        <h3 class="fw-bold mb-1" style="letter-spacing: 8px; color: var(--gold);">TEMPLE</h3>
+        <span class="badge bg-dark border border-jade text-jade font-monospace" style="letter-spacing: 2px;">v1.0.6-EMERALD</span>
     </div>
     <div class="nav flex-column">
-        <div class="nav-link active" onclick="showView('transfers')"><i class="fas fa-satellite-dish me-3"></i> COMMAND CENTER</div>
+        <div class="nav-link active" onclick="showView('transfers')"><i class="fas fa-om me-3"></i> COMMAND ALTAR</div>
         <div id="admin-menu" style="display:none;">
-            <div class="text-info font-monospace small mt-5 mb-3 px-3 fw-bold" style="letter-spacing: 2px;">ROOT PROTOCOLS</div>
-            <div class="nav-link" onclick="showView('users')"><i class="fas fa-fingerprint me-3"></i> ACCESS MATRIX</div>
-            <div class="nav-link" onclick="showView('config')"><i class="fas fa-sliders-h me-3"></i> SYSTEM OVERRIDES</div>
+            <div class="text-gold font-monospace small mt-5 mb-3 px-3 fw-bold" style="letter-spacing: 3px;">HIGH PRIEST PROTOCOLS</div>
+            <div class="nav-link" onclick="showView('users')"><i class="fas fa-eye me-3"></i> SOUL_WATCHER</div>
+            <div class="nav-link" onclick="showView('config')"><i class="fas fa-cog me-3"></i> WORLD_STRATA</div>
         </div>
-        <div class="mt-auto pt-5"><div class="nav-link" style="color: #ff003c; border-left-color: #ff003c;" onclick="logout()"><i class="fas fa-power-off me-3"></i> SEVER CONNECTION</div></div>
+        <div class="mt-auto pt-5"><div class="nav-link" style="color: var(--vermilion); border-left-color: var(--vermilion);" onclick="logout()"><i class="fas fa-power-off me-3"></i> SEVER KARMA</div></div>
     </div>
 </div>
 
-<div id="noc-monitor">
-    <div id="noc-header">
+<div id="noc-monitor" style="border-color: var(--jade);">
+    <div id="noc-header" style="background: rgba(0, 255, 162, 0.1); border-bottom-color: var(--jade); color: var(--jade);">
         <div class="d-flex align-items-center">
-            <button class="btn btn-sm text-info p-0 me-4 fw-bold font-monospace" id="tab-feed-btn" onclick="switchNocTab('feed')">SYS_LOG</button>
-            <button class="btn btn-sm text-secondary p-0 fw-bold font-monospace" id="tab-users-btn" onclick="switchNocTab('users')">NODES <span id="user-count-badge" class="badge bg-magenta text-white ms-1 rounded-pill" style="background: var(--neon-magenta);">0</span></button>
+            <button class="btn btn-sm text-jade p-0 me-4 fw-bold font-monospace" id="tab-feed-btn" onclick="switchNocTab('feed')">TEMPLE_LOG</button>
+            <button class="btn btn-sm text-secondary p-0 fw-bold font-monospace" id="tab-users-btn" onclick="switchNocTab('users')">NODES <span id="user-count-badge" class="badge bg-jade text-dark ms-1 rounded-pill">0</span></button>
         </div>
         <i class="fas fa-terminal"></i>
     </div>
@@ -200,49 +200,49 @@
 </div>
 
 <div id="upload-overlay">
-    <div class="glass-card p-5 text-center" style="max-width: 700px; width: 95%; border-color: var(--neon-magenta); box-shadow: 0 0 50px rgba(255,0,255,0.1);">
-        <div class="mb-4"><i class="fas fa-sync-alt fa-4x fa-spin" style="color: var(--neon-magenta);"></i></div>
-        <h2 class="fw-bold mb-2" style="color: var(--neon-magenta); letter-spacing: 4px;">INGESTION SEQUENCE ACTIVE</h2>
-        <h4 id="upload-filename" class="text-white mb-5 font-monospace" style="text-shadow: 0 0 10px white;"></h4>
+    <div class="glass-card p-5 text-center" style="max-width: 800px; width: 95%; border-color: var(--gold); box-shadow: 0 0 80px rgba(255,215,0,0.15);">
+        <div class="mb-4"><i class="fas fa-feather-alt fa-5x" style="color: var(--gold); filter: drop-shadow(0 0 20px var(--gold));"></i></div>
+        <h2 class="fw-bold mb-2" style="color: var(--gold); letter-spacing: 6px;">GARUDA_ASCENSION ACTIVE</h2>
+        <h3 id="upload-filename" class="text-white mb-5 font-monospace" style="text-shadow: 0 0 15px white;"></h3>
         
         <div class="row g-4 mb-5">
             <div class="col-6">
-                <div class="telemetry-box">
-                    <small class="text-info font-monospace d-block mb-2">TRANSFER VELOCITY</small>
-                    <span id="upload-speed" class="h2 fw-bold text-white mb-0">0.00</span> <span class="text-info font-monospace">Mbps</span>
+                <div class="telemetry-box" style="border-color: var(--jade);">
+                    <small class="text-jade font-monospace d-block mb-2">WING VELOCITY</small>
+                    <span id="upload-speed" class="h1 fw-bold text-white mb-0">0.00</span> <span class="text-jade font-monospace">Mbps</span>
                 </div>
             </div>
             <div class="col-6">
-                <div class="telemetry-box" style="border-color: var(--neon-magenta);">
-                    <small class="text-magenta font-monospace d-block mb-2" style="color: var(--neon-magenta);">ESTIMATED TIME</small>
-                    <span id="upload-eta" class="h2 fw-bold text-white mb-0">--:--</span>
+                <div class="telemetry-box" style="border-color: var(--vermilion);">
+                    <small class="text-vermilion font-monospace d-block mb-2" style="color: var(--vermilion);">KARMA_REMAINING</small>
+                    <span id="upload-eta" class="h1 fw-bold text-white mb-0">--:--</span>
                 </div>
             </div>
         </div>
 
-        <div class="progress-container">
-            <div id="upload-bar" class="progress-bar-cyber" style="width: 0%"></div>
+        <div class="progress-container" style="height: 16px;">
+            <div id="upload-bar" class="progress-bar-cyber" style="width: 0%; background: linear-gradient(90deg, var(--vermilion), var(--gold), var(--jade));"></div>
         </div>
         
         <div class="d-flex justify-content-between font-monospace mt-3">
-            <span id="upload-status" class="text-white h3 fw-bold mb-0">0%</span>
-            <span id="upload-bytes" class="text-info align-self-end" style="font-size: 1.1rem;">0.0 / 0.0 MB</span>
+            <span id="upload-status" class="text-white h2 fw-bold mb-0">0%</span>
+            <span id="upload-bytes" class="text-jade align-self-end" style="font-size: 1.3rem;">0.0 / 0.0 MB</span>
         </div>
     </div>
 </div>
 
 <div class="modal fade" id="userModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered"><div class="modal-content glass-card p-4">
-        <div class="modal-header border-0 pb-0"><h3 class="fw-bold" style="color: var(--neon-magenta);">GENERATE IDENTITY</h3><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+        <div class="modal-header border-0 pb-0"><h3 class="fw-bold" style="color: var(--vermilion);">GENERATE IDENTITY</h3><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
         <div class="modal-body pt-4">
-            <label class="text-info font-monospace small mb-2">IDENTITY DESIGNATION</label>
+            <label class="text-gold font-monospace small mb-2">IDENTITY DESIGNATION</label>
             <input type="text" id="new-user-name" class="form-control mb-4" placeholder="USER_ID">
-            <label class="text-info font-monospace small mb-2">SECURITY HASH</label>
+            <label class="text-gold font-monospace small mb-2">SECURITY HASH</label>
             <input type="password" id="new-user-pass" class="form-control mb-4" placeholder="••••••••">
-            <label class="text-info font-monospace small mb-2">CLEARANCE LEVEL</label>
+            <label class="text-gold font-monospace small mb-2">CLEARANCE LEVEL</label>
             <select id="new-user-role" class="form-control"><option value="USER">LEVEL_01 (STANDARD)</option><option value="ADMIN,USER">LEVEL_09 (ROOT)</option></select>
         </div>
-        <div class="modal-footer border-0 pt-0"><button class="btn btn-neon btn-neon-magenta w-100" onclick="createUser()">AUTHORIZE CREATION</button></div>
+        <div class="modal-footer border-0 pt-0"><button class="btn btn-neon w-100" onclick="createUser()">AUTHORIZE CREATION</button></div>
     </div></div>
 </div>
 
@@ -252,37 +252,32 @@
     let authHeader = sessionStorage.getItem('mft_auth');
     let currentUser = null; let isMaintenanceRedirecting = false;
 
-    // --- ENHANCED CYBER BACKGROUND ---
-    const canvas = document.getElementById('bg-canvas'); const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); const scene = new THREE.Scene(); const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000); camera.position.z = 8; camera.position.y = 2; camera.lookAt(0,0,0);
+    // --- NEO-VEDIC BACKGROUND ---
+    const canvas = document.getElementById('bg-canvas'); const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); const scene = new THREE.Scene(); const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000); camera.position.z = 10;
     
-    // Grid floor
-    const gridHelper = new THREE.GridHelper(200, 100, 0xff00ff, 0x00f2ff); 
-    gridHelper.position.y = -3; 
-    gridHelper.material.opacity = 0.2;
-    gridHelper.material.transparent = true;
-    scene.add(gridHelper);
-    
-    // Particles
-    const pCount = 3000; const pos = new Float32Array(pCount*3); 
-    for(let i=0; i<pCount*3; i++) pos[i]=(Math.random()-0.5)*40;
+    // Emerald particles
+    const pCount = 4000; const pos = new Float32Array(pCount*3); 
+    for(let i=0; i<pCount*3; i++) pos[i]=(Math.random()-0.5)*50;
     const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    const mat = new THREE.PointsMaterial({ size: 0.03, color: '#ffffff', transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+    const mat = new THREE.PointsMaterial({ size: 0.04, color: '#00ffa2', transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending });
     const mesh = new THREE.Points(geo, mat); scene.add(mesh);
     
+    // Golden Grid
+    const grid = new THREE.GridHelper(100, 50, 0xffd700, 0x002211); grid.position.y = -5; grid.material.opacity = 0.15; grid.material.transparent = true; scene.add(grid);
+
     function animate3D() { 
         requestAnimationFrame(animate3D); 
-        mesh.rotation.y += 0.0005; 
-        mesh.rotation.x += 0.0002;
-        gridHelper.position.z += 0.05; 
-        if(gridHelper.position.z > 2) gridHelper.position.z = 0; 
+        mesh.rotation.y += 0.0003; 
+        grid.position.z += 0.04; 
+        if(grid.position.z > 2) grid.position.z = 0; 
         renderer.render(scene, camera); 
     }
     function resize() { camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
     window.addEventListener('resize', resize); resize(); animate3D();
 
     async function safeFetch(url, opts = {}) { const res = await fetch(url, opts); if(!res.ok) throw new Error(res.status); const ct = res.headers.get("content-type"); return (ct && ct.includes("application/json")) ? await res.json() : null; }
-    function login() { const u = document.getElementById('login-user').value; const p = document.getElementById('login-pass').value; authHeader = 'Basic ' + btoa(u + ':' + p); fetch('/api/me', { headers: { 'Authorization': authHeader } }).then(res => { if (res.ok) { sessionStorage.setItem('mft_auth', authHeader); startSession(); } else { alert("ACCESS DENIED: Invalid Security Hash"); document.getElementById('login-pass').value = ''; } }); }
-    function startSession() { document.getElementById('login-overlay').style.display = 'none'; document.getElementById('dashboard').style.display = 'block'; safeFetch('/api/me', { headers: { 'Authorization': authHeader } }).then(user => { currentUser = user; document.getElementById('user-tag').innerText = `ID: ${user.username.toUpperCase()}`; if (user.roles.includes('ROLE_ADMIN')) { document.getElementById('admin-menu').style.display = 'block'; document.getElementById('noc-monitor').style.display = 'flex'; makeDraggable(document.getElementById("noc-monitor")); } refresh(); setInterval(refresh, 3000); setInterval(pingSystem, 5000); }); }
+    function login() { const u = document.getElementById('login-user').value; const p = document.getElementById('login-pass').value; authHeader = 'Basic ' + btoa(u + ':' + p); fetch('/api/me', { headers: { 'Authorization': authHeader } }).then(res => { if (res.ok) { sessionStorage.setItem('mft_auth', authHeader); startSession(); } else { alert("ACCESS DENIED: Spirit Not Found"); } }); }
+    function startSession() { document.getElementById('login-overlay').style.display = 'none'; document.getElementById('dashboard').style.display = 'block'; safeFetch('/api/me', { headers: { 'Authorization': authHeader } }).then(user => { currentUser = user; document.getElementById('user-tag').innerText = `PRIEST: ${user.username.toUpperCase()}`; if (user.roles.includes('ROLE_ADMIN')) { document.getElementById('admin-menu').style.display = 'block'; document.getElementById('noc-monitor').style.display = 'flex'; makeDraggable(document.getElementById("noc-monitor")); } refresh(); setInterval(refresh, 3000); setInterval(pingSystem, 5000); }); }
     function pingSystem() { if(isMaintenanceRedirecting) return; fetch('/api/system/ping', { headers: { 'Authorization': authHeader } }).then(res => res.json()).then(data => { if (data && data.maintenance === true) { isMaintenanceRedirecting = true; document.getElementById('maintenance-alert').style.display = 'flex'; setTimeout(() => window.location.href = '/maintenance.html', 3000); } }).catch(()=>{}); }
     
     function refresh() { 
@@ -293,32 +288,29 @@
             document.getElementById('stat-count').innerText = `${files.length} ARTIFACTS`; 
             
             files.forEach(f => { 
-                // Hard extraction of filename, guaranteeing no UUID clutter
-                const displayName = f.originalFilename || f.original_filename || f.name || "UNKNOWN_PAYLOAD.BIN";
+                const displayName = f.originalFilename || f.original_filename || "SACRED_PAYLOAD.BIN";
                 
-                // Determine Cyberpunk Status Badge
                 let statusClass = "status-progress";
-                let statusIcon = "fa-sync-alt fa-spin";
+                let statusIcon = "fa-dharmachakra fa-spin";
                 if(f.status === 'COMPLETED') { statusClass = 'status-completed'; statusIcon = 'fa-check-circle'; }
-                if(f.status === 'INITIATED') { statusClass = 'status-initiated'; statusIcon = 'fa-hourglass-start'; }
+                if(f.status === 'INITIATED') { statusClass = 'status-initiated'; statusIcon = 'fa-circle-notch'; }
                 
                 const sizeMB = (f.totalSize/1024/1024).toFixed(2);
-                const dateStr = new Date(f.createdAt).toLocaleString('en-US', { hour12: false, month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                const dateStr = new Date(f.createdAt).toLocaleString('en-US', { hour12: false, month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
                 list.innerHTML += `
                 <tr>
                     <td><span class="artifact-name">${displayName}</span></td>
                     <td><span class="status-badge ${statusClass}"><i class="fas ${statusIcon} me-2"></i>${f.status}</span></td>
-                    <td class="font-monospace text-info" style="font-size: 1.1rem;">${sizeMB} <span class="text-secondary small">MB</span></td>
+                    <td class="font-monospace" style="font-size: 1.2rem; color: var(--gold);">${sizeMB} <span class="text-secondary small">MB</span></td>
                     <td class="text-secondary font-monospace small">${dateStr}</td>
                 </tr>`; 
             }); 
-        }).catch(err => console.error("Telemetry sync failed:", err)); 
-        
+        }); 
         if(currentUser && currentUser.roles.includes('ROLE_ADMIN')) fetchNoc(); 
     }
     
-    function fetchNoc() { safeFetch('/api/admin/activity', { headers: { 'Authorization': authHeader } }).then(events => { if(!events) return; const body = document.getElementById('noc-body'); body.innerHTML = ''; events.forEach(e => { const entry = document.createElement('div'); entry.className = 'noc-entry'; if(e.type === 'LOGIN') { entry.style.borderLeftColor = 'var(--neon-cyan)'; entry.style.background = 'rgba(0,242,255,0.03)'; } entry.innerHTML = `<span class="text-secondary">#${new Date(e.timestamp).toTimeString().split(' ')[0]}</span> <span class="fw-bold" style="color:${e.type==='LOGIN'?'var(--neon-cyan)':'var(--neon-magenta)'}">${e.type}</span> <span class="text-white">${e.detail}</span>`; body.appendChild(entry); }); }); safeFetch('/api/admin/activity/active-users', { headers: { 'Authorization': authHeader } }).then(users => { if(!users || !Array.isArray(users)) return; document.getElementById('user-count-badge').innerText = users.length; document.getElementById('noc-users').innerHTML = users.map(u => `<div class="noc-entry" style="border-left-color:var(--neon-lime);"><i class="fas fa-terminal me-3 text-lime"></i><span class="text-white font-monospace">${u}</span></div>`).join(''); }); }
+    function fetchNoc() { safeFetch('/api/admin/activity', { headers: { 'Authorization': authHeader } }).then(events => { if(!events) return; const body = document.getElementById('noc-body'); body.innerHTML = ''; events.forEach(e => { const entry = document.createElement('div'); entry.className = 'noc-entry'; if(e.type === 'LOGIN') { entry.style.borderLeftColor = 'var(--gold)'; } entry.innerHTML = `<span class="text-secondary">#${new Date(e.timestamp).toTimeString().split(' ')[0]}</span> <span class="fw-bold" style="color:${e.type==='LOGIN'?'var(--gold)':'var(--vermilion)'}">${e.type}</span> <span class="text-white">${e.detail}</span>`; body.appendChild(entry); }); }); safeFetch('/api/admin/activity/active-users', { headers: { 'Authorization': authHeader } }).then(users => { if(!users || !Array.isArray(users)) return; document.getElementById('user-count-badge').innerText = users.length; document.getElementById('noc-users').innerHTML = users.map(u => `<div class="noc-entry" style="border-left-color:var(--jade);"><i class="fas fa-terminal me-3 text-jade"></i><span class="text-white font-monospace">${u}</span></div>`).join(''); }); }
     
     async function startSmartUpload(file) {
         if (!file) return;
@@ -331,7 +323,7 @@
         const nameText = document.getElementById('upload-filename');
 
         overlay.style.display = 'flex';
-        nameText.innerText = `> ${file.name.toUpperCase()} <`;
+        nameText.innerText = `[ ${file.name.toUpperCase()} ]`;
 
         const CHUNK_SIZE = 1024 * 1024;
         const CONCURRENCY = 4;
@@ -345,68 +337,53 @@
             async function worker() {
                 while (chunks.length > 0) {
                     const c = chunks.shift(); if (!c) break;
-                    
                     await new Promise((resolve, reject) => {
                         const xhr = new XMLHttpRequest();
                         xhr.open('POST', `/api/files/${fileId}/chunk`, true);
                         xhr.setRequestHeader('Authorization', authHeader);
                         xhr.timeout = 30000;
-
                         let lastLoaded = 0;
                         xhr.upload.onprogress = (e) => {
                             if (e.lengthComputable) {
                                 const diff = e.loaded - lastLoaded;
-                                uploaded += diff;
-                                lastLoaded = e.loaded;
-
+                                uploaded += diff; lastLoaded = e.loaded;
                                 const pct = Math.min(Math.round((uploaded / file.size) * 100), 100);
-                                const now = Date.now();
-                                const duration = (now - startTime) / 1000;
+                                const duration = (Date.now() - startTime) / 1000;
                                 const speedBps = (uploaded * 8) / duration;
                                 const mbps = speedBps / 1000000;
-                                const remainingBytes = file.size - uploaded;
-                                const etaSeconds = mbps > 0 ? (remainingBytes * 8) / speedBps : 0;
-
                                 bar.style.width = pct + '%';
                                 status.innerText = pct + '%';
                                 speedText.innerText = mbps.toFixed(2);
                                 bytesText.innerText = `${(uploaded/1024/1024).toFixed(1)} / ${(file.size/1024/1024).toFixed(1)} MB`;
-                                
+                                const etaSeconds = mbps > 0 ? ((file.size - uploaded) * 8) / speedBps : 0;
                                 if (etaSeconds > 0) {
-                                    const m = Math.floor(etaSeconds / 60);
-                                    const s = Math.floor(etaSeconds % 60);
+                                    const m = Math.floor(etaSeconds / 60); const s = Math.floor(etaSeconds % 60);
                                     etaText.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-                                } else {
-                                    etaText.innerText = "0:00";
-                                }
+                                } else { etaText.innerText = "0:00"; }
                             }
                         };
-
                         xhr.onload = () => { if (xhr.status >= 200 && xhr.status < 300) resolve(); else reject(xhr.status); };
                         xhr.onerror = () => reject("Network Error");
                         xhr.ontimeout = () => reject("Request Timeout");
-                        
-                        const fd = new FormData();
-                        fd.append('chunk', file.slice(c.offset, c.offset + c.size));
-                        xhr.send(fd);
+                        const fd = new FormData(); fd.append('chunk', file.slice(c.offset, c.offset + c.size)); xhr.send(fd);
                     });
                 }
             }
             await Promise.all(Array(CONCURRENCY).fill(0).map(() => worker()));
             await fetch(`/api/files/${fileId}/complete`, { method: 'POST', headers: { 'Authorization': authHeader } });
             setTimeout(() => { overlay.style.display = 'none'; refresh(); }, 500);
-        } catch (err) { alert("SYSTEM FAILURE: " + err); overlay.style.display = 'none'; }
+        } catch (err) { alert("TEMPLE_FAILURE: " + err); overlay.style.display = 'none'; }
     }
     
-    function fetchUsers() { safeFetch('/api/admin/users', { headers: { 'Authorization': authHeader } }).then(users => { if(!users) return; const list = document.getElementById('user-list'); list.innerHTML = ''; users.forEach(u => { list.innerHTML += `<tr><td><span class="text-white fw-bold h5 mb-0">${u.username}</span></td><td><span class="text-info font-monospace small">${u.roles.join(', ')}</span></td><td><span class="badge bg-dark border border-success text-success">ONLINE</span></td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${u.id}')"><i class="fas fa-ban"></i></button></td></tr>`; }); }); }
-    function fetchConfig() { safeFetch('/api/admin/config', { headers: { 'Authorization': authHeader } }).then(configs => { if(!configs) return; const cont = document.getElementById('config-container'); cont.innerHTML = `<button class="btn btn-neon btn-neon-magenta w-100 mb-5" onclick="toggleMaintenance()"><i class="fas fa-radiation me-2"></i> INITIATE PROTOCOL ZERO (MAINTENANCE)</button>`; configs.forEach(c => { cont.innerHTML += `<div class="mb-4"><label class="text-info font-monospace small fw-bold mb-2">${c.configKey}</label><div class="input-group"><input type="text" class="form-control" value="${c.configValue}" id="cfg-${c.configKey}"><button class="btn btn-neon px-4" onclick="saveConfig('${c.configKey}')">PATCH</button></div></div>`; }); }); }
-    function toggleMaintenance() { fetch('/api/admin/config/maintenance', { method: 'POST', headers: { 'Authorization': authHeader } }).then(res => res.json()).then(data => alert("MAINTENANCE PROTOCOL: " + (data.maintenance ? "ENGAGED" : "DISENGAGED"))); }
-    function saveConfig(key) { const val = document.getElementById('cfg-'+key).value; fetch('/api/admin/config', { method: 'POST', headers: { 'Authorization': authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify({ configKey: key, configValue: val }) }).then(() => alert("PARAMETER PATCHED")); }
+    function fetchUsers() { safeFetch('/api/admin/users', { headers: { 'Authorization': authHeader } }).then(users => { if(!users) return; const list = document.getElementById('user-list'); list.innerHTML = ''; users.forEach(u => { list.innerHTML += `<tr><td><span class="text-gold fw-bold h5 mb-0">${u.username}</span></td><td><span class="text-jade font-monospace small">${u.roles.join(', ')}</span></td><td><span class="badge border border-jade text-jade">ETERNAL</span></td><td><button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${u.id}')"><i class="fas fa-ban"></i></button></td></tr>`; }); }); }
+    function fetchConfig() { safeFetch('/api/admin/config', { headers: { 'Authorization': authHeader } }).then(configs => { if(!configs) return; const cont = document.getElementById('config-container'); cont.innerHTML = `<button class="btn btn-neon w-100 mb-5" onclick="toggleMaintenance()"><i class="fas fa-radiation me-2"></i> TRIGGER REINCARNATION CYCLE</button>`; configs.forEach(c => { cont.innerHTML += `<div class="mb-4"><label class="text-gold font-monospace small fw-bold mb-2">${c.configKey}</label><div class="input-group"><input type="text" class="form-control" value="${c.configValue}" id="cfg-${c.configKey}"><button class="btn btn-neon px-4" onclick="saveConfig('${c.configKey}')">PATCH</button></div></div>`; }); }); }
+    function toggleMaintenance() { fetch('/api/admin/config/maintenance', { method: 'POST', headers: { 'Authorization': authHeader } }).then(res => res.json()).then(data => alert("MAINTENANCE: " + (data.maintenance ? "ENGAGED" : "DISENGAGED"))); }
+    function saveConfig(key) { const val = document.getElementById('cfg-'+key).value; fetch('/api/admin/config', { method: 'POST', headers: { 'Authorization': authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify({ configKey: key, configValue: val }) }).then(() => alert("COSMOS PATCHED")); }
     function createUser() { const n = document.getElementById('new-user-name').value; const p = document.getElementById('new-user-pass').value; const r = document.getElementById('new-user-role').value; fetch('/api/admin/users', { method: 'POST', headers: { 'Authorization': authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify({ username: n, password: p, roles: r.split(',') }) }).then(() => { bootstrap.Modal.getInstance(document.getElementById('userModal')).hide(); refresh(); }); }
-    function deleteUser(id) { if(confirm("CONFIRM PERMANENT SEVERANCE?")) fetch('/api/admin/users/'+id, { method: 'DELETE', headers: { 'Authorization': authHeader } }).then(refresh); }
-    function switchNocTab(t) { document.getElementById('noc-body').style.display=t==='feed'?'block':'none'; document.getElementById('noc-users').style.display=t==='users'?'block':'none'; document.getElementById('tab-feed-btn').classList.toggle('text-info', t==='feed'); document.getElementById('tab-feed-btn').classList.toggle('text-secondary', t!=='feed'); document.getElementById('tab-users-btn').classList.toggle('text-info', t==='users'); document.getElementById('tab-users-btn').classList.toggle('text-secondary', t!=='users'); }
+    function deleteUser(id) { if(confirm("EXTINGUISH THIS SOUL?")) fetch('/api/admin/users/'+id, { method: 'DELETE', headers: { 'Authorization': authHeader } }).then(refresh); }
+    function switchNocTab(t) { document.getElementById('noc-body').style.display=t==='feed'?'block':'none'; document.getElementById('noc-users').style.display=t==='users'?'block':'none'; document.getElementById('tab-feed-btn').classList.toggle('text-jade', t==='feed'); document.getElementById('tab-users-btn').classList.toggle('text-jade', t==='users'); }
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('sidebar-overlay').classList.toggle('active'); }
-    function showView(v) { document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); document.getElementById('view-'+v).classList.add('active'); document.getElementById('view-title').innerText = '| ' + (v==='transfers'?'OMEGA PROTOCOL':v.toUpperCase()); if(window.innerWidth < 992 && document.getElementById('sidebar').classList.contains('active')) toggleSidebar(); }
+    function showView(v) { document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); document.getElementById('view-'+v).classList.add('active'); document.getElementById('view-title').innerText = '| ' + (v==='transfers'?'GARUDA_ARRAY':v.toUpperCase()); if(window.innerWidth < 992 && document.getElementById('sidebar').classList.contains('active')) toggleSidebar(); }
     function makeDraggable(el) { let p1=0,p2=0,p3=0,p4=0; document.getElementById("noc-header").onmousedown = (e) => { e.preventDefault(); p3=e.clientX; p4=e.clientY; document.onmouseup=()=>{document.onmouseup=null;document.onmousemove=null;}; document.onmousemove=(e)=>{e.preventDefault(); p1=p3-e.clientX; p2=p4-e.clientY; p3=e.clientX; p4=e.clientY; el.style.top=(el.offsetTop-p2)+"px"; el.style.left=(el.offsetLeft-p1)+"px";}; }; }
     function logout() { sessionStorage.removeItem('mft_auth'); location.reload(); }
     if (authHeader) startSession();
