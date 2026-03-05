@@ -1,6 +1,8 @@
 # SyncForge Whitepaper: The Future of High-Throughput MFT
+![Project Lead](mft-server/images/draygen_profile.jpg)
+
 **Version:** 1.0  
-**Author:** SyncForge Core Team  
+**Architect:** draygen  
 **Date:** March 2026
 
 ## 1. Vision Statement
