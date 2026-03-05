@@ -84,7 +84,7 @@ public class FileStorageService {
         }
     }
 
-    public void completeUpload(java.util.UUID fileId) {
+    public FileMetadata completeUpload(java.util.UUID fileId) {
         FileMetadata metadata = activeTransfers.remove(fileId);
         fileLocks.remove(fileId);
         if (metadata == null) {
@@ -93,8 +93,9 @@ public class FileStorageService {
         
         if (metadata != null) {
             metadata.setStatus("COMPLETED");
-            fileMetadataRepository.save(metadata);
+            return fileMetadataRepository.save(metadata);
         }
+        return null;
     }
 
     public java.util.List<FileMetadata> getAllFiles() {

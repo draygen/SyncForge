@@ -52,8 +52,13 @@ public class FileTransferController {
     @PostMapping("/{fileId}/complete")
     public ResponseEntity<String> completeUpload(@PathVariable java.util.UUID fileId, org.springframework.security.core.Authentication auth) {
         try {
-            fileStorageService.completeUpload(fileId);
-            activityService.log("UPLOAD_COMPLETE", auth.getName(), "Finished ID: " + fileId);
+            com.mft.server.model.FileMetadata metadata = fileStorageService.completeUpload(fileId);
+            String fileName = (metadata != null) ? metadata.getOriginalFilename() : fileId.toString();
+            activityService.log("UPLOAD_COMPLETE", auth.getName(), "Finished: " + fileName);
+            
+            // Invalidate cache
+            lastCacheUpdate = 0;
+            
             return ResponseEntity.ok("Upload completed");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Failed to complete upload: " + e.getMessage());
@@ -71,7 +76,14 @@ public class FileTransferController {
         if (now - lastCacheUpdate > CACHE_TTL) {
             synchronized (this) {
                 if (System.currentTimeMillis() - lastCacheUpdate > CACHE_TTL) {
-                    cachedFileList = fileStorageService.getAllFiles();
+                    java.util.List<com.mft.server.model.FileMetadata> files = fileStorageService.getAllFiles();
+                    // Defense: Ensure originalFilename is never null in the response
+                    files.forEach(f -> {
+                        if (f.getOriginalFilename() == null || f.getOriginalFilename().isEmpty()) {
+                            f.setOriginalFilename("UNTITLED_ARTIFACT_" + f.getId().toString().substring(0,8));
+                        }
+                    });
+                    cachedFileList = files;
                     lastCacheUpdate = System.currentTimeMillis();
                 }
             }

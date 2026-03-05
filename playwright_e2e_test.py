@@ -32,10 +32,22 @@ def run_test():
         page.wait_for_function('document.getElementById("user-tag").innerText === "admin"')
         print(f"User identity verified: {user_tag.inner_text()}")
         
-        # Verify table presence
-        table = page.query_selector(".table-responsive")
-        if table:
-            print("Artifact telemetry table detected.")
+        # Verify table presence and content
+        table = page.wait_for_selector("#my-file-list")
+        print("Artifact telemetry table detected.")
+        
+        # Check the first row if it exists
+        first_row_artifact = page.query_selector("#my-file-list tr:first-child td strong")
+        if first_row_artifact:
+            name = first_row_artifact.inner_text()
+            print(f"Latest Artifact Name in Table: {name}")
+            # UUID regex check
+            import re
+            uuid_regex = r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            if re.match(uuid_regex, name.lower()):
+                print("❌ ERROR: Table is displaying a UUID instead of a Filename!")
+            else:
+                print("✅ SUCCESS: Table is displaying a Filename.")
         
         # 3. Upload Flow UI Simulation
         print("Testing Artifact Ingestion Overlay...")
