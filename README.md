@@ -20,7 +20,7 @@ SyncForge is a modern, 3-tier Managed File Transfer system designed for high-con
 cd mft-server
 docker-compose up --build -d
 ```
-Access the dashboard at `http://localhost:8888` (User: `admin` / Pass: `Renoise28!`)
+Access the dashboard at `http://localhost:8888` (User: `admin` / Pass: `<YOUR_PASSWORD>`)
 
 ### Running the Client
 ```bash

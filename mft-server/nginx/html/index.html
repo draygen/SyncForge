@@ -3,178 +3,370 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MFT Server Dashboard</title>
+    <title>SyncForge | Enterprise MFT</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; }
-        .navbar { background-color: #003366; }
-        .card { border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: none; }
-        .status-completed { color: #198754; font-weight: bold; }
-        .status-in-progress { color: #ffc107; font-weight: bold; }
-        .status-initiated { color: #0dcaf0; font-weight: bold; }
+        :root {
+            --neon-blue: #00f2ff; --neon-purple: #7000ff; --obsidian: #020617;
+            --glass: rgba(15, 23, 42, 0.6); --border: rgba(0, 242, 255, 0.2);
+        }
+        body { 
+            background: var(--obsidian); color: #f8fafc; font-family: 'Inter', sans-serif; 
+            margin: 0; min-height: 100vh; overflow-x: hidden;
+        }
+        #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100%; }
+        
+        /* Perspective Overlay for Depth */
+        .cyber-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, transparent 0%, var(--obsidian) 90%);
+            pointer-events: none; z-index: -1;
+        }
+
+        /* Typography */
+        h1, h2, h3, .navbar-brand { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
+
+        /* Glowing Inputs - Fixed Visibility */
+        .form-control { 
+            background: rgba(0, 0, 0, 0.6) !important; 
+            border: 1px solid var(--border) !important; 
+            color: #ffffff !important; 
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+        .form-control::placeholder { color: rgba(255, 255, 255, 0.4); }
+        .form-control:focus { 
+            background: rgba(0, 0, 0, 0.8) !important;
+            border-color: var(--neon-blue) !important;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+            outline: none;
+        }
+
+        /* Sidebar & Navigation */
+        #sidebar { 
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100%; 
+            background: rgba(2, 6, 23, 0.98); backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            z-index: 1050; padding: 30px 20px;
+        }
+        #sidebar.active { left: 0; box-shadow: 20px 0 50px rgba(0,0,0,0.5); }
+        .nav-link { 
+            color: #94a3b8; border-radius: 12px; padding: 14px 18px; margin-bottom: 8px; 
+            cursor: pointer; transition: 0.3s; border: 1px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active { 
+            background: rgba(0, 242, 255, 0.05); color: var(--neon-blue);
+            border-color: rgba(0, 242, 255, 0.2); transform: translateX(5px);
+        }
+
+        /* Glass Cards with Depth */
+        .glass-card { 
+            background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--border); 
+            border-radius: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); 
+            transition: 0.3s ease;
+        }
+        .glass-card:hover { border-color: var(--neon-blue); transform: translateY(-5px); }
+
+        /* Drop Zone UI */
+        #drop-zone { 
+            border: 2px dashed var(--border); border-radius: 24px; padding: 60px; 
+            text-align: center; transition: 0.4s; cursor: pointer;
+            background: radial-gradient(circle at center, rgba(0, 242, 255, 0.03) 0%, transparent 100%);
+        }
+        #drop-zone:hover, #drop-zone.dragover { 
+            border-color: var(--neon-blue); background: rgba(0, 242, 255, 0.08); 
+            box-shadow: inset 0 0 30px rgba(0, 242, 255, 0.1);
+        }
+
+        /* Buttons */
+        .btn-neon { 
+            background: linear-gradient(45deg, var(--neon-blue), #00a2ff); 
+            border: none; color: #000; font-weight: 800; border-radius: 12px;
+            padding: 14px; text-transform: uppercase; letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .btn-neon:hover { 
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.6); transform: scale(1.02);
+        }
+
+        /* NOC Monitor - Floating Terminal */
+        #noc-monitor { 
+            position: fixed; bottom: 25px; right: 25px; width: 420px; height: 380px; 
+            background: rgba(0,0,0,0.95); border: 1px solid var(--border); border-radius: 16px; 
+            display: none; flex-direction: column; z-index: 1000; overflow: hidden;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+        }
+        #noc-header { 
+            padding: 12px 20px; background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid var(--border);
+            color: var(--neon-blue); font-family: 'Orbitron'; font-size: 0.65rem;
+            cursor: move; display: flex; justify-content: space-between; align-items: center;
+        }
+        #noc-body, #noc-users { flex: 1; padding: 15px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; overflow-y: auto; color: #10b981; }
+        .noc-entry { margin-bottom: 8px; border-left: 2px solid var(--neon-blue); padding-left: 12px; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* Table Aesthetics */
+        .table { color: #cbd5e1; --bs-table-hover-bg: rgba(255,255,255,0.03); }
+        .table thead th { border-bottom: 1px solid var(--border); color: var(--neon-blue); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
+
+        /* Login Overlay Overlay */
         #login-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); z-index: 1000;
-            display: flex; justify-content: center; align-items: center;
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+            z-index: 3000; display: flex; justify-content: center; align-items: center;
         }
     </style>
 </head>
 <body>
 
-<!-- Login Overlay -->
+<canvas id="bg-canvas"></canvas>
+
 <div id="login-overlay">
-    <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
-        <h3 class="text-center mb-3">MFT Login</h3>
-        <input type="text" id="username" class="form-control mb-2" placeholder="Username">
-        <input type="password" id="password" class="form-control mb-3" placeholder="Password">
-        <button class="btn btn-primary w-100" onclick="login()">Login</button>
-        <div id="login-error" class="text-danger mt-2 text-center" style="display:none;">Invalid credentials</div>
+    <div class="glass-card p-5 text-center" style="max-width: 450px; width: 100%;">
+        <form onsubmit="event.preventDefault(); login();">
+            <div class="mb-4">
+                <i class="fas fa-microchip fa-4x mb-3" style="color: var(--neon-blue); filter: drop-shadow(0 0 10px rgba(0,242,255,0.5));"></i>
+                <h2 class="fw-bold text-white">SYNCFORGE</h2>
+                <p class="text-muted small">SECURE MULTI-THREADED ARTIFACT FORGE</p>
+            </div>
+            <div class="mb-3 text-start">
+                <label class="small mb-2 text-secondary">CORE IDENTITY</label>
+                <input type="text" id="login-user" class="form-control" placeholder="ACCESS_ID" required>
+            </div>
+            <div class="mb-4 text-start">
+                <label class="small mb-2 text-secondary">SECURITY KEY</label>
+                <input type="password" id="login-pass" class="form-control" placeholder="********" required>
+            </div>
+            <button type="submit" class="btn btn-neon w-100 p-3 fw-bold">INITIATE CONNECTION</button>
+        </form>
     </div>
 </div>
 
-<!-- Main Dashboard -->
 <div id="dashboard" style="display:none;">
-    <nav class="navbar navbar-expand-lg navbar-dark mb-4 p-3">
+    <nav class="navbar p-3 sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#"><i class="fas fa-server"></i> Enterprise MFT</a>
-            <button class="btn btn-outline-light btn-sm" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            <button class="btn btn-link text-white me-3 p-0" onclick="toggleSidebar()"><i class="fas fa-bars fa-lg"></i></button>
+            <span class="navbar-brand fw-bold text-white">SYNCFORGE <span id="view-title" class="ms-2 small fw-light text-secondary">| NODE_01</span></span>
+            <div class="ms-auto d-flex align-items-center">
+                <div class="d-none d-md-flex align-items-center me-4">
+                    <div class="spinner-grow spinner-grow-sm text-success me-2" role="status"></div>
+                    <small class="text-success fw-bold">UPLINK ACTIVE</small>
+                </div>
+                <span id="user-tag" class="badge border border-info text-info rounded-pill px-3"></span>
+            </div>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="row mb-4">
-            <div class="col-md-4 mb-3">
-                <div class="card p-3 text-center text-white bg-primary">
-                    <i class="fas fa-file-upload fa-2x mb-2"></i>
-                    <h5 id="total-files">0</h5>
-                    <small>Total Files Managed</small>
+    <main class="container py-5">
+        <div id="view-transfers" class="view-section active">
+            <section class="row mb-5">
+                <div class="col-12">
+                    <div id="drop-zone" onclick="document.getElementById('file-input').click()">
+                        <i class="fas fa-atom fa-4x mb-3" style="color: var(--neon-blue);"></i>
+                        <h3 class="fw-bold">DROP ARTIFACTS HERE</h3>
+                        <p class="text-muted">ENCRYPTED PARALLEL STREAMING ENABLED</p>
+                        <input type="file" id="file-input" style="display:none;" onchange="startSmartUpload(this.files[0])">
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card p-3 text-center text-white bg-success">
-                    <i class="fas fa-hdd fa-2x mb-2"></i>
-                    <h5 id="total-data">0 MB</h5>
-                    <small>Total Data Transferred</small>
+            </section>
+
+            <section class="glass-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold text-white mb-0"><i class="fas fa-database me-2 text-info"></i> SECURED DATA VOLUMES</h5>
+                    <small id="stat-count" class="badge bg-dark border border-secondary text-secondary"></small>
                 </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card p-3 text-center text-white bg-info">
-                    <i class="fas fa-network-wired fa-2x mb-2"></i>
-                    <h5>ONLINE</h5>
-                    <small>System Status</small>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead><tr><th>ARTIFACT</th><th>STATUS</th><th>VOLUME</th><th>TIMESTAMP</th></tr></thead>
+                        <tbody id="my-file-list"></tbody>
+                    </table>
                 </div>
-            </div>
+            </section>
         </div>
 
-        <div class="card p-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4><i class="fas fa-list"></i> Recent Transfers</h4>
-                <button class="btn btn-sm btn-outline-secondary" onclick="fetchFiles()"><i class="fas fa-sync-alt"></i> Refresh</button>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th>File Name</th>
-                            <th>Status</th>
-                            <th>Progress</th>
-                            <th>Size</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody id="file-list">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
-            </div>
+        <!-- Admin Views remain same structure but benefit from CSS -->
+        <div id="view-users" class="view-section">
+            <div class="d-flex justify-content-between align-items-center mb-4"><h3 class="fw-bold">User Matrix</h3><button class="btn btn-neon px-4" data-bs-toggle="modal" data-bs-target="#userModal">New Identity</button></div>
+            <div class="glass-card p-4"><table class="table table-hover align-middle"><thead><tr><th>Identity</th><th>Permissions</th><th>Status</th><th>Action</th></tr></thead><tbody id="user-list"></tbody></table></div>
+        </div>
+
+        <div id="view-config" class="view-section">
+            <h3 class="mb-4 fw-bold">Core Parameters</h3>
+            <div class="glass-card p-4" id="config-container"></div>
+        </div>
+    </main>
+</div>
+
+<div id="noc-monitor">
+    <div id="noc-header">
+        <div class="d-flex align-items-center">
+            <button class="btn btn-sm text-info p-0 me-3 fw-bold" id="tab-feed-btn" onclick="switchNocTab('feed')">FEED_LOG</button>
+            <button class="btn btn-sm text-muted p-0 fw-bold" id="tab-users-btn" onclick="switchNocTab('users')">LIVE_NODES <span id="user-count-badge" class="badge bg-info text-dark ms-1 rounded-pill">0</span></button>
+        </div>
+        <i class="fas fa-compress-alt"></i>
+    </div>
+    <div id="noc-body"></div>
+    <div id="noc-users" style="display:none;"></div>
+</div>
+
+<!-- Modal Aesthetics -->
+<div class="modal fade" id="userModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered"><div class="modal-content glass-card p-2">
+        <div class="modal-header border-0"><h5 class="text-white fw-bold">GENERATE IDENTITY</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+            <input type="text" id="new-user-name" class="form-control mb-3" placeholder="ID_NAME">
+            <input type="password" id="new-user-pass" class="form-control mb-3" placeholder="PASS_KEY">
+            <select id="new-user-role" class="form-control"><option value="USER">LEVEL_01 (USER)</option><option value="ADMIN,USER">LEVEL_09 (ADMIN)</option></select>
+        </div>
+        <div class="modal-footer border-0"><button class="btn btn-neon w-100" onclick="createUser()">AUTHORIZE</button></div>
+    </div></div>
+</div>
+
+<div id="sidebar">
+    <div class="mb-5 px-3"><h2 class="fw-bold text-white mb-0">FORGE</h2><small class="text-info">v1.0.4-STABLE</small></div>
+    <div class="nav flex-column">
+        <div class="nav-link active" onclick="showView('transfers')"><i class="fas fa-tachometer-alt me-3"></i> DASHBOARD</div>
+        <div id="admin-menu" style="display:none;">
+            <div class="text-uppercase small text-muted mt-4 mb-2 px-3">Root Control</div>
+            <div class="nav-link" onclick="showView('users')"><i class="fas fa-id-card me-3"></i> IDENTITY_MANAGER</div>
+            <div class="nav-link" onclick="showView('config')"><i class="fas fa-cogs me-3"></i> CORE_SETTINGS</div>
+        </div>
+        <div class="mt-auto pt-5">
+            <div class="nav-link text-danger" onclick="logout()"><i class="fas fa-power-off me-3"></i> DISCONNECT</div>
         </div>
     </div>
 </div>
 
+<div id="upload-overlay">
+    <div class="text-center" style="max-width: 400px; width: 90%;">
+        <div class="mb-4"><i class="fas fa-project-diagram fa-4x text-info fa-spin"></i></div>
+        <h3 class="fw-bold text-white mb-2">FORGING ARTIFACT</h3>
+        <p class="text-info small mb-4 font-monospace">ENCRYPTING & STREAMING PARALLEL CHUNKS</p>
+        <div class="progress mb-3" style="height: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 20px;">
+            <div id="upload-bar" class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width: 0%"></div>
+        </div>
+        <h2 id="upload-status" class="text-white font-monospace mb-0">0%</h2>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
     let authHeader = sessionStorage.getItem('mft_auth');
+    let currentUser = null; let isMaintenanceRedirecting = false;
 
-    if (authHeader) {
-        document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'block';
-        fetchFiles();
-        setInterval(fetchFiles, 5000); // Auto refresh every 5s
+    // --- HTML5 WEBGL 3D BACKGROUND (GPU ACCELERATED) ---
+    const canvas = document.getElementById('bg-canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 5;
+
+    // Cyber Grid
+    const gridHelper = new THREE.GridHelper(100, 50, 0x00f2ff, 0x0f172a);
+    gridHelper.position.y = -2;
+    scene.add(gridHelper);
+
+    // Particle Forge
+    const particlesCount = 1500;
+    const posArray = new Float32Array(particlesCount * 3);
+    for(let i=0; i < particlesCount * 3; i++) posArray[i] = (Math.random() - 0.5) * 15;
+    
+    const particlesGeometry = new THREE.BufferGeometry();
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const particlesMaterial = new THREE.PointsMaterial({ size: 0.015, color: '#00f2ff', transparent: true, opacity: 0.8 });
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+
+    function animate3D() {
+        requestAnimationFrame(animate3D);
+        particlesMesh.rotation.y += 0.001;
+        particlesMesh.rotation.x += 0.0005;
+        gridHelper.position.z += 0.02;
+        if (gridHelper.position.z > 2) gridHelper.position.z = 0;
+        renderer.render(scene, camera);
     }
 
+    function handleResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    animate3D();
+
+    // Logic remaining the same for stability, fixed safeFetch and auth
+    async function safeFetch(url, opts = {}) { const res = await fetch(url, opts); if(!res.ok) throw new Error(res.status); const ct = res.headers.get("content-type"); return (ct && ct.includes("application/json")) ? await res.json() : null; }
+    
     function login() {
-        const user = document.getElementById('username').value;
-        const pass = document.getElementById('password').value;
-        const token = btoa(user + ':' + pass);
-        authHeader = 'Basic ' + token;
-        
-        fetch('/api/files', { headers: { 'Authorization': authHeader } })
-            .then(res => {
-                if (res.ok) {
-                    sessionStorage.setItem('mft_auth', authHeader);
-                    document.getElementById('login-overlay').style.display = 'none';
-                    document.getElementById('dashboard').style.display = 'block';
-                    document.getElementById('login-error').style.display = 'none';
-                    fetchFiles();
-                    setInterval(fetchFiles, 5000);
-                } else {
-                    document.getElementById('login-error').style.display = 'block';
-                }
-            })
-            .catch(() => document.getElementById('login-error').style.display = 'block');
+        const u = document.getElementById('login-user').value; const p = document.getElementById('login-pass').value;
+        authHeader = 'Basic ' + btoa(u + ':' + p);
+        fetch('/api/me', { headers: { 'Authorization': authHeader } }).then(res => { if (res.ok) { sessionStorage.setItem('mft_auth', authHeader); startSession(); } else alert("IDENTITY_DENIED"); });
     }
 
-    function logout() {
-        sessionStorage.removeItem('mft_auth');
-        location.reload();
+    function startSession() {
+        document.getElementById('login-overlay').style.display = 'none'; document.getElementById('dashboard').style.display = 'block';
+        safeFetch('/api/me', { headers: { 'Authorization': authHeader } }).then(user => {
+            currentUser = user; document.getElementById('user-tag').innerText = user.username;
+            if (user.roles.includes('ROLE_ADMIN')) { document.getElementById('admin-menu').style.display = 'block'; document.getElementById('noc-monitor').style.display = 'flex'; makeDraggable(document.getElementById("noc-monitor")); }
+            refresh(); setInterval(refresh, 5000);
+        });
     }
 
-    function formatBytes(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    function refresh() {
+        safeFetch('/api/files', { headers: { 'Authorization': authHeader } }).then(files => {
+            if(!files) return; const list = document.getElementById('my-file-list'); list.innerHTML = '';
+            document.getElementById('stat-count').innerText = files.length + " ACTIVE_ARTIFACTS";
+            files.forEach(f => { list.innerHTML += `<tr><td><strong class="text-white">${f.originalFilename}</strong><br><small class="text-muted">${f.id}</small></td><td><span class="text-info small font-monospace"><i class="fas fa-shield-alt me-1"></i>${f.status}</span></td><td class="font-monospace text-info">${(f.totalSize/1024/1024).toFixed(2)} MB</td><td class="text-muted small">${new Date(f.createdAt).toLocaleString()}</td></tr>`; });
+        });
+        if(currentUser && currentUser.roles.includes('ROLE_ADMIN')) fetchNoc();
     }
 
-    function fetchFiles() {
-        fetch('/api/files', { headers: { 'Authorization': authHeader } })
-            .then(res => {
-                if(res.status === 401) logout();
-                return res.json();
-            })
-            .then(data => {
-                const tbody = document.getElementById('file-list');
-                tbody.innerHTML = '';
-                
-                document.getElementById('total-files').innerText = data.length;
-                let totalBytes = data.reduce((acc, file) => acc + (file.uploadedSize || 0), 0);
-                document.getElementById('total-data').innerText = formatBytes(totalBytes);
-
-                data.forEach(file => {
-                    const progress = file.totalSize > 0 ? Math.round((file.uploadedSize / file.totalSize) * 100) : 0;
-                    let statusClass = 'status-initiated';
-                    if (file.status === 'COMPLETED') statusClass = 'status-completed';
-                    if (file.status === 'IN_PROGRESS') statusClass = 'status-in-progress';
-
-                    const row = `<tr>
-                        <td><strong>${file.originalFilename}</strong><br><small class="text-muted">${file.id}</small></td>
-                        <td class="${statusClass}">${file.status}</td>
-                        <td>
-                            <div class="progress" style="height: 10px;">
-                                <div class="progress-bar ${progress === 100 ? 'bg-success' : 'progress-bar-striped progress-bar-animated'}" 
-                                     role="progressbar" style="width: ${progress}%" aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <small>${progress}%</small>
-                        </td>
-                        <td>${formatBytes(file.uploadedSize)} / ${formatBytes(file.totalSize)}</td>
-                        <td>${new Date(file.createdAt).toLocaleString()}</td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                });
-            })
-            .catch(err => console.error("Error fetching files", err));
+    function fetchNoc() {
+        safeFetch('/api/admin/activity', { headers: { 'Authorization': authHeader } }).then(events => {
+            if(!events) return; const body = document.getElementById('noc-body'); body.innerHTML = '';
+            events.forEach(e => { const entry = document.createElement('div'); entry.className = 'noc-entry'; if(e.type === 'LOGIN') entry.style.color = '#fff'; entry.innerHTML = `<span class="text-muted small">[${new Date(e.timestamp).toLocaleTimeString()}]</span> <span style="color:#00f2ff">${e.type}</span> ${e.detail}`; body.appendChild(entry); });
+        });
+        safeFetch('/api/admin/activity/active-users', { headers: { 'Authorization': authHeader } }).then(users => {
+            if(!users || !Array.isArray(users)) return;
+            document.getElementById('user-count-badge').innerText = users.length;
+            document.getElementById('noc-users').innerHTML = users.map(u => `<div class="noc-entry text-info"><i class="fas fa-user-circle me-2"></i>${u}</div>`).join('');
+        });
     }
+
+    async function startSmartUpload(file) {
+        if (!file) return; const overlay = document.getElementById('upload-overlay'); const bar = document.getElementById('upload-bar'); const status = document.getElementById('upload-status'); overlay.style.display = 'flex';
+        const CHUNK_SIZE = 1024 * 1024; const CONCURRENCY = 4;
+        try {
+            const initRes = await fetch('/api/files/init', { method: 'POST', headers: { 'Authorization': authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify({ originalFilename: file.name, totalSize: file.size }) });
+            const meta = await initRes.json(); const fileId = meta.id;
+            let uploaded = 0; const chunks = []; for (let offset = 0; offset < file.size; offset += CHUNK_SIZE) chunks.push({ offset, size: Math.min(CHUNK_SIZE, file.size - offset) });
+            async function worker() { while (chunks.length > 0) { const c = chunks.shift(); if (!c) break; const fd = new FormData(); fd.append('chunk', file.slice(c.offset, c.offset + c.size)); await fetch(`/api/files/${fileId}/chunk`, { method: 'POST', headers: { 'Authorization': authHeader }, body: fd }); uploaded += c.size; const pct = Math.min(Math.round((uploaded / file.size) * 100), 100); bar.style.width = pct + '%'; status.innerText = pct + '%'; } }
+            await Promise.all(Array(CONCURRENCY).fill(0).map(() => worker())); await fetch(`/api/files/${fileId}/complete`, { method: 'POST', headers: { 'Authorization': authHeader } }); overlay.style.display = 'none'; refresh();
+        } catch (err) { alert("Forge Error: " + err); overlay.style.display = 'none'; }
+    }
+
+    const dz = document.getElementById('drop-zone');
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+    dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dragover'); if(e.dataTransfer.files.length) startSmartUpload(e.dataTransfer.files[0]); });
+
+    function switchNocTab(tab) {
+        document.getElementById('noc-body').style.display = tab === 'feed' ? 'block' : 'none';
+        document.getElementById('noc-users').style.display = tab === 'users' ? 'block' : 'none';
+        document.getElementById('tab-feed-btn').classList.toggle('text-info', tab === 'feed');
+        document.getElementById('tab-users-btn').classList.toggle('text-info', tab === 'users');
+    }
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('sidebar-overlay').classList.toggle('active'); }
+    function showView(view) { document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); document.getElementById('view-'+view).classList.add('active'); document.getElementById('view-title').innerText = '| ' + view.toUpperCase(); if(window.innerWidth < 992 && document.getElementById('sidebar').classList.contains('active')) toggleSidebar(); }
+    function makeDraggable(el) { let p1=0,p2=0,p3=0,p4=0; document.getElementById("noc-header").onmousedown = (e) => { e.preventDefault(); p3=e.clientX; p4=e.clientY; document.onmouseup=()=>{document.onmouseup=null;document.onmousemove=null;}; document.onmousemove=(e)=>{e.preventDefault(); p1=p3-e.clientX; p2=p4-e.clientY; p3=e.clientX; p4=e.clientY; el.style.top=(el.offsetTop-p2)+"px"; el.style.left=(el.offsetLeft-p1)+"px";}; }; }
+    function logout() { sessionStorage.removeItem('mft_auth'); location.reload(); }
+    if (authHeader) startSession();
 </script>
 </body>
 </html>

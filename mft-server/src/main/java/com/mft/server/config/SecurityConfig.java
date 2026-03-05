@@ -13,6 +13,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
+@org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
@@ -24,14 +25,36 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Disable CSRF for REST APIs
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
-            .httpBasic(withDefaults()); // Use Basic Auth for API clients and web UI
-            
+            .httpBasic(withDefaults())
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.IF_REQUIRED)
+            )
+            .authenticationProvider(dbAuthenticationProvider());
+
         return http.build();
+    }
+
+    @Bean
+    public org.springframework.security.provisioning.InMemoryUserDetailsManager inMemoryUserDetailsManager() {
+        org.springframework.security.core.userdetails.UserDetails admin = org.springframework.security.core.userdetails.User.builder()
+            .username("admin")
+            .password(passwordEncoder().encode("Renoise28!"))
+            .roles("ADMIN", "USER")
+            .build();
+        return new org.springframework.security.provisioning.InMemoryUserDetailsManager(admin);
+    }
+
+    @Bean
+    public org.springframework.security.authentication.dao.DaoAuthenticationProvider dbAuthenticationProvider() {
+        org.springframework.security.authentication.dao.DaoAuthenticationProvider authProvider = new org.springframework.security.authentication.dao.DaoAuthenticationProvider(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
     }
 
     @Bean

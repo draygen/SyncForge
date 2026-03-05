@@ -22,6 +22,9 @@ public class FileStorageService {
 
     private final FileMetadataRepository fileMetadataRepository;
     private final EncryptionService encryptionService;
+    
+    // Concurrent cache for rapid chunk processing
+    private final java.util.Map<java.util.UUID, FileMetadata> activeTransfers = new java.util.concurrent.ConcurrentHashMap<>();
 
     public FileStorageService(FileMetadataRepository fileMetadataRepository, EncryptionService encryptionService) {
         this.fileMetadataRepository = fileMetadataRepository;
@@ -39,7 +42,7 @@ public class FileStorageService {
     public FileMetadata initializeUpload(String originalFilename, Long totalSize) throws Exception {
         String aesKey = encryptionService.generateAesKey();
         String encryptedAesKey = encryptionService.encryptAesKeyWithMasterKey(aesKey);
-        String storedFilename = UUID.randomUUID().toString() + ".enc";
+        String storedFilename = java.util.UUID.randomUUID().toString() + ".enc";
 
         FileMetadata metadata = new FileMetadata();
         metadata.setOriginalFilename(originalFilename);
@@ -48,21 +51,18 @@ public class FileStorageService {
         metadata.setStatus("INITIATED");
         metadata.setEncryptedAesKey(encryptedAesKey);
 
-        return fileMetadataRepository.save(metadata);
+        FileMetadata saved = fileMetadataRepository.save(metadata);
+        activeTransfers.put(saved.getId(), saved);
+        return saved;
     }
 
-    public void appendChunk(UUID fileId, byte[] chunkData) throws Exception {
-        Optional<FileMetadata> optionalMetadata = fileMetadataRepository.findById(fileId);
-        if (optionalMetadata.isEmpty()) {
-            throw new IllegalArgumentException("File ID not found");
+    public void appendChunk(java.util.UUID fileId, byte[] chunkData) throws Exception {
+        FileMetadata metadata = activeTransfers.get(fileId);
+        if (metadata == null) {
+            metadata = fileMetadataRepository.findById(fileId)
+                .orElseThrow(() -> new IllegalArgumentException("File ID not found"));
+            activeTransfers.put(fileId, metadata);
         }
-
-        FileMetadata metadata = optionalMetadata.get();
-        if ("COMPLETED".equals(metadata.getStatus())) {
-            throw new IllegalStateException("File already completed");
-        }
-
-        metadata.setStatus("IN_PROGRESS");
 
         String aesKey = encryptionService.decryptAesKeyWithMasterKey(metadata.getEncryptedAesKey());
         byte[] encryptedChunk = encryptionService.encryptChunk(chunkData, aesKey);
@@ -73,13 +73,16 @@ public class FileStorageService {
         }
 
         metadata.setUploadedSize(metadata.getUploadedSize() + chunkData.length);
-        fileMetadataRepository.save(metadata);
+        metadata.setStatus("IN_PROGRESS");
     }
 
-    public void completeUpload(UUID fileId) {
-        Optional<FileMetadata> optionalMetadata = fileMetadataRepository.findById(fileId);
-        if (optionalMetadata.isPresent()) {
-            FileMetadata metadata = optionalMetadata.get();
+    public void completeUpload(java.util.UUID fileId) {
+        FileMetadata metadata = activeTransfers.remove(fileId);
+        if (metadata == null) {
+            metadata = fileMetadataRepository.findById(fileId).orElse(null);
+        }
+        
+        if (metadata != null) {
             metadata.setStatus("COMPLETED");
             fileMetadataRepository.save(metadata);
         }

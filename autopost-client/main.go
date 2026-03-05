@@ -18,11 +18,12 @@ import (
 
 // Configuration - this would normally be loaded from a config.yaml or .env
 const (
-	ServerURL    = "http://localhost:8888"
-	WatchDir     = "./sync_folder"
-	Username     = "admin"
-	Password     = "Renoise28!"
-	BaseChunkSize = 5 * 1024 * 1024 // 5 MB chunks
+	ServerURL     = "http://localhost:8888"
+	WatchDir      = "./sync_folder"
+	Username      = "admin"
+	Password      = "Renoise28!"
+	BaseChunkSize = 1024 * 1024 // 1 MB chunks
+	Concurrency   = 4           // Parallel chunks per file
 )
 
 // InitResponse matches the Java Spring Boot FileMetadata JSON response
@@ -96,69 +97,64 @@ func main() {
 
 func handleUpload(filePath string) {
 	fileInfo, err := os.Stat(filePath)
-	if err != nil {
-		log.Printf("Error stating file %s: %v", filePath, err)
+	if err != nil || fileInfo.IsDir() {
 		return
-	}
-
-	if fileInfo.IsDir() {
-		return // Skip directories
 	}
 
 	filename := filepath.Base(filePath)
 	totalSize := fileInfo.Size()
+	log.Printf("Starting PARALLEL upload for: %s (%d bytes)", filename, totalSize)
 
-	log.Printf("Starting upload for: %s (%d bytes)", filename, totalSize)
-
-	// Step 1: Initialize Upload
 	fileID, err := initUpload(filename, totalSize)
 	if err != nil {
-		log.Printf("Failed to initialize upload: %v", err)
+		log.Printf("Init failed: %v", err)
 		return
 	}
-	log.Printf("Server granted File ID: %s", fileID)
 
-	// Step 2: Chunk and Upload
 	file, err := os.Open(filePath)
 	if err != nil {
-		log.Printf("Failed to open file: %v", err)
 		return
 	}
 	defer file.Close()
 
+	type chunkJob struct {
+		index int
+		data  []byte
+	}
+
+	jobs := make(chan chunkJob, Concurrency)
+	var wg sync.WaitGroup
+
+	// Start workers
+	for w := 0; w < Concurrency; w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for job := range jobs {
+				log.Printf("Uploading chunk %d...", job.index)
+				uploadChunk(fileID, job.data)
+			}
+		}()
+	}
+
 	buffer := make([]byte, BaseChunkSize)
 	chunkIndex := 0
-
 	for {
 		bytesRead, err := file.Read(buffer)
-		if err != nil && err != io.EOF {
-			log.Printf("Error reading chunk: %v", err)
-			return
-		}
 		if bytesRead == 0 {
 			break
 		}
-
-		log.Printf("Uploading chunk %d (%d bytes)...", chunkIndex, bytesRead)
-		err = uploadChunk(fileID, buffer[:bytesRead])
-		if err != nil {
-			log.Printf("Failed to upload chunk: %v", err)
-			return // In a robust app, we'd add retry logic here
-		}
+		
+		data := make([]byte, bytesRead)
+		copy(data, buffer[:bytesRead])
+		jobs <- chunkJob{index: chunkIndex, data: data}
 		chunkIndex++
 	}
+	close(jobs)
+	wg.Wait()
 
-	// Step 3: Complete Upload
-	err = completeUpload(fileID)
-	if err != nil {
-		log.Printf("Failed to complete upload: %v", err)
-		return
-	}
-
-	log.Printf("✅ Successfully uploaded %s to the MFT server.", filename)
-	
-	// Optional: Delete local file after sync
-	// os.Remove(filePath)
+	completeUpload(fileID)
+	log.Printf("✅ Parallel Transfer Complete: %s", filename)
 }
 
 func initUpload(filename string, totalSize int64) (string, error) {
