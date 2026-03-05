@@ -11,6 +11,7 @@
         :root {
             --neon-blue: #00f2ff; --neon-purple: #7000ff; --obsidian: #020617;
             --glass: rgba(15, 23, 42, 0.6); --border: rgba(0, 242, 255, 0.2);
+            --primary: #6366f1;
         }
         body { 
             background: var(--obsidian); color: #f8fafc; font-family: 'Inter', sans-serif; 
@@ -18,121 +19,19 @@
         }
         #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100%; }
         
-        /* Perspective Overlay for Depth */
         .cyber-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at 50% 50%, transparent 0%, var(--obsidian) 90%);
             pointer-events: none; z-index: -1;
         }
 
-        /* Typography */
-        h1, h2, h3, .navbar-brand { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
-
-        /* Glowing Inputs - Fixed Visibility */
-        .form-control { 
-            background: rgba(0, 0, 0, 0.6) !important; 
-            border: 1px solid var(--border) !important; 
-            color: #ffffff !important; 
-            border-radius: 12px;
-            padding: 15px;
-            transition: all 0.3s ease;
-        }
-        .form-control::placeholder { color: rgba(255, 255, 255, 0.4); }
-        .form-control:focus { 
-            background: rgba(0, 0, 0, 0.8) !important;
-            border-color: var(--neon-blue) !important;
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
-            outline: none;
-        }
-
-        /* Sidebar & Navigation */
-        #sidebar { 
-            position: fixed; top: 0; left: -280px; width: 280px; height: 100%; 
-            background: rgba(2, 6, 23, 0.98); backdrop-filter: blur(20px);
-            border-right: 1px solid var(--border); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            z-index: 1050; padding: 30px 20px;
-        }
-        #sidebar.active { left: 0; box-shadow: 20px 0 50px rgba(0,0,0,0.5); }
-        .nav-link { 
-            color: #94a3b8; border-radius: 12px; padding: 14px 18px; margin-bottom: 8px; 
-            cursor: pointer; transition: 0.3s; border: 1px solid transparent;
-        }
-        .nav-link:hover, .nav-link.active { 
-            background: rgba(0, 242, 255, 0.05); color: var(--neon-blue);
-            border-color: rgba(0, 242, 255, 0.2); transform: translateX(5px);
-        }
-
-        /* Glass Cards with Depth */
-        .glass-card { 
-            background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--border); 
-            border-radius: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); 
-            transition: 0.3s ease;
-        }
-        .glass-card:hover { border-color: var(--neon-blue); transform: translateY(-5px); }
-
-        /* Drop Zone UI */
-        #drop-zone { 
-            border: 2px dashed var(--border); border-radius: 24px; padding: 60px; 
-            text-align: center; transition: 0.4s; cursor: pointer;
-            background: radial-gradient(circle at center, rgba(0, 242, 255, 0.03) 0%, transparent 100%);
-        }
-        #drop-zone:hover, #drop-zone.dragover { 
-            border-color: var(--neon-blue); background: rgba(0, 242, 255, 0.08); 
-            box-shadow: inset 0 0 30px rgba(0, 242, 255, 0.1);
-        }
-
-        /* Buttons */
-        .btn-neon { 
-            background: linear-gradient(45deg, var(--neon-blue), #00a2ff); 
-            border: none; color: #000; font-weight: 800; border-radius: 12px;
-            padding: 14px; text-transform: uppercase; letter-spacing: 1px;
-            transition: 0.3s;
-        }
-        .btn-neon:hover { 
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.6); transform: scale(1.02);
-        }
-
-        /* NOC Monitor - Floating Terminal */
-        #noc-monitor { 
-            position: fixed; bottom: 25px; right: 25px; width: 420px; height: 380px; 
-            background: rgba(0,0,0,0.95); border: 1px solid var(--border); border-radius: 16px; 
-            display: none; flex-direction: column; z-index: 1000; overflow: hidden;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
-        }
-        #noc-header { 
-            padding: 12px 20px; background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid var(--border);
-            color: var(--neon-blue); font-family: 'Orbitron'; font-size: 0.65rem;
-            cursor: move; display: flex; justify-content: space-between; align-items: center;
-        }
-        #noc-body, #noc-users { flex: 1; padding: 15px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; overflow-y: auto; color: #10b981; }
-        .noc-entry { margin-bottom: 8px; border-left: 2px solid var(--neon-blue); padding-left: 12px; animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
-
-        /* Table Aesthetics */
-        .table { color: #cbd5e1; --bs-table-hover-bg: rgba(255,255,255,0.03); }
-        .table thead th { border-bottom: 1px solid var(--border); color: var(--neon-blue); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
-
-        /* Login Overlay Overlay */
-        #login-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
-            z-index: 3000; display: flex; justify-content: center; align-items: center;
-        }
-
         /* FitGirl Style Architect Avatar */
         #architect-avatar {
-            position: fixed;
-            bottom: 0;
-            left: 2%;
-            height: 85vh;
-            max-width: 40vw;
-            object-fit: contain;
-            object-position: bottom left;
-            z-index: 0; /* Behind UI cards, above canvas */
-            pointer-events: none;
-            opacity: 0.65;
+            position: fixed; bottom: 0; left: 2%; height: 85vh; max-width: 40vw;
+            object-fit: contain; object-position: bottom left; z-index: 0;
+            pointer-events: none; opacity: 0.65;
             filter: drop-shadow(0 0 30px rgba(0, 242, 255, 0.3)) contrast(1.1) grayscale(0.2);
-            -webkit-mask-image: -webkit-linear-gradient(bottom, transparent 2%, black 25%);
+            -webkit-mask-image: linear-gradient(to top, transparent 2%, black 25%);
             mask-image: linear-gradient(to top, transparent 2%, black 25%);
             animation: breathe 8s infinite ease-in-out;
         }
@@ -140,29 +39,76 @@
             0%, 100% { transform: translateY(0) scale(1); }
             50% { transform: translateY(-10px) scale(1.01); }
         }
-        </style>
-        </head>
-        <body>
 
-        <canvas id="bg-canvas"></canvas>
-        <img id="architect-avatar" src="/face.jpg" alt="Architect">
+        h1, h2, h3, .navbar-brand { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
 
-        <div id="maintenance-alert">
+        .form-control { 
+            background: rgba(0, 0, 0, 0.6) !important; border: 1px solid var(--border) !important; 
+            color: #ffffff !important; border-radius: 12px; padding: 15px; transition: 0.3s;
+        }
+        .form-control:focus { 
+            background: rgba(0, 0, 0, 0.8) !important; border-color: var(--neon-blue) !important;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+        }
+
+        #sidebar { 
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100%; 
+            background: rgba(2, 6, 23, 0.98); backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border); transition: 0.4s; z-index: 1050; padding: 30px 20px;
+        }
+        #sidebar.active { left: 0; }
+        .nav-link { color: #94a3b8; border-radius: 12px; padding: 14px 18px; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { background: rgba(0, 242, 255, 0.05); color: var(--neon-blue); }
+
+        .glass-card { 
+            background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--border); 
+            border-radius: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); position: relative; z-index: 1;
+        }
+
+        #drop-zone { border: 2px dashed var(--border); border-radius: 24px; padding: 60px; text-align: center; transition: 0.4s; cursor: pointer; }
+        #drop-zone.dragover { border-color: var(--neon-blue); background: rgba(0, 242, 255, 0.08); }
+
+        .btn-neon { background: linear-gradient(45deg, var(--neon-blue), #00a2ff); border: none; color: #000; font-weight: 800; border-radius: 12px; padding: 14px; text-transform: uppercase; transition: 0.3s; }
+        .btn-neon:hover { box-shadow: 0 0 30px rgba(0, 242, 255, 0.6); transform: scale(1.02); }
+
+        #noc-monitor { position: fixed; bottom: 25px; right: 25px; width: 420px; height: 380px; background: rgba(0,0,0,0.95); border: 1px solid var(--border); border-radius: 16px; display: none; flex-direction: column; z-index: 1000; overflow: hidden; }
+        #noc-header { padding: 12px 20px; background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid var(--border); color: var(--neon-blue); font-family: 'Orbitron'; cursor: move; display: flex; justify-content: space-between; align-items: center; }
+        #noc-body, #noc-users { flex: 1; padding: 15px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; overflow-y: auto; color: #10b981; }
+        .noc-entry { margin-bottom: 8px; border-left: 2px solid var(--neon-blue); padding-left: 12px; }
+
+        .view-section { display: none; animation: fadeIn 0.5s ease forwards; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); z-index: 3000; display: flex; justify-content: center; align-items: center; }
+        #upload-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        #maintenance-alert { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(220, 38, 38, 0.95); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 1040; }
+        .sidebar-overlay.active { display: block; }
+    </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div class="cyber-overlay"></div>
+<img id="architect-avatar" src="/face.jpg" alt="Architect">
+
+<div id="maintenance-alert">
+    <i class="fas fa-exclamation-triangle fa-5x mb-4"></i>
+    <h1>SYSTEM UPDATE IN PROGRESS</h1>
+    <p>Hold please... redirecting to maintenance portal.</p>
+</div>
+
+<div id="login-overlay">
     <div class="glass-card p-5 text-center" style="max-width: 450px; width: 100%;">
         <form onsubmit="event.preventDefault(); login();">
             <div class="mb-4">
-                <i class="fas fa-microchip fa-4x mb-3" style="color: var(--neon-blue); filter: drop-shadow(0 0 10px rgba(0,242,255,0.5));"></i>
+                <i class="fas fa-microchip fa-4x mb-3" style="color: var(--neon-blue);"></i>
                 <h2 class="fw-bold text-white">SYNCFORGE</h2>
                 <p class="text-muted small">SECURE MULTI-THREADED ARTIFACT FORGE</p>
             </div>
-            <div class="mb-3 text-start">
-                <label class="small mb-2 text-secondary">CORE IDENTITY</label>
-                <input type="text" id="login-user" class="form-control" placeholder="ACCESS_ID" required>
-            </div>
-            <div class="mb-4 text-start">
-                <label class="small mb-2 text-secondary">SECURITY KEY</label>
-                <input type="password" id="login-pass" class="form-control" placeholder="********" required>
-            </div>
+            <div class="mb-3 text-start"><label class="small mb-2 text-secondary">CORE IDENTITY</label><input type="text" id="login-user" class="form-control" placeholder="ACCESS_ID" required></div>
+            <div class="mb-4 text-start"><label class="small mb-2 text-secondary">SECURITY KEY</label><input type="password" id="login-pass" class="form-control" placeholder="********" required></div>
             <button type="submit" class="btn btn-neon w-100 p-3 fw-bold">INITIATE CONNECTION</button>
         </form>
     </div>
@@ -173,54 +119,41 @@
         <div class="container-fluid">
             <button class="btn btn-link text-white me-3 p-0" onclick="toggleSidebar()"><i class="fas fa-bars fa-lg"></i></button>
             <span class="navbar-brand fw-bold text-white">SYNCFORGE <span id="view-title" class="ms-2 small fw-light text-secondary">| NODE_01</span></span>
-            <div class="ms-auto d-flex align-items-center">
-                <div class="d-none d-md-flex align-items-center me-4">
-                    <div class="spinner-grow spinner-grow-sm text-success me-2" role="status"></div>
-                    <small class="text-success fw-bold">UPLINK ACTIVE</small>
-                </div>
-                <span id="user-tag" class="badge border border-info text-info rounded-pill px-3"></span>
-            </div>
+            <div class="ms-auto"><span id="user-tag" class="badge border border-info text-info rounded-pill px-3"></span></div>
         </div>
     </nav>
 
     <main class="container py-5">
         <div id="view-transfers" class="view-section active">
-            <section class="row mb-5">
-                <div class="col-12">
-                    <div id="drop-zone" onclick="document.getElementById('file-input').click()">
-                        <i class="fas fa-atom fa-4x mb-3" style="color: var(--neon-blue);"></i>
-                        <h3 class="fw-bold">DROP ARTIFACTS HERE</h3>
-                        <p class="text-muted">ENCRYPTED PARALLEL STREAMING ENABLED</p>
-                        <input type="file" id="file-input" style="display:none;" onchange="startSmartUpload(this.files[0])">
-                    </div>
-                </div>
-            </section>
-
+            <section class="row mb-5"><div class="col-12"><div id="drop-zone" onclick="document.getElementById('file-input').click()"><i class="fas fa-atom fa-4x mb-3" style="color: var(--neon-blue);"></i><h3 class="fw-bold">DROP ARTIFACTS HERE</h3><p class="text-muted">ENCRYPTED PARALLEL STREAMING ENABLED</p><input type="file" id="file-input" style="display:none;" onchange="startSmartUpload(this.files[0])"></div></div></section>
             <section class="glass-card p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="fw-bold text-white mb-0"><i class="fas fa-database me-2 text-info"></i> SECURED DATA VOLUMES</h5>
-                    <small id="stat-count" class="badge bg-dark border border-secondary text-secondary"></small>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead><tr><th>ARTIFACT</th><th>STATUS</th><th>VOLUME</th><th>TIMESTAMP</th></tr></thead>
-                        <tbody id="my-file-list"></tbody>
-                    </table>
-                </div>
+                <div class="d-flex justify-content-between align-items-center mb-4"><h5 class="fw-bold text-white mb-0"><i class="fas fa-database me-2 text-info"></i> SECURED DATA VOLUMES</h5><small id="stat-count" class="badge bg-dark border border-secondary text-secondary"></small></div>
+                <div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>ARTIFACT</th><th>STATUS</th><th>VOLUME</th><th>TIMESTAMP</th></tr></thead><tbody id="my-file-list"></tbody></table></div>
             </section>
         </div>
-
-        <!-- Admin Views remain same structure but benefit from CSS -->
         <div id="view-users" class="view-section">
             <div class="d-flex justify-content-between align-items-center mb-4"><h3 class="fw-bold">User Matrix</h3><button class="btn btn-neon px-4" data-bs-toggle="modal" data-bs-target="#userModal">New Identity</button></div>
             <div class="glass-card p-4"><table class="table table-hover align-middle"><thead><tr><th>Identity</th><th>Permissions</th><th>Status</th><th>Action</th></tr></thead><tbody id="user-list"></tbody></table></div>
         </div>
-
         <div id="view-config" class="view-section">
             <h3 class="mb-4 fw-bold">Core Parameters</h3>
             <div class="glass-card p-4" id="config-container"></div>
         </div>
     </main>
+</div>
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+<div id="sidebar">
+    <div class="mb-5 px-3"><h2 class="fw-bold text-white mb-0">FORGE</h2><small class="text-info">v1.0.4-STABLE</small></div>
+    <div class="nav flex-column">
+        <div class="nav-link active" onclick="showView('transfers')"><i class="fas fa-tachometer-alt me-3"></i> DASHBOARD</div>
+        <div id="admin-menu" style="display:none;">
+            <div class="text-uppercase small text-muted mt-4 mb-2 px-3">Root Control</div>
+            <div class="nav-link" onclick="showView('users')"><i class="fas fa-id-card me-3"></i> IDENTITY_MANAGER</div>
+            <div class="nav-link" onclick="showView('config')"><i class="fas fa-cogs me-3"></i> CORE_SETTINGS</div>
+        </div>
+        <div class="mt-auto pt-5"><div class="nav-link text-danger" onclick="logout()"><i class="fas fa-power-off me-3"></i> DISCONNECT</div></div>
+    </div>
 </div>
 
 <div id="noc-monitor">
@@ -235,44 +168,26 @@
     <div id="noc-users" style="display:none;"></div>
 </div>
 
-<!-- Modal Aesthetics -->
+<div id="upload-overlay">
+    <div class="text-center" style="max-width: 400px; width: 90%;">
+        <div class="mb-4"><i class="fas fa-project-diagram fa-4x text-info fa-spin"></i></div>
+        <h3 class="fw-bold text-white mb-2">FORGING ARTIFACT</h3>
+        <p class="text-info small mb-4 font-monospace">ENCRYPTING & STREAMING PARALLEL CHUNKS</p>
+        <div class="progress mb-3" style="height: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 20px;"><div id="upload-bar" class="progress-bar bg-info" style="width: 0%"></div></div>
+        <h2 id="upload-status" class="text-white font-monospace mb-0">0%</h2>
+    </div>
+</div>
+
 <div class="modal fade" id="userModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered"><div class="modal-content glass-card p-2">
         <div class="modal-header border-0"><h5 class="text-white fw-bold">GENERATE IDENTITY</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
         <div class="modal-body">
             <input type="text" id="new-user-name" class="form-control mb-3" placeholder="ID_NAME">
             <input type="password" id="new-user-pass" class="form-control mb-3" placeholder="PASS_KEY">
-            <select id="new-user-role" class="form-control"><option value="USER">LEVEL_01 (USER)</option><option value="ADMIN,USER">LEVEL_09 (ADMIN)</option></select>
+            <select id="new-user-role" class="form-control"><option value="USER">LEVEL_01</option><option value="ADMIN,USER">LEVEL_09</option></select>
         </div>
         <div class="modal-footer border-0"><button class="btn btn-neon w-100" onclick="createUser()">AUTHORIZE</button></div>
     </div></div>
-</div>
-
-<div id="sidebar">
-    <div class="mb-5 px-3"><h2 class="fw-bold text-white mb-0">FORGE</h2><small class="text-info">v1.0.4-STABLE</small></div>
-    <div class="nav flex-column">
-        <div class="nav-link active" onclick="showView('transfers')"><i class="fas fa-tachometer-alt me-3"></i> DASHBOARD</div>
-        <div id="admin-menu" style="display:none;">
-            <div class="text-uppercase small text-muted mt-4 mb-2 px-3">Root Control</div>
-            <div class="nav-link" onclick="showView('users')"><i class="fas fa-id-card me-3"></i> IDENTITY_MANAGER</div>
-            <div class="nav-link" onclick="showView('config')"><i class="fas fa-cogs me-3"></i> CORE_SETTINGS</div>
-        </div>
-        <div class="mt-auto pt-5">
-            <div class="nav-link text-danger" onclick="logout()"><i class="fas fa-power-off me-3"></i> DISCONNECT</div>
-        </div>
-    </div>
-</div>
-
-<div id="upload-overlay">
-    <div class="text-center" style="max-width: 400px; width: 90%;">
-        <div class="mb-4"><i class="fas fa-project-diagram fa-4x text-info fa-spin"></i></div>
-        <h3 class="fw-bold text-white mb-2">FORGING ARTIFACT</h3>
-        <p class="text-info small mb-4 font-monospace">ENCRYPTING & STREAMING PARALLEL CHUNKS</p>
-        <div class="progress mb-3" style="height: 12px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 20px;">
-            <div id="upload-bar" class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width: 0%"></div>
-        </div>
-        <h2 id="upload-status" class="text-white font-monospace mb-0">0%</h2>
-    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -281,48 +196,21 @@
     let authHeader = sessionStorage.getItem('mft_auth');
     let currentUser = null; let isMaintenanceRedirecting = false;
 
-    // --- HTML5 WEBGL 3D BACKGROUND (GPU ACCELERATED) ---
+    // --- THREE.JS BACKGROUND ---
     const canvas = document.getElementById('bg-canvas');
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
     camera.position.z = 5;
+    const grid = new THREE.GridHelper(100, 50, 0x00f2ff, 0x020617); grid.position.y = -2; scene.add(grid);
+    const pCount = 1500; const pos = new Float32Array(pCount*3); for(let i=0; i<pCount*3; i++) pos[i]=(Math.random()-0.5)*15;
+    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const mat = new THREE.PointsMaterial({ size: 0.015, color: '#00f2ff', transparent: true, opacity: 0.8 });
+    const mesh = new THREE.Points(geo, mat); scene.add(mesh);
+    function animate3D() { requestAnimationFrame(animate3D); mesh.rotation.y+=0.001; grid.position.z+=0.02; if(grid.position.z>2) grid.position.z=0; renderer.render(scene, camera); }
+    function resize() { camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
+    window.addEventListener('resize', resize); resize(); animate3D();
 
-    // Cyber Grid
-    const gridHelper = new THREE.GridHelper(100, 50, 0x00f2ff, 0x0f172a);
-    gridHelper.position.y = -2;
-    scene.add(gridHelper);
-
-    // Particle Forge
-    const particlesCount = 1500;
-    const posArray = new Float32Array(particlesCount * 3);
-    for(let i=0; i < particlesCount * 3; i++) posArray[i] = (Math.random() - 0.5) * 15;
-    
-    const particlesGeometry = new THREE.BufferGeometry();
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    const particlesMaterial = new THREE.PointsMaterial({ size: 0.015, color: '#00f2ff', transparent: true, opacity: 0.8 });
-    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-    scene.add(particlesMesh);
-
-    function animate3D() {
-        requestAnimationFrame(animate3D);
-        particlesMesh.rotation.y += 0.001;
-        particlesMesh.rotation.x += 0.0005;
-        gridHelper.position.z += 0.02;
-        if (gridHelper.position.z > 2) gridHelper.position.z = 0;
-        renderer.render(scene, camera);
-    }
-
-    function handleResize() {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-    window.addEventListener('resize', handleResize);
-    handleResize();
-    animate3D();
-
-    // Logic remaining the same for stability, fixed safeFetch and auth
     async function safeFetch(url, opts = {}) { const res = await fetch(url, opts); if(!res.ok) throw new Error(res.status); const ct = res.headers.get("content-type"); return (ct && ct.includes("application/json")) ? await res.json() : null; }
     
     function login() {
@@ -336,7 +224,14 @@
         safeFetch('/api/me', { headers: { 'Authorization': authHeader } }).then(user => {
             currentUser = user; document.getElementById('user-tag').innerText = user.username;
             if (user.roles.includes('ROLE_ADMIN')) { document.getElementById('admin-menu').style.display = 'block'; document.getElementById('noc-monitor').style.display = 'flex'; makeDraggable(document.getElementById("noc-monitor")); }
-            refresh(); setInterval(refresh, 5000);
+            refresh(); setInterval(refresh, 5000); setInterval(pingSystem, 3000);
+        });
+    }
+
+    function pingSystem() {
+        if(isMaintenanceRedirecting) return;
+        fetch('/api/system/ping', { headers: { 'Authorization': authHeader } }).then(res => res.json()).then(data => {
+            if (data && data.maintenance === true) { isMaintenanceRedirecting = true; document.getElementById('maintenance-alert').style.display = 'flex'; setTimeout(() => window.location.href = '/maintenance.html', 3000); }
         });
     }
 
@@ -370,23 +265,12 @@
             let uploaded = 0; const chunks = []; for (let offset = 0; offset < file.size; offset += CHUNK_SIZE) chunks.push({ offset, size: Math.min(CHUNK_SIZE, file.size - offset) });
             async function worker() { while (chunks.length > 0) { const c = chunks.shift(); if (!c) break; const fd = new FormData(); fd.append('chunk', file.slice(c.offset, c.offset + c.size)); await fetch(`/api/files/${fileId}/chunk`, { method: 'POST', headers: { 'Authorization': authHeader }, body: fd }); uploaded += c.size; const pct = Math.min(Math.round((uploaded / file.size) * 100), 100); bar.style.width = pct + '%'; status.innerText = pct + '%'; } }
             await Promise.all(Array(CONCURRENCY).fill(0).map(() => worker())); await fetch(`/api/files/${fileId}/complete`, { method: 'POST', headers: { 'Authorization': authHeader } }); overlay.style.display = 'none'; refresh();
-        } catch (err) { alert("Forge Error: " + err); overlay.style.display = 'none'; }
+        } catch (err) { alert("Error: " + err); overlay.style.display = 'none'; }
     }
 
-    const dz = document.getElementById('drop-zone');
-    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
-    dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
-    dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dragover'); if(e.dataTransfer.files.length) startSmartUpload(e.dataTransfer.files[0]); });
-
-    function switchNocTab(tab) {
-        document.getElementById('noc-body').style.display = tab === 'feed' ? 'block' : 'none';
-        document.getElementById('noc-users').style.display = tab === 'users' ? 'block' : 'none';
-        document.getElementById('tab-feed-btn').classList.toggle('text-info', tab === 'feed');
-        document.getElementById('tab-users-btn').classList.toggle('text-info', tab === 'users');
-    }
-
+    function switchNocTab(t) { document.getElementById('noc-body').style.display=t==='feed'?'block':'none'; document.getElementById('noc-users').style.display=t==='users'?'block':'none'; document.getElementById('tab-feed-btn').classList.toggle('text-info', t==='feed'); document.getElementById('tab-users-btn').classList.toggle('text-info', t==='users'); }
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('sidebar-overlay').classList.toggle('active'); }
-    function showView(view) { document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); document.getElementById('view-'+view).classList.add('active'); document.getElementById('view-title').innerText = '| ' + view.toUpperCase(); if(window.innerWidth < 992 && document.getElementById('sidebar').classList.contains('active')) toggleSidebar(); }
+    function showView(v) { document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); document.getElementById('view-'+v).classList.add('active'); document.getElementById('view-title').innerText = '| ' + v.toUpperCase(); if(window.innerWidth < 992 && document.getElementById('sidebar').classList.contains('active')) toggleSidebar(); }
     function makeDraggable(el) { let p1=0,p2=0,p3=0,p4=0; document.getElementById("noc-header").onmousedown = (e) => { e.preventDefault(); p3=e.clientX; p4=e.clientY; document.onmouseup=()=>{document.onmouseup=null;document.onmousemove=null;}; document.onmousemove=(e)=>{e.preventDefault(); p1=p3-e.clientX; p2=p4-e.clientY; p3=e.clientX; p4=e.clientY; el.style.top=(el.offsetTop-p2)+"px"; el.style.left=(el.offsetLeft-p1)+"px";}; }; }
     function logout() { sessionStorage.removeItem('mft_auth'); location.reload(); }
     if (authHeader) startSession();
