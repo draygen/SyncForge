@@ -26,7 +26,6 @@ pgdata/
 *.log
 key
 syncforge_deploy_key*
-*.py
 update_admin.sql
 instance_ip.txt
 instance_port.txt
