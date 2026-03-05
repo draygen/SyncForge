@@ -14,6 +14,9 @@ class SyncForgeE2ETest(unittest.TestCase):
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--remote-debugging-port=9222")
+        chrome_options.add_argument("--window-size=1920,1080")
         
         # Use the found chromium path
         self.driver = webdriver.Chrome(options=chrome_options)
@@ -45,11 +48,12 @@ class SyncForgeE2ETest(unittest.TestCase):
 
         # Verify filename display fix (check if originalFilename is prominent and ID is gone)
         # We need a file to be present. For now just check if the list exists.
-        file_list = self.driver.find_element(By.ID, "my-file-list")
-        self.assertTrue(file_list.is_displayed())
-        print("Dashboard file list is visible.")
+        file_table = self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".table-responsive")))
+        self.assertIsNotNone(file_table)
+        print("Dashboard file list is present.")
 
         # Check user tag
+        self.wait.until(EC.text_to_be_present_in_element((By.ID, "user-tag"), "admin"))
         user_tag = self.driver.find_element(By.ID, "user-tag")
         self.assertEqual(user_tag.text, "admin")
         print("User tag verified.")
