@@ -16,7 +16,7 @@ import (
 const (
 	ServerURL      = "http://localhost:8888"
 	Username       = "admin"
-	Password      = "SyncForge2026!"
+	Password       = "admin"
 	ConcurrentJobs = 20 // Number of simultaneous uploads
 	FilesPerJob    = 5  // Total 100 files
 	ChunkSize      = 5 * 1024 * 1024
