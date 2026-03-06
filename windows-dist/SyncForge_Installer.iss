@@ -12,6 +12,7 @@ SolidCompression=yes
 OutputDir=.
 OutputBaseFilename=SyncForge_Setup_v2
 SetupIconFile=nginx\html\favicon.ico
+UninstallDisplayIcon={app}\nginx\html\favicon.ico
 
 [Files]
 ; Binaries
@@ -21,8 +22,10 @@ Source: "bin\autopost.exe"; DestDir: "{app}\bin"; Flags: ignoreversion
 ; Configuration
 Source: "config\application.properties"; DestDir: "{app}\config"; Flags: ignoreversion
 
-; Nginx Web Tier
+; Nginx Web Tier & Assets
 Source: "nginx\*"; DestDir: "{app}\nginx"; Flags: ignoreversion recursesubdirs
+Source: "nginx\html\draygen_avatar.jpg"; DestDir: "{app}\nginx\html"; Flags: ignoreversion
+Source: "nginx\html\favicon.ico"; DestDir: "{app}\nginx\html"; Flags: ignoreversion
 
 ; Database Layer (Binaries must be provided in dist folder)
 Source: "postgres\bin\*"; DestDir: "{app}\postgres\bin"; Flags: ignoreversion recursesubdirs
