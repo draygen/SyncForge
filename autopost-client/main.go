@@ -17,12 +17,11 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-// Configuration - this would normally be loaded from a config.yaml or .env
-const (
-	ServerURL     = "http://localhost:8888"
-	WatchDir      = "./sync_folder"
-	Username      = "admin"
-	Password      = "Renoise28!"
+var (
+	ServerURL     = getEnv("MFT_SERVER_URL", "http://localhost:8888")
+	WatchDir      = getEnv("MFT_WATCH_DIR", "./sync_folder")
+	Username      = getEnv("MFT_USERNAME", "admin")
+	Password      = getEnv("MFT_PASSWORD", "admin")
 	BaseChunkSize = 1024 * 1024 // 1 MB chunks
 	Concurrency   = 4           // Parallel chunks per file
 )
@@ -32,6 +31,13 @@ type InitResponse struct {
 	ID               string `json:"id"`
 	OriginalFilename string `json:"originalFilename"`
 	Status           string `json:"status"`
+}
+
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
 }
 
 func main() {
@@ -133,7 +139,7 @@ func handleUpload(filePath string) {
 			defer wg.Done()
 			for job := range jobs {
 				log.Printf("Uploading chunk %d...", job.index)
-				uploadChunk(fileID, job.data)
+				uploadChunk(fileID, job.index, job.data)
 			}
 		}()
 	}
@@ -142,10 +148,13 @@ func handleUpload(filePath string) {
 	chunkIndex := 0
 	for {
 		bytesRead, err := file.Read(buffer)
-		if bytesRead == 0 {
+		if bytesRead == 0 || err == io.EOF {
 			break
+		} else if err != nil {
+			log.Printf("Read error: %v", err)
+			return
 		}
-		
+
 		data := make([]byte, bytesRead)
 		copy(data, buffer[:bytesRead])
 		jobs <- chunkJob{index: chunkIndex, data: data}
@@ -185,7 +194,7 @@ func initUpload(filename string, totalSize int64) (string, error) {
 	return initResp.ID, nil
 }
 
-func uploadChunk(fileID string, chunkData []byte) error {
+func uploadChunk(fileID string, chunkIndex int, chunkData []byte) error {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 	
@@ -196,7 +205,7 @@ func uploadChunk(fileID string, chunkData []byte) error {
 	part.Write(chunkData)
 	writer.Close()
 
-	req, _ := http.NewRequest("POST", fmt.Sprintf("%s/api/files/%s/chunk", ServerURL, fileID), body)
+	req, _ := http.NewRequest("POST", fmt.Sprintf("%s/api/files/%s/chunk?chunkIndex=%d", ServerURL, fileID, chunkIndex), body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	setBasicAuth(req)
 

@@ -3,9 +3,9 @@ import time
 import os
 import concurrent.futures
 
-URL = "https://rapid-homes-epa-fountain.trycloudflare.com"
-USER = "admin"
-PASS = "admin"
+URL = os.environ.get("MFT_SERVER_URL", "https://rapid-homes-epa-fountain.trycloudflare.com")
+USER = os.environ.get("MFT_USERNAME", "admin")
+PASS = os.environ.get("MFT_PASSWORD", "admin")
 
 def run_upload_benchmark(file_name, size_mb):
     session = requests.Session()

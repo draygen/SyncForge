@@ -17,12 +17,29 @@ public class ActivityService {
     private static final int MAX_EVENTS = 50;
     
     private final Map<String, LocalDateTime> activeUsers = new ConcurrentHashMap<>();
+    private final List<org.springframework.web.servlet.mvc.method.annotation.SseEmitter> emitters = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    public void registerEmitter(org.springframework.web.servlet.mvc.method.annotation.SseEmitter emitter) {
+        emitters.add(emitter);
+        emitter.onCompletion(() -> emitters.remove(emitter));
+        emitter.onTimeout(() -> emitters.remove(emitter));
+        emitter.onError(e -> emitters.remove(emitter));
+    }
 
     public void log(String type, String user, String detail) {
         ActivityEvent event = new ActivityEvent(type, user, detail);
         events.add(0, event);
         if (events.size() > MAX_EVENTS) {
             events.remove(events.size() - 1);
+        }
+        
+        // Notify emitters
+        for (org.springframework.web.servlet.mvc.method.annotation.SseEmitter emitter : emitters) {
+            try {
+                emitter.send(event);
+            } catch (Exception e) {
+                emitters.remove(emitter);
+            }
         }
     }
 

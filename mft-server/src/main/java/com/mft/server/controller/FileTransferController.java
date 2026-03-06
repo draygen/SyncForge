@@ -40,9 +40,10 @@ public class FileTransferController {
     public ResponseEntity<String> uploadChunk(
             @PathVariable java.util.UUID fileId,
             @RequestParam("chunk") MultipartFile chunk,
+            @RequestParam(value = "chunkIndex", defaultValue = "-1") int chunkIndex,
             org.springframework.security.core.Authentication auth) {
         try {
-            fileStorageService.appendChunk(fileId, chunk.getBytes());
+            fileStorageService.appendChunk(fileId, chunk.getBytes(), chunkIndex);
             // We don't log every chunk to avoid flooding, maybe just some summary later
             return ResponseEntity.ok("Chunk appended successfully");
         } catch (IllegalArgumentException e) {

@@ -63,7 +63,7 @@ public class FileStorageService {
         return saved;
     }
 
-    public void appendChunk(java.util.UUID fileId, byte[] chunkData) throws Exception {
+    public void appendChunk(java.util.UUID fileId, byte[] chunkData, int chunkIndex) throws Exception {
         FileMetadata metadata = activeTransfers.get(fileId);
         if (metadata == null) {
             metadata = fileMetadataRepository.findById(fileId)
@@ -74,15 +74,22 @@ public class FileStorageService {
         java.util.concurrent.locks.ReentrantLock lock = fileLocks.computeIfAbsent(fileId, k -> new java.util.concurrent.locks.ReentrantLock());
         lock.lock();
         try {
-            String aesKey = encryptionService.decryptAesKeyWithMasterKey(metadata.getEncryptedAesKey());
-            byte[] encryptedChunk = encryptionService.encryptChunkGcm(chunkData, aesKey);
+            if (chunkIndex >= 0) {
+                File partFile = new File(storagePath, metadata.getStoredFilename() + ".part" + chunkIndex);
+                try (FileOutputStream fos = new FileOutputStream(partFile)) {
+                    fos.write(chunkData);
+                }
+            } else {
+                String aesKey = encryptionService.decryptAesKeyWithMasterKey(metadata.getEncryptedAesKey());
+                byte[] encryptedChunk = encryptionService.encryptChunkGcm(chunkData, aesKey);
 
-            // GCM framing: [4-byte big-endian length][IV+ciphertext+tag]
-            File file = new File(storagePath, metadata.getStoredFilename());
-            try (FileOutputStream fos = new FileOutputStream(file, true)) {
-                byte[] lenBytes = ByteBuffer.allocate(4).putInt(encryptedChunk.length).array();
-                fos.write(lenBytes);
-                fos.write(encryptedChunk);
+                // GCM framing: [4-byte big-endian length][IV+ciphertext+tag]
+                File file = new File(storagePath, metadata.getStoredFilename());
+                try (FileOutputStream fos = new FileOutputStream(file, true)) {
+                    byte[] lenBytes = ByteBuffer.allocate(4).putInt(encryptedChunk.length).array();
+                    fos.write(lenBytes);
+                    fos.write(encryptedChunk);
+                }
             }
 
             metadata.setUploadedSize(metadata.getUploadedSize() + chunkData.length);
@@ -92,17 +99,45 @@ public class FileStorageService {
         }
     }
 
-    public FileMetadata completeUpload(java.util.UUID fileId) {
-        FileMetadata metadata = activeTransfers.remove(fileId);
-        fileLocks.remove(fileId);
+    public FileMetadata completeUpload(java.util.UUID fileId) throws Exception {
+        FileMetadata metadata = activeTransfers.get(fileId);
         if (metadata == null) {
             metadata = fileMetadataRepository.findById(fileId).orElse(null);
         }
         
         if (metadata != null) {
-            metadata.setStatus("COMPLETED");
-            return fileMetadataRepository.save(metadata);
+            java.util.concurrent.locks.ReentrantLock lock = fileLocks.computeIfAbsent(fileId, k -> new java.util.concurrent.locks.ReentrantLock());
+            lock.lock();
+            try {
+                String aesKey = encryptionService.decryptAesKeyWithMasterKey(metadata.getEncryptedAesKey());
+                File file = new File(storagePath, metadata.getStoredFilename());
+                int chunkIndex = 0;
+                while (true) {
+                    File partFile = new File(storagePath, metadata.getStoredFilename() + ".part" + chunkIndex);
+                    if (!partFile.exists()) break;
+                    
+                    byte[] chunkData = Files.readAllBytes(partFile.toPath());
+                    byte[] encryptedChunk = encryptionService.encryptChunkGcm(chunkData, aesKey);
+                    try (FileOutputStream fos = new FileOutputStream(file, true)) {
+                        byte[] lenBytes = ByteBuffer.allocate(4).putInt(encryptedChunk.length).array();
+                        fos.write(lenBytes);
+                        fos.write(encryptedChunk);
+                    }
+                    partFile.delete();
+                    chunkIndex++;
+                }
+                
+                metadata.setStatus("COMPLETED");
+                return fileMetadataRepository.save(metadata);
+            } finally {
+                lock.unlock();
+                activeTransfers.remove(fileId);
+                fileLocks.remove(fileId);
+            }
         }
+        
+        activeTransfers.remove(fileId);
+        fileLocks.remove(fileId);
         return null;
     }
 

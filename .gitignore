@@ -34,3 +34,22 @@ syncforge_deploy_key*
 *.sql
 *.txt
 mft-server/images/draygen_avatar.jpg
+
+# Windows Dist Binaries
+windows-dist/jre/
+windows-dist/postgres/
+windows-dist/nginx/nginx.exe
+windows-dist/nginx/docs/
+windows-dist/nginx/contrib/
+windows-dist/bin/WinSW.exe
+windows-dist/bin/SyncForgeDB.exe
+windows-dist/bin/SyncForgeServer.exe
+windows-dist/bin/SyncForgeProxy.exe
+
+# Temp zips
+jre.zip
+pg.zip
+nginx.zip
+pgsql/
+jdk17*/
+amazon-corretto-*/

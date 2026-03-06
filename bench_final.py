@@ -2,9 +2,12 @@ import requests
 import time
 import os
 
-URL = "https://rapid-homes-epa-fountain.trycloudflare.com"
+URL = os.environ.get("MFT_SERVER_URL", "https://rapid-homes-epa-fountain.trycloudflare.com")
+USER = os.environ.get("MFT_USERNAME", "admin")
+PASS = os.environ.get("MFT_PASSWORD", "admin")
+
 session = requests.Session()
-session.auth = ("admin", "admin")
+session.auth = (USER, PASS)
 
 def run():
     print("Testing 10MB Parallel-Aware Upload (2MB chunks)...")

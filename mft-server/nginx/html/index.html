@@ -504,7 +504,7 @@ async function startUpload(file){
   document.getElementById('up-name').textContent=file.name.toUpperCase();
   ['up-bar','up-pct','up-speed','up-eta'].forEach(id=>{const el=document.getElementById(id);if(id==='up-bar')el.style.width='0%';else el.textContent=id==='up-eta'?'--:--':id==='up-pct'?'0%':'0.00';});
   document.getElementById('up-bytes').textContent=`0 / ${(file.size/1048576).toFixed(1)} MB`;
-  const chunks=[];for(let o=0;o<file.size;o+=CHUNK)chunks.push({o,s:Math.min(CHUNK,file.size-o)});
+  const chunks=[];let i=0;for(let o=0;o<file.size;o+=CHUNK)chunks.push({o,s:Math.min(CHUNK,file.size-o),i:i++});
   document.getElementById('up-chunks').textContent=chunks.length;
   const t0=Date.now();let uploaded=0;
   function ui(){
@@ -526,7 +526,7 @@ async function startUpload(file){
       while(pending.length){
         const c=pending.shift();if(!c)break;
         await new Promise((res,rej)=>{
-          const xhr=new XMLHttpRequest();xhr.open('POST',`/api/files/${fid}/chunk`,true);xhr.setRequestHeader('Authorization',authHeader);
+          const xhr=new XMLHttpRequest();xhr.open('POST',`/api/files/${fid}/chunk?chunkIndex=${c.i}`,true);xhr.setRequestHeader('Authorization',authHeader);
           let last=0;xhr.upload.onprogress=e=>{if(e.lengthComputable){uploaded+=e.loaded-last;last=e.loaded;ui();}};
           xhr.onload=()=>xhr.status<300?res():rej(xhr.status);xhr.onerror=()=>rej('network');
           const fd=new FormData();fd.append('chunk',file.slice(c.o,c.o+c.s));xhr.send(fd);

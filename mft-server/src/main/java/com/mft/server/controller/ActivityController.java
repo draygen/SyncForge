@@ -22,6 +22,8 @@ public class ActivityController {
     public org.springframework.web.servlet.mvc.method.annotation.SseEmitter streamEvents() {
         org.springframework.web.servlet.mvc.method.annotation.SseEmitter emitter = new org.springframework.web.servlet.mvc.method.annotation.SseEmitter(3600000L); // 1 hour timeout
         
+        activityService.registerEmitter(emitter);
+
         // Return existing events first
         try {
             for (com.mft.server.model.ActivityEvent event : activityService.getRecentEvents()) {
@@ -31,9 +33,6 @@ public class ActivityController {
             emitter.completeWithError(e);
         }
         
-        // In a real app, you'd use a Pub/Sub or Observer pattern here.
-        // For this high-performance prototype, we will return the current state 
-        // and let the client handle the rest, or implement a simple listener.
         return emitter;
     }
 
