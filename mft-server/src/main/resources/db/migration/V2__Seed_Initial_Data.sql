@@ -2,7 +2,7 @@
 -- This ensures the admin user and system version are created during the migration phase.
 
 INSERT INTO users (id, username, password, enabled) 
-VALUES ('00000000-0000-0000-0000-000000000001', 'admin', '$2b$12$W/DD/u2Y3qSsZPMG19l/oea9Q18X2Y1W5viTp3xM.5Huv7wbpea1W', TRUE)
+VALUES ('00000000-0000-0000-0000-000000000001', 'admin', '$2b$12$Nu4CkvY0QqSkMkrSuegAZuadximVMcoK8642TfvqG/SXS0FOBHwGq', TRUE)
 ON CONFLICT (username) DO NOTHING;
 
 INSERT INTO user_roles (user_id, role)

@@ -1,5 +1,5 @@
 # SyncForge Whitepaper: The Future of High-Throughput MFT
-<img src="mft-server/images/draygen_profile.jpg" width="150" alt="Project Lead" style="border-radius: 10px;">
+<img src="mft-server/images/draygen-avatar.jpg" width="150" alt="Project Lead" style="border-radius: 10px;">
 
 **Version:** 1.0  
 **Architect:** draygen  
