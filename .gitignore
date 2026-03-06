@@ -46,10 +46,9 @@ windows-dist/bin/SyncForgeDB.exe
 windows-dist/bin/SyncForgeServer.exe
 windows-dist/bin/SyncForgeProxy.exe
 
-# Temp zips
-jre.zip
-pg.zip
-nginx.zip
-pgsql/
-jdk17*/
-amazon-corretto-*/
+# Cloudflare Tunnel
+*.json
+!package.json
+!tsconfig.json
+!SyncForge_Installer.iss
+!windows-dist/config/application.properties
