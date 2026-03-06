@@ -190,7 +190,7 @@ select.fctl option{background:var(--bg1)}
 <div id="dashboard">
   <nav class="top-nav">
     <div class="nav-dot"></div>
-    <span class="nav-logo">SYNCFORGE</span>
+    <img src="/draygen_avatar.jpg" alt="Draygen" style="width:28px;height:28px;border-radius:50%;border:2px solid var(--c);object-fit:cover;margin-right:8px;box-shadow:0 0 8px rgba(0,242,255,0.4)"><span class="nav-logo">SYNCFORGE</span>
     <span style="color:#1e293b">|</span>
     <span id="view-title" style="font-size:.72rem;color:#475569;font-family:'JetBrains Mono'">DASHBOARD</span>
     <div class="ms-auto" style="display:flex;align-items:center;gap:8px">
@@ -415,7 +415,7 @@ let maintRedirecting=false;
 function ping(){
   if(maintRedirecting)return;
   fetch('/api/system/ping',{headers:{'Authorization':authHeader}})
-    .then(r=>r.json()).then(d=>{if(d?.maintenance){maintRedirecting=true;document.getElementById('maint-alert').style.display='flex';setTimeout(()=>location.href='/maintenance.html',3000);}})
+    .then(r=>r.json()).then(d=>{if(d?.maintenance&&!d?.isAdmin){maintRedirecting=true;document.getElementById('maint-alert').style.display='flex';setTimeout(()=>location.href='/maintenance.html',3000);}})
     .catch(()=>{});
 }
 

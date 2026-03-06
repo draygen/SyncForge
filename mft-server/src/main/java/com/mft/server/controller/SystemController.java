@@ -45,6 +45,7 @@ public class SystemController {
 
     @GetMapping("/ping")
     public Map<String, Object> ping(org.springframework.security.core.Authentication auth, jakarta.servlet.http.HttpServletRequest request) {
+        boolean isAdmin = false;
         if (auth != null) {
             String clientIp = request.getHeader("X-Forwarded-For");
             if (clientIp == null || clientIp.isEmpty()) {
@@ -53,7 +54,9 @@ public class SystemController {
                 clientIp = clientIp.split(",")[0].trim();
             }
             activityService.pingUser(auth.getName(), clientIp);
+            isAdmin = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         }
-        return Map.of("maintenance", maintenanceMode);
+        return Map.of("maintenance", maintenanceMode, "isAdmin", isAdmin);
     }
 }
