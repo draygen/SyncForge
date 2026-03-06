@@ -3,9 +3,9 @@ credentials-file: ./d08c0117-519b-423e-8318-8f9d1f23f80b.json
 
 ingress:
   - hostname: drayhub.org
-    service: http://localhost:3000
+    service: http://127.0.0.1:8888
   - hostname: www.drayhub.org
-    service: http://localhost:3000
+    service: http://127.0.0.1:8888
   - hostname: syncforge.drayhub.org
-    service: http://localhost:3000
+    service: http://127.0.0.1:8888
   - service: http_status:404

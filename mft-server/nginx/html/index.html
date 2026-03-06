@@ -315,16 +315,19 @@ select.fctl option{background:var(--bg1)}
     <div class="modal-content">
       <div class="modal-header"><h5 style="font-family:'Orbitron';font-size:.82rem;letter-spacing:2px">GENERATE IDENTITY</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
-        <div class="mb-3"><label style="font-size:.68rem;color:#475569;letter-spacing:1px;display:block;margin-bottom:6px;font-family:'Orbitron'">USERNAME</label><input id="nu-name" class="fctl form-control" placeholder="identity_id"></div>
-        <div class="mb-3"><label style="font-size:.68rem;color:#475569;letter-spacing:1px;display:block;margin-bottom:6px;font-family:'Orbitron'">PASSKEY</label><input type="password" id="nu-pass" class="fctl form-control" placeholder="••••••••"></div>
-        <div><label style="font-size:.68rem;color:#475569;letter-spacing:1px;display:block;margin-bottom:6px;font-family:'Orbitron'">CLEARANCE</label>
-          <select id="nu-role" class="fctl form-control form-select">
-            <option value="USER">LEVEL_01 — Standard User</option>
-            <option value="ADMIN,USER">LEVEL_09 — NOC Administrator</option>
-          </select>
-        </div>
+        <form id="nu-form" onsubmit="event.preventDefault();createUser()">
+          <div class="mb-3"><label style="font-size:.68rem;color:#475569;letter-spacing:1px;display:block;margin-bottom:6px;font-family:'Orbitron'">USERNAME</label><input id="nu-name" class="fctl form-control" placeholder="identity_id" required></div>
+          <div class="mb-3"><label style="font-size:.68rem;color:#475569;letter-spacing:1px;display:block;margin-bottom:6px;font-family:'Orbitron'">PASSKEY</label><input type="password" id="nu-pass" class="fctl form-control" placeholder="••••••••" required></div>
+          <div class="mb-3"><label style="font-size:.68rem;color:#475569;letter-spacing:1px;display:block;margin-bottom:6px;font-family:'Orbitron'">CLEARANCE</label>
+            <select id="nu-role" class="fctl form-control form-select">
+              <option value="USER">LEVEL_01 — Standard User</option>
+              <option value="ADMIN,USER">LEVEL_09 — NOC Administrator</option>
+            </select>
+          </div>
+          <button type="submit" style="display:none"></button>
+        </form>
       </div>
-      <div class="modal-footer"><button class="btn-forge btn w-100" onclick="createUser()">AUTHORIZE IDENTITY</button></div>
+      <div class="modal-footer"><button class="btn-forge btn w-100" onclick="document.getElementById('nu-form').requestSubmit()">AUTHORIZE IDENTITY</button></div>
     </div>
   </div>
 </div>
