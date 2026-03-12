@@ -1,7 +1,10 @@
 package com.mft.server.service;
 
 import com.mft.server.model.FileMetadata;
+import com.mft.server.model.UploadChunk;
+import com.mft.server.model.UploadSessionResponse;
 import com.mft.server.repository.FileMetadataRepository;
+import com.mft.server.repository.UploadChunkRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,8 +18,9 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class FileStorageService {
@@ -25,14 +29,20 @@ public class FileStorageService {
     private String storagePath;
 
     private final FileMetadataRepository fileMetadataRepository;
+    private final UploadChunkRepository uploadChunkRepository;
     private final EncryptionService encryptionService;
     
     // Concurrent cache for rapid chunk processing
     private final java.util.Map<java.util.UUID, FileMetadata> activeTransfers = new java.util.concurrent.ConcurrentHashMap<>();
     private final java.util.Map<java.util.UUID, java.util.concurrent.locks.ReentrantLock> fileLocks = new java.util.concurrent.ConcurrentHashMap<>();
 
-    public FileStorageService(FileMetadataRepository fileMetadataRepository, EncryptionService encryptionService) {
+    public FileStorageService(
+            FileMetadataRepository fileMetadataRepository,
+            UploadChunkRepository uploadChunkRepository,
+            EncryptionService encryptionService
+    ) {
         this.fileMetadataRepository = fileMetadataRepository;
+        this.uploadChunkRepository = uploadChunkRepository;
         this.encryptionService = encryptionService;
     }
 
@@ -44,7 +54,19 @@ public class FileStorageService {
         }
     }
 
-    public FileMetadata initializeUpload(String originalFilename, Long totalSize) throws Exception {
+    public UploadSessionResponse initializeUpload(String originalFilename, Long totalSize) throws Exception {
+        var existing = fileMetadataRepository.findTopByOriginalFilenameAndTotalSizeAndStatusInOrderByCreatedAtDesc(
+                originalFilename,
+                totalSize,
+                List.of("INITIATED", "IN_PROGRESS")
+        );
+        if (existing.isPresent()) {
+            FileMetadata metadata = refreshProgress(existing.get());
+            activeTransfers.put(metadata.getId(), metadata);
+            fileLocks.computeIfAbsent(metadata.getId(), ignored -> new java.util.concurrent.locks.ReentrantLock());
+            return toUploadSession(metadata);
+        }
+
         String aesKey = encryptionService.generateAesKey();
         String encryptedAesKey = encryptionService.encryptAesKeyWithMasterKey(aesKey);
         String storedFilename = java.util.UUID.randomUUID().toString() + ".enc";
@@ -60,10 +82,10 @@ public class FileStorageService {
         FileMetadata saved = fileMetadataRepository.save(metadata);
         activeTransfers.put(saved.getId(), saved);
         fileLocks.put(saved.getId(), new java.util.concurrent.locks.ReentrantLock());
-        return saved;
+        return toUploadSession(saved);
     }
 
-    public void appendChunk(java.util.UUID fileId, byte[] chunkData, int chunkIndex) throws Exception {
+    public FileMetadata appendChunk(java.util.UUID fileId, byte[] chunkData, int chunkIndex) throws Exception {
         FileMetadata metadata = activeTransfers.get(fileId);
         if (metadata == null) {
             metadata = fileMetadataRepository.findById(fileId)
@@ -76,9 +98,17 @@ public class FileStorageService {
         try {
             if (chunkIndex >= 0) {
                 File partFile = new File(storagePath, metadata.getStoredFilename() + ".part" + chunkIndex);
-                try (FileOutputStream fos = new FileOutputStream(partFile)) {
+                if (uploadChunkRepository.existsByFileIdAndChunkIndex(fileId, chunkIndex)) {
+                    return refreshProgress(metadata);
+                }
+                try (FileOutputStream fos = new FileOutputStream(partFile, false)) {
                     fos.write(chunkData);
                 }
+                UploadChunk uploadChunk = new UploadChunk();
+                uploadChunk.setFileId(fileId);
+                uploadChunk.setChunkIndex(chunkIndex);
+                uploadChunk.setChunkSize((long) chunkData.length);
+                uploadChunkRepository.save(uploadChunk);
             } else {
                 String aesKey = encryptionService.decryptAesKeyWithMasterKey(metadata.getEncryptedAesKey());
                 byte[] encryptedChunk = encryptionService.encryptChunkGcm(chunkData, aesKey);
@@ -90,43 +120,80 @@ public class FileStorageService {
                     fos.write(lenBytes);
                     fos.write(encryptedChunk);
                 }
+                metadata.setUploadedSize((metadata.getUploadedSize() == null ? 0L : metadata.getUploadedSize()) + chunkData.length);
             }
 
-            metadata.setUploadedSize(metadata.getUploadedSize() + chunkData.length);
             metadata.setStatus("IN_PROGRESS");
+            return fileMetadataRepository.save(refreshProgress(metadata));
         } finally {
             lock.unlock();
         }
     }
 
+    @org.springframework.transaction.annotation.Transactional
+    public void markAssembling(UUID fileId) {
+        fileMetadataRepository.findById(fileId).ifPresent(m -> {
+            m.setStatus("ASSEMBLING");
+            fileMetadataRepository.save(m);
+        });
+        activeTransfers.remove(fileId);
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void markFailed(UUID fileId) {
+        fileMetadataRepository.findById(fileId).ifPresent(m -> {
+            m.setStatus("ERROR");
+            fileMetadataRepository.save(m);
+        });
+        activeTransfers.remove(fileId);
+        fileLocks.remove(fileId);
+    }
+
+    @org.springframework.transaction.annotation.Transactional
     public FileMetadata completeUpload(java.util.UUID fileId) throws Exception {
         FileMetadata metadata = activeTransfers.get(fileId);
         if (metadata == null) {
             metadata = fileMetadataRepository.findById(fileId).orElse(null);
         }
-        
+
         if (metadata != null) {
             java.util.concurrent.locks.ReentrantLock lock = fileLocks.computeIfAbsent(fileId, k -> new java.util.concurrent.locks.ReentrantLock());
             lock.lock();
             try {
                 String aesKey = encryptionService.decryptAesKeyWithMasterKey(metadata.getEncryptedAesKey());
-                File file = new File(storagePath, metadata.getStoredFilename());
-                int chunkIndex = 0;
-                while (true) {
-                    File partFile = new File(storagePath, metadata.getStoredFilename() + ".part" + chunkIndex);
-                    if (!partFile.exists()) break;
-                    
-                    byte[] chunkData = Files.readAllBytes(partFile.toPath());
-                    byte[] encryptedChunk = encryptionService.encryptChunkGcm(chunkData, aesKey);
-                    try (FileOutputStream fos = new FileOutputStream(file, true)) {
-                        byte[] lenBytes = ByteBuffer.allocate(4).putInt(encryptedChunk.length).array();
-                        fos.write(lenBytes);
-                        fos.write(encryptedChunk);
+                final String storedFilename = metadata.getStoredFilename();
+                File file = new File(storagePath, storedFilename);
+                List<UploadChunk> chunks = uploadChunkRepository.findByFileIdOrderByChunkIndexAsc(fileId);
+                if (!chunks.isEmpty()) {
+                    // Check if enc was already assembled by a previous complete attempt
+                    // (part files gone, enc exists, chunks still in DB due to prior failure)
+                    boolean partsExist = chunks.stream().anyMatch(c ->
+                            new File(storagePath, storedFilename + ".part" + c.getChunkIndex()).exists());
+
+                    if (partsExist) {
+                        try (FileOutputStream fos = new FileOutputStream(file, false)) {
+                            for (UploadChunk chunk : chunks) {
+                                File partFile = new File(storagePath, metadata.getStoredFilename() + ".part" + chunk.getChunkIndex());
+                                if (!partFile.exists()) {
+                                    throw new IllegalStateException("Missing chunk file: " + chunk.getChunkIndex());
+                                }
+                                byte[] chunkData = Files.readAllBytes(partFile.toPath());
+                                byte[] encryptedChunk = encryptionService.encryptChunkGcm(chunkData, aesKey);
+                                byte[] lenBytes = ByteBuffer.allocate(4).putInt(encryptedChunk.length).array();
+                                fos.write(lenBytes);
+                                fos.write(encryptedChunk);
+                                Files.deleteIfExists(partFile.toPath());
+                            }
+                        }
+                    } else if (!file.exists()) {
+                        throw new IllegalStateException("No uploaded chunks or assembled file found");
                     }
-                    partFile.delete();
-                    chunkIndex++;
+                    // Clean up chunk records regardless of whether we just assembled or recovered
+                    uploadChunkRepository.deleteByFileId(fileId);
+                    metadata.setUploadedSize(metadata.getTotalSize());
+                } else if (!file.exists()) {
+                    throw new IllegalStateException("No uploaded chunks found for file");
                 }
-                
                 metadata.setStatus("COMPLETED");
                 return fileMetadataRepository.save(metadata);
             } finally {
@@ -139,6 +206,45 @@ public class FileStorageService {
         activeTransfers.remove(fileId);
         fileLocks.remove(fileId);
         return null;
+    }
+
+    public UploadSessionResponse getUploadSession(UUID fileId) {
+        FileMetadata metadata = fileMetadataRepository.findById(fileId)
+                .orElseThrow(() -> new IllegalArgumentException("File not found"));
+        return toUploadSession(refreshProgress(metadata));
+    }
+
+    public FileMetadata getFile(UUID fileId) {
+        return fileMetadataRepository.findById(fileId).orElse(null);
+    }
+
+    public boolean storedFileExists(FileMetadata metadata) {
+        if (metadata == null || metadata.getStoredFilename() == null || metadata.getStoredFilename().isBlank()) {
+            return false;
+        }
+        return Files.exists(Paths.get(storagePath, metadata.getStoredFilename()));
+    }
+
+    private UploadSessionResponse toUploadSession(FileMetadata metadata) {
+        return UploadSessionResponse.from(
+                metadata,
+                uploadChunkRepository.findByFileIdOrderByChunkIndexAsc(metadata.getId()).stream()
+                        .map(UploadChunk::getChunkIndex)
+                        .collect(Collectors.toList())
+        );
+    }
+
+    private FileMetadata refreshProgress(FileMetadata metadata) {
+        long uploadedSize = uploadChunkRepository.sumChunkSizeByFileId(metadata.getId());
+        if (uploadedSize > 0) {
+            metadata.setUploadedSize(uploadedSize);
+            if (!"COMPLETED".equals(metadata.getStatus())) {
+                metadata.setStatus(uploadedSize >= (metadata.getTotalSize() != null ? metadata.getTotalSize() : Long.MAX_VALUE)
+                        ? "IN_PROGRESS"
+                        : "IN_PROGRESS");
+            }
+        }
+        return metadata;
     }
 
     public java.util.List<FileMetadata> getAllFiles() {
@@ -217,6 +323,10 @@ public class FileStorageService {
             }
             file.delete();
         }
+        for (UploadChunk chunk : uploadChunkRepository.findByFileIdOrderByChunkIndexAsc(fileId)) {
+            Files.deleteIfExists(Paths.get(storagePath, metadata.getStoredFilename() + ".part" + chunk.getChunkIndex()));
+        }
+        uploadChunkRepository.deleteByFileId(fileId);
         activeTransfers.remove(fileId);
         fileLocks.remove(fileId);
         fileMetadataRepository.deleteById(fileId);
@@ -224,6 +334,7 @@ public class FileStorageService {
 
     @org.springframework.transaction.annotation.Transactional
     public void purgeAllData() {
+        uploadChunkRepository.deleteAll();
         activeTransfers.clear();
         fileLocks.clear();
         fileMetadataRepository.deleteAll();

@@ -7,7 +7,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -24,9 +26,23 @@ public class UserController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    private record UserDTO(UUID id, String username, boolean enabled, Set<String> roles) {
+    private record UserDTO(
+            UUID id,
+            String username,
+            boolean enabled,
+            Set<String> roles,
+            java.time.LocalDateTime lastLoginAt,
+            String lastLoginIp
+    ) {
         static UserDTO from(User u) {
-            return new UserDTO(u.getId(), u.getUsername(), u.isEnabled(), u.getRoles());
+            return new UserDTO(
+                    u.getId(),
+                    u.getUsername(),
+                    u.isEnabled(),
+                    u.getRoles(),
+                    u.getLastLoginAt(),
+                    u.getLastLoginIp()
+            );
         }
     }
 
@@ -50,5 +66,24 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable java.util.UUID id) {
         userRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/vast-access")
+    public ResponseEntity<Void> toggleVastAccess(@PathVariable UUID id, @RequestBody Map<String, Boolean> body,
+                                                  org.springframework.security.core.Authentication auth) {
+        if (auth == null || !"draygen".equals(auth.getName())) {
+            return ResponseEntity.status(403).build();
+        }
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) return ResponseEntity.notFound().build();
+        Set<String> roles = new HashSet<>(user.getRoles() != null ? user.getRoles() : Set.of());
+        if (Boolean.TRUE.equals(body.get("enabled"))) {
+            roles.add("ROLE_VAST");
+        } else {
+            roles.remove("ROLE_VAST");
+        }
+        user.setRoles(roles);
+        userRepository.save(user);
+        return ResponseEntity.<Void>noContent().build();
     }
 }

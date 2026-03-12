@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -11,7 +11,7 @@
 <style>
 :root{--c:#00f2ff;--cp:#7c3aed;--cg:#10b981;--cr:#ef4444;--cy:#f59e0b;--bg:#020617;--bg1:#0f172a;--bg2:#1e293b;--glass:rgba(15,23,42,0.72);--border:rgba(0,242,255,0.16)}
 *,*::before,*::after{box-sizing:border-box}
-body{background:var(--bg);color:#f1f5f9;font-family:'Inter',sans-serif;margin:0;overflow-x:hidden;min-height:100vh}
+body{background:var(--bg);color:#f1f5f9;font-family:'Inter',sans-serif;margin:0;overflow-x:hidden;min-height:100vh;max-width:100vw}
 #bg-canvas{position:fixed;top:0;left:0;z-index:0;width:100%;height:100%;pointer-events:none}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(0,242,255,0.2);border-radius:2px}
 
@@ -33,48 +33,86 @@ body{background:var(--bg);color:#f1f5f9;font-family:'Inter',sans-serif;margin:0;
 /* Top nav */
 .top-nav{position:sticky;top:0;z-index:200;background:rgba(2,6,23,0.88);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;gap:14px}
 .nav-logo{font-family:'Orbitron';font-weight:900;font-size:.92rem;letter-spacing:5px;color:var(--c);text-shadow:0 0 15px rgba(0,242,255,0.4)}
+.nav-brand{display:flex;align-items:center;gap:8px;min-width:0}
+.nav-meta{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+.nav-title-sep{color:#1e293b}
+.nav-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .nav-dot{width:8px;height:8px;border-radius:50%;background:var(--cg);box-shadow:0 0 8px var(--cg);animation:blink 2s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
 .user-pill{background:rgba(0,242,255,0.07);border:1px solid var(--border);border-radius:20px;padding:4px 14px;font-size:.78rem;font-family:'JetBrains Mono';color:var(--c)}
-.nbtn{background:transparent;border:1px solid var(--border);border-radius:10px;color:#94a3b8;padding:6px 12px;font-size:.75rem;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px}
+.maint-pill{display:none;align-items:center;gap:6px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:20px;padding:4px 12px;font-size:.72rem;font-family:'Orbitron';letter-spacing:1px;color:var(--cy)}
+.nbtn{background:transparent;border:1px solid var(--border);border-radius:10px;color:#94a3b8;padding:6px 12px;font-size:.75rem;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px;min-height:40px}
 .nbtn:hover{border-color:var(--c);color:var(--c);background:rgba(0,242,255,0.05)}
+.mobile-nav{display:none;position:sticky;top:60px;z-index:190;padding:10px 12px;background:rgba(2,6,23,0.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,242,255,0.08);gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.mobile-nav::-webkit-scrollbar{display:none}
+.mnav-btn{border:1px solid rgba(0,242,255,0.12);background:rgba(15,23,42,0.82);color:#94a3b8;border-radius:14px;padding:10px 14px;min-height:44px;display:flex;align-items:center;gap:8px;font-size:.72rem;font-family:'Orbitron';letter-spacing:1px;white-space:nowrap;flex:0 0 auto;transition:.2s}
+.mnav-btn.active{color:var(--c);border-color:rgba(0,242,255,0.28);background:rgba(0,242,255,0.08);box-shadow:0 0 20px rgba(0,242,255,0.08)}
+.mnav-btn i{font-size:.88rem}
 
 /* Layout */
-.layout{display:flex;height:calc(100vh - 60px)}
+.layout{display:flex;height:calc(100vh - 60px);min-width:0}
 .sidebar{width:220px;min-width:220px;background:rgba(2,6,23,0.96);border-right:1px solid var(--border);padding:20px 12px;display:flex;flex-direction:column;gap:3px;overflow-y:auto}
 .s-label{font-size:.62rem;color:#334155;letter-spacing:2px;padding:4px 12px 8px;font-family:'Orbitron';text-transform:uppercase}
 .s-item{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;cursor:pointer;color:#64748b;transition:.2s;font-size:.84rem}
 .s-item:hover{background:rgba(0,242,255,0.05);color:#94a3b8}
 .s-item.active{background:rgba(0,242,255,0.1);color:var(--c);border:1px solid rgba(0,242,255,0.14)}
 .s-item i{width:15px;text-align:center;flex-shrink:0}
-.main-panel{flex:1;overflow-y:auto;padding:28px 32px}
+.main-panel{flex:1;overflow-y:auto;padding:28px 32px;min-width:0}
 
 /* Stat cards */
 .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
-.stat-card{background:var(--glass);border:1px solid var(--border);border-radius:18px;padding:20px 22px;backdrop-filter:blur(14px);position:relative;overflow:hidden;transition:.25s;cursor:default}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0}
-.sc-blue::before{background:linear-gradient(90deg,transparent,var(--c),transparent)}.sc-purple::before{background:linear-gradient(90deg,transparent,#a78bfa,transparent)}.sc-green::before{background:linear-gradient(90deg,transparent,var(--cg),transparent)}.sc-amber::before{background:linear-gradient(90deg,transparent,var(--cy),transparent)}
-.stat-card:hover{transform:translateY(-2px);box-shadow:0 20px 50px rgba(0,0,0,0.35)}
+.stat-shell{position:relative;min-height:232px;perspective:1200px;transition:transform .28s ease,opacity .28s ease;cursor:grab}
+.stat-shell.dragging{opacity:.45;transform:scale(.98)}
+.stat-shell.drag-over{transform:translateY(-4px)}
+.stat-card{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+.stat-shell.flipped .stat-card{transform:rotateY(180deg)}
+.stat-face{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,0.86),rgba(6,11,24,0.92));border:1px solid var(--border);border-radius:18px;padding:20px 22px;backdrop-filter:blur(14px);overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,0.35);backface-visibility:hidden}
+.stat-face::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0}
+.sc-blue .stat-face::before{background:linear-gradient(90deg,transparent,var(--c),transparent)}.sc-purple .stat-face::before{background:linear-gradient(90deg,transparent,#a78bfa,transparent)}.sc-green .stat-face::before{background:linear-gradient(90deg,transparent,var(--cg),transparent)}.sc-amber .stat-face::before{background:linear-gradient(90deg,transparent,var(--cy),transparent)}
+.stat-shell:hover .stat-face{box-shadow:0 24px 60px rgba(0,0,0,0.38)}
+.stat-front{display:flex;flex-direction:column}
+.stat-back{transform:rotateY(180deg);display:flex;flex-direction:column;justify-content:flex-start;gap:12px}
+.stat-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .stat-label{font-size:.62rem;color:#64748b;letter-spacing:2px;font-family:'Orbitron';margin-bottom:10px}
 .stat-val{font-size:1.85rem;font-weight:700;font-family:'Orbitron';line-height:1}
 .sv-blue{color:var(--c);text-shadow:0 0 18px rgba(0,242,255,0.35)}.sv-purple{color:#a78bfa;text-shadow:0 0 18px rgba(167,139,250,0.3)}.sv-green{color:var(--cg);text-shadow:0 0 18px rgba(16,185,129,0.25)}.sv-amber{color:var(--cy);text-shadow:0 0 18px rgba(245,158,11,0.25)}
-.stat-sub{font-size:.73rem;color:#334155;margin-top:6px}
-.stat-icon{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:2rem;opacity:.07}
+.stat-sub{font-size:.73rem;color:#475569;margin-top:6px;max-width:70%}
+.stat-icon{font-size:2rem;opacity:.09;align-self:center}
+.stat-actions{display:flex;align-items:center;gap:8px}
+.stat-grip,.stat-flip{width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;color:#64748b;transition:.2s;flex-shrink:0}
+.stat-flip{cursor:pointer}
+.stat-grip{cursor:grab}
+.stat-flip:hover,.stat-grip:hover{color:var(--c);border-color:rgba(0,242,255,0.22);background:rgba(0,242,255,0.06)}
+.stat-grip:active{cursor:grabbing}
+.stat-back-title{font-size:.67rem;color:#94a3b8;letter-spacing:2px;font-family:'Orbitron';text-transform:uppercase}
+.stat-detail-list{display:grid;gap:10px;margin-top:4px;flex:1;min-height:0;overflow-y:auto;padding-right:6px}
+.stat-detail-list::-webkit-scrollbar{width:5px}
+.stat-detail-list::-webkit-scrollbar-thumb{background:rgba(148,163,184,0.35);border-radius:999px}
+.stat-detail{display:flex;justify-content:space-between;gap:12px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04)}
+.stat-detail span:first-child{font-size:.68rem;color:#64748b;letter-spacing:1px;font-family:'Orbitron'}
+.stat-detail span:last-child{font-size:.8rem;color:#e2e8f0;font-family:'JetBrains Mono';text-align:right}
+.stat-back-note{display:none}
 
 /* Glass card */
-.gcard{background:var(--glass);border:1px solid var(--border);border-radius:20px;backdrop-filter:blur(14px);box-shadow:0 20px 60px rgba(0,0,0,0.35)}
+.gcard{background:linear-gradient(180deg,rgba(15,23,42,0.84),rgba(8,15,30,0.84));border:1px solid var(--border);border-radius:20px;backdrop-filter:blur(14px);box-shadow:0 20px 60px rgba(0,0,0,0.35);position:relative;overflow:hidden;min-width:0}
+.gcard::before{content:'';position:absolute;inset:0 0 auto 0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,242,255,0.55),transparent);opacity:.7}
+.panel-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.panel-copy{display:flex;flex-direction:column;gap:4px}
+.panel-kicker{font-size:.58rem;color:#475569;letter-spacing:2px;font-family:'Orbitron';text-transform:uppercase}
+.panel-meta{font-size:.69rem;color:#64748b;font-family:'JetBrains Mono';line-height:1.35}
 
 /* Drop zone */
-#drop-zone{border:2px dashed rgba(0,242,255,0.18);border-radius:18px;padding:44px 32px;text-align:center;transition:.3s;cursor:pointer;background:rgba(0,242,255,0.01)}
-#drop-zone:hover,#drop-zone.dg{border-color:var(--c);background:rgba(0,242,255,0.04);box-shadow:0 0 40px rgba(0,242,255,0.07) inset}
-.drop-ic{font-size:2.8rem;color:var(--c);opacity:.55;margin-bottom:14px;display:block}
+#drop-zone{border:2px dashed rgba(0,242,255,0.18);border-radius:18px;padding:44px 32px;text-align:center;transition:.3s;cursor:pointer;background:radial-gradient(circle at top,rgba(0,242,255,0.08),rgba(0,242,255,0.01) 42%,rgba(0,0,0,0.02) 100%)}
+#drop-zone:hover,#drop-zone.dg{border-color:var(--c);background:radial-gradient(circle at top,rgba(0,242,255,0.14),rgba(0,242,255,0.04) 45%,rgba(0,0,0,0.03) 100%);box-shadow:0 0 40px rgba(0,242,255,0.07) inset,0 24px 60px rgba(0,0,0,0.25)}
+.drop-ic{font-size:2.8rem;color:var(--c);opacity:.7;margin-bottom:14px;display:block;text-shadow:0 0 24px rgba(0,242,255,0.22)}
+.drop-note{max-width:620px;margin:0 auto;color:#475569;font-size:.75rem;line-height:1.6}
 
 /* Table */
 .ftable{width:100%;border-collapse:separate;border-spacing:0}
-.ftable thead th{font-size:.62rem;letter-spacing:2px;color:#334155;font-family:'Orbitron';padding:12px 14px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.15);white-space:nowrap}
+.ftable thead th{font-size:.62rem;letter-spacing:2px;color:#475569;font-family:'Orbitron';padding:12px 14px;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.15);white-space:nowrap}
 .ftable tbody tr{transition:.15s}
-.ftable tbody tr:hover td{background:rgba(0,242,255,0.025)}
-.ftable tbody td{padding:13px 14px;border-bottom:1px solid rgba(255,255,255,0.03);vertical-align:middle}
+.ftable tbody tr:hover td{background:rgba(0,242,255,0.04)}
+.ftable tbody td{padding:13px 14px;border-bottom:1px solid rgba(255,255,255,0.03);vertical-align:middle;background:rgba(255,255,255,0.01)}
 .ficon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.85rem;margin-right:10px;flex-shrink:0}
 .fname{font-size:.88rem;font-weight:500;color:#e2e8f0;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fid-small{font-family:'JetBrains Mono';font-size:.67rem;color:#334155}
@@ -86,10 +124,33 @@ body{background:var(--bg);color:#f1f5f9;font-family:'Inter',sans-serif;margin:0;
 .bs-failed{background:rgba(239,68,68,.08);color:var(--cr);border:1px solid rgba(239,68,68,.18)}
 .fsize{font-family:'JetBrains Mono';font-size:.78rem;color:#94a3b8}
 .ftime{font-size:.75rem;color:#475569}
-.abtn{width:30px;height:30px;border-radius:8px;border:1px solid transparent;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;font-size:.78rem;padding:0}
+.abtn{width:36px;height:36px;border-radius:10px;border:1px solid transparent;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s;font-size:.82rem;padding:0;flex-shrink:0}
 .abtn-dl{color:#60a5fa;border-color:rgba(96,165,250,.18)}.abtn-dl:hover{background:rgba(96,165,250,.1);border-color:rgba(96,165,250,.35)}
 .abtn-del{color:#f87171;border-color:rgba(248,113,113,.18)}.abtn-del:hover{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.35)}
 .abtn:disabled{opacity:.25;cursor:not-allowed}
+.toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;margin-bottom:12px;padding:10px 12px;border:1px solid rgba(255,255,255,0.04);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))}
+.toolbar-group{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;min-width:0}
+.toolbar .fctl{min-height:36px;padding:7px 11px;font-size:.8rem;flex:0 0 auto}
+.toolbar .form-control,.toolbar .form-select{width:auto;display:block}
+.table-search{width:260px;min-width:0;max-width:30vw}
+#file-status{width:162px}
+#file-page-size{width:124px}
+.table-meta{font-size:.68rem;color:#94a3b8;font-family:'JetBrains Mono';justify-self:end;white-space:nowrap}
+.bulk-chip{display:inline-flex;align-items:center;gap:7px;padding:0 10px;height:36px;border-radius:11px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);font-family:'JetBrains Mono';font-size:.72rem;color:#cbd5e1}
+.bulk-check{width:15px;height:15px;accent-color:#00f2ff;cursor:pointer}
+.sel-col{width:42px;text-align:center}
+.bulk-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bulk-btn{min-width:36px}
+.sort-btn{background:none;border:none;color:inherit;padding:0;display:inline-flex;align-items:center;gap:6px;font:inherit;letter-spacing:inherit;cursor:pointer;transition:.2s}
+.sort-btn:hover{color:var(--c);text-shadow:0 0 12px rgba(0,242,255,0.25)}
+.sort-btn.active{color:var(--c)}
+.pager{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05)}
+.pager-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.page-chip{min-width:44px;justify-content:center}
+.empty-state{padding:32px;text-align:center;color:#475569;font-family:'JetBrains Mono';font-size:.76rem;letter-spacing:1px}
+.table-wrap{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
+.table-wrap::-webkit-scrollbar{height:6px}
+.table-wrap::-webkit-scrollbar-thumb{background:rgba(148,163,184,0.28);border-radius:999px}
 
 /* Upload overlay */
 #upload-overlay{position:fixed;inset:0;background:rgba(2,6,23,0.92);backdrop-filter:blur(24px);z-index:2000;display:none;justify-content:center;align-items:center}
@@ -111,19 +172,19 @@ body{background:var(--bg);color:#f1f5f9;font-family:'Inter',sans-serif;margin:0;
 .mval{font-size:1.05rem;font-weight:700;font-family:'Orbitron'}
 
 /* NOC */
-#noc-monitor{position:fixed;bottom:24px;right:24px;width:370px;height:330px;background:rgba(2,6,23,0.97);border:1px solid var(--border);border-radius:18px;display:none;flex-direction:column;z-index:500;box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 40px rgba(0,242,255,.04)}
-#noc-hdr{padding:11px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:move;user-select:none}
+#noc-monitor{position:fixed;bottom:24px;right:24px;width:370px;height:330px;background:linear-gradient(180deg,rgba(9,15,29,0.98),rgba(4,9,20,0.98));border:1px solid var(--border);border-radius:18px;display:none;flex-direction:column;z-index:500;box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 40px rgba(0,242,255,.04)}
+#noc-hdr{padding:11px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;cursor:move;user-select:none;background:linear-gradient(180deg,rgba(255,255,255,0.025),rgba(255,255,255,0))}
 .noc-tabs{display:flex;gap:6px}
 .ntab{font-size:.67rem;font-family:'Orbitron';padding:4px 9px;border-radius:8px;cursor:pointer;color:#334155;border:1px solid transparent;transition:.2s}
 .ntab.active{color:var(--c);border-color:rgba(0,242,255,.18);background:rgba(0,242,255,.06)}
 .nmin{color:#334155;cursor:pointer;font-size:.78rem;padding:4px 7px;border-radius:6px;transition:.2s}
 .nmin:hover{color:var(--c);background:rgba(0,242,255,.07)}
 #noc-body,#noc-users{flex:1;padding:10px;overflow-y:auto;font-family:'JetBrains Mono';font-size:.68rem}
-.noc-entry{display:flex;gap:7px;margin-bottom:6px;padding:5px 7px;border-radius:7px;background:rgba(255,255,255,.018);border-left:2px solid transparent}
-.noc-entry:hover{background:rgba(255,255,255,.035)}
+.noc-entry{display:flex;gap:7px;margin-bottom:6px;padding:7px 8px;border-radius:9px;background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,0.03);border-left:2px solid transparent}
+.noc-entry:hover{background:rgba(255,255,255,.04)}
 .noc-entry.UPLOAD_INIT{border-left-color:var(--c)}.noc-entry.UPLOAD_COMPLETE{border-left-color:var(--cg)}.noc-entry.LOGIN{border-left-color:#a78bfa}.noc-entry.DELETE{border-left-color:var(--cr)}.noc-entry.DOWNLOAD{border-left-color:#60a5fa}.noc-entry.PURGE,.noc-entry.MAINTENANCE{border-left-color:var(--cy)}
-.noc-t{color:#1e293b;min-width:50px;flex-shrink:0}.noc-type{color:var(--c);min-width:76px;flex-shrink:0}.noc-detail{color:#475569;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.noc-node{display:flex;align-items:center;gap:9px;padding:7px;border-radius:9px;margin-bottom:5px;background:rgba(255,255,255,.025)}
+.noc-t{color:#334155;min-width:58px;flex-shrink:0}.noc-type{color:var(--c);min-width:88px;flex-shrink:0}.noc-detail{color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.noc-node{display:flex;align-items:center;gap:9px;padding:9px;border-radius:10px;margin-bottom:6px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,0.03)}
 .ndot{width:7px;height:7px;border-radius:50%;background:var(--cg);box-shadow:0 0 5px var(--cg);animation:blink 1.5s infinite;flex-shrink:0}
 #noc-monitor.noc-min{height:44px}
 #noc-monitor.noc-min #noc-body,#noc-monitor.noc-min #noc-users{display:none}
@@ -137,7 +198,7 @@ body{background:var(--bg);color:#f1f5f9;font-family:'Inter',sans-serif;margin:0;
 .view-section{display:none;animation:fadeUp .3s ease}
 .view-section.active{display:block}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.sec-title{font-family:'Orbitron';font-size:.9rem;font-weight:700;letter-spacing:2px;color:#e2e8f0;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.sec-title{font-family:'Orbitron';font-size:.9rem;font-weight:700;letter-spacing:2px;color:#e2e8f0;margin-bottom:20px;display:flex;align-items:center;gap:10px;text-shadow:0 0 16px rgba(0,242,255,0.12)}
 
 /* Toast */
 #toasts{position:fixed;top:24px;right:24px;z-index:5000;display:flex;flex-direction:column;gap:7px;pointer-events:none}
@@ -150,8 +211,91 @@ body{background:var(--bg);color:#f1f5f9;font-family:'Inter',sans-serif;margin:0;
 .modal-header,.modal-footer{border-color:var(--border)!important}
 select.fctl option{background:var(--bg1)}
 
-@media(max-width:900px){.stat-grid{grid-template-columns:1fr 1fr}.sidebar{display:none}}
-@media(max-width:580px){.stat-grid{grid-template-columns:1fr}#noc-monitor{width:calc(100vw - 32px)}}
+@media(max-width:900px){
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .sidebar{display:none}
+  .mobile-nav{display:flex}
+  .layout{display:block;height:auto}
+  .main-panel{padding:20px 16px 28px}
+  .toolbar{grid-template-columns:1fr}
+  .toolbar-group{flex-wrap:wrap}
+  .table-search{width:100%;max-width:none}
+  #file-status,#file-page-size{width:auto}
+}
+@media(max-width:700px){
+  .top-nav{padding:10px 12px;height:auto;min-height:60px;align-items:flex-start;flex-wrap:wrap}
+  .nav-brand{order:1}
+  .nav-meta{order:2;flex:1 1 auto;min-width:0}
+  .nav-title-sep{display:none}
+  #view-title{font-size:.66rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nav-actions{order:3;width:100%;justify-content:space-between}
+  .nav-logo{font-size:.82rem;letter-spacing:3px}
+  .user-pill,.maint-pill{font-size:.68rem}
+  .stat-grid{grid-template-columns:1fr}
+  .stat-shell{min-height:216px}
+  .panel-header{align-items:stretch}
+  .toolbar,.pager{align-items:stretch}
+  .toolbar-group,.pager-controls,.bulk-actions{width:100%}
+  .toolbar .fctl,.toolbar .form-control,.toolbar .form-select{width:100%!important;min-height:44px}
+  .bulk-actions{gap:10px}
+  .bulk-chip{min-height:44px}
+  .nbtn,.stat-flip,.stat-grip,.ntab,.btn-forge{min-height:44px}
+  .stat-flip,.stat-grip{width:44px;height:44px}
+  .abtn{width:44px;height:44px}
+  #drop-zone{padding:28px 18px}
+  .up-card{padding:28px 18px}
+  .up-metrics{grid-template-columns:1fr}
+  .sec-title{font-size:.82rem;letter-spacing:1.5px}
+  .table-wrap.mobile-stack .ftable,
+  .table-wrap.mobile-stack .ftable tbody,
+  .table-wrap.mobile-stack .ftable tr,
+  .table-wrap.mobile-stack .ftable td{display:block;width:100%}
+  .table-wrap.mobile-stack .ftable thead{display:none}
+  .table-wrap.mobile-stack .ftable tbody{display:grid;gap:12px}
+  .table-wrap.mobile-stack .ftable tr{border:1px solid rgba(0,242,255,0.1);border-radius:16px;padding:12px;background:rgba(255,255,255,0.02);box-shadow:0 12px 28px rgba(0,0,0,0.18)}
+  .table-wrap.mobile-stack .ftable td{border:none;padding:8px 0;background:transparent}
+  .table-wrap.mobile-stack .ftable td::before{content:attr(data-label);display:block;margin-bottom:4px;font-size:.6rem;letter-spacing:1.4px;color:#475569;font-family:'Orbitron'}
+  .table-wrap.mobile-stack .ftable td.sel-col{padding-top:0}
+  .table-wrap.mobile-stack .ftable td.sel-col::before{display:none}
+  .table-wrap.mobile-stack .ftable td:last-child{padding-bottom:0}
+  .table-wrap.mobile-stack .ftable td:last-child > div{justify-content:flex-end}
+  .table-wrap.mobile-stack .fname{max-width:none;white-space:normal;overflow:visible;text-overflow:unset}
+  .table-wrap.mobile-stack .fid-small{word-break:break-all}
+  .table-wrap.mobile-stack .fsize,.table-wrap.mobile-stack .ftime{font-size:.82rem}
+  #noc-monitor{left:16px;right:16px;bottom:16px;width:auto;height:min(420px,70vh)}
+  #noc-fab{right:16px;bottom:16px}
+  #toasts{top:auto;bottom:72px;right:12px;left:12px}
+  .toast-p{min-width:0;max-width:none}
+}
+@media(max-width:580px){
+  .main-panel{padding:16px 12px 24px}
+  .pager-controls{justify-content:space-between}
+  .mnav-btn{padding:10px 12px;font-size:.68rem}
+}
+/* VAST.AI Panel */
+.vast-filters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px;background:rgba(0,0,0,.25);padding:14px;border-radius:12px;border:1px solid var(--border)}
+.vast-filter-group{display:flex;flex-direction:column;gap:5px}
+.vast-filter-group label{font-size:.68rem;color:#64748b;letter-spacing:1px;font-family:'Orbitron'}
+.vast-input{padding:8px 12px;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;color:#e2e8f0;font-size:.88rem;outline:none;transition:.2s}
+.vast-input:focus{border-color:var(--c);box-shadow:0 0 0 2px rgba(0,242,255,.08)}
+.vast-input::placeholder{color:#334155}
+.vast-inst-card{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.vast-inst-card:last-child{margin-bottom:0}
+.vast-inst-card.running{border-left:3px solid var(--cg)}
+.vast-inst-card.exited,.vast-inst-card.stopped{border-left:3px solid var(--cr)}
+.vast-inst-card.loading{border-left:3px solid var(--cy)}
+.vast-inst-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px}
+.vast-inst-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.vast-ops-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.vast-output{white-space:pre-wrap;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;padding:12px;min-height:140px;font-size:.78rem;line-height:1.5;color:#94a3b8;font-family:'JetBrains Mono';overflow-x:auto;margin:0}
+.vast-toggle-wrap{display:flex;align-items:center;justify-content:center}
+.vast-toggle{position:relative;display:inline-flex;align-items:center;cursor:pointer}
+.vast-toggle input{opacity:0;width:0;height:0;position:absolute}
+.vast-slider{width:34px;height:18px;background:rgba(255,255,255,.08);border:1px solid var(--border);border-radius:10px;transition:.2s;position:relative}
+.vast-slider::after{content:'';position:absolute;left:2px;top:2px;width:12px;height:12px;border-radius:50%;background:#475569;transition:.2s}
+.vast-toggle input:checked~.vast-slider{background:rgba(0,242,255,.15);border-color:var(--c)}
+.vast-toggle input:checked~.vast-slider::after{left:18px;background:var(--c)}
+@media(max-width:700px){.vast-ops-grid{grid-template-columns:1fr}.vast-filters{flex-direction:column}}
 </style>
 </head>
 <body>
@@ -162,7 +306,7 @@ select.fctl option{background:var(--bg1)}
 <div id="maint-alert" style="display:none">
   <i class="fas fa-exclamation-triangle fa-4x mb-4" style="color:#fca5a5"></i>
   <h2 style="font-family:'Orbitron';letter-spacing:4px">SYSTEM MAINTENANCE</h2>
-  <p style="color:#9ca3af">Redirecting to maintenance portal…</p>
+  <p style="color:#9ca3af">Redirecting to maintenance portal...</p>
 </div>
 
 <!-- Login -->
@@ -178,10 +322,10 @@ select.fctl option{background:var(--bg1)}
       </div>
       <div class="mb-4">
         <label style="font-size:.68rem;color:#475569;letter-spacing:1.5px;display:block;margin-bottom:6px;font-family:'Orbitron'">SECURITY KEY</label>
-        <input id="login-pass" type="password" class="fctl form-control" placeholder="••••••••" required autocomplete="current-password">
+        <input id="login-pass" type="password" class="fctl form-control" placeholder="........" required autocomplete="current-password">
       </div>
       <button type="submit" class="btn-forge btn w-100">INITIATE CONNECTION</button>
-      <div class="login-err" id="login-err"><i class="fas fa-times-circle me-2"></i>IDENTITY DENIED — Invalid credentials</div>
+      <div class="login-err" id="login-err"><i class="fas fa-times-circle me-2"></i>IDENTITY DENIED - Invalid credentials</div>
     </form>
   </div>
 </div>
@@ -189,15 +333,28 @@ select.fctl option{background:var(--bg1)}
 <!-- Dashboard -->
 <div id="dashboard">
   <nav class="top-nav">
-    <div class="nav-dot"></div>
-    <img src="/draygen_avatar.jpg" alt="Draygen" style="width:28px;height:28px;border-radius:50%;border:2px solid var(--c);object-fit:cover;margin-right:8px;box-shadow:0 0 8px rgba(0,242,255,0.4)"><span class="nav-logo">SYNCFORGE</span>
-    <span style="color:#1e293b">|</span>
-    <span id="view-title" style="font-size:.72rem;color:#475569;font-family:'JetBrains Mono'">DASHBOARD</span>
-    <div class="ms-auto" style="display:flex;align-items:center;gap:8px">
+    <div class="nav-brand">
+      <div class="nav-dot"></div>
+      <img src="/draygen_avatar.jpg" alt="Draygen" style="width:28px;height:28px;border-radius:50%;border:2px solid var(--c);object-fit:cover;box-shadow:0 0 8px rgba(0,242,255,0.4)">
+      <span class="nav-logo">SYNCFORGE</span>
+    </div>
+    <div class="nav-meta">
+      <span class="nav-title-sep">|</span>
+      <span id="view-title" style="font-size:.72rem;color:#475569;font-family:'JetBrains Mono'">DASHBOARD</span>
+    </div>
+    <div class="nav-actions ms-auto">
+      <span id="maint-pill" class="maint-pill"><i class="fas fa-wrench"></i>MAINTENANCE</span>
       <span id="user-tag" class="user-pill"></span>
-      <button class="nbtn" onclick="logout()"><i class="fas fa-power-off"></i><span class="d-none d-md-inline">DISCONNECT</span></button>
+      <button class="nbtn" onclick="logout()"><i class="fas fa-power-off"></i><span>DISCONNECT</span></button>
     </div>
   </nav>
+  <div class="mobile-nav" id="mobile-nav">
+    <button class="mnav-btn active" id="mnav-transfers" onclick="showView('transfers')"><i class="fas fa-chart-line"></i><span>Dashboard</span></button>
+    <button class="mnav-btn" id="mnav-users" style="display:none" onclick="showView('users')"><i class="fas fa-users"></i><span>Users</span></button>
+    <button class="mnav-btn" id="mnav-config" style="display:none" onclick="showView('config')"><i class="fas fa-sliders-h"></i><span>Settings</span></button>
+    <button class="mnav-btn" id="mnav-noc" style="display:none" onclick="toggleNoc()"><i class="fas fa-satellite-dish"></i><span>NOC</span></button>
+    <button class="mnav-btn" id="mnav-vast" style="display:none" onclick="showView('vast')"><i class="fas fa-server"></i><span>Compute</span></button>
+  </div>
 
   <div class="layout">
     <div class="sidebar">
@@ -208,6 +365,10 @@ select.fctl option{background:var(--bg1)}
         <div class="s-item" id="nav-users" onclick="showView('users')"><i class="fas fa-users"></i>IDENTITY MATRIX</div>
         <div class="s-item" id="nav-config" onclick="showView('config')"><i class="fas fa-cogs"></i>CORE SETTINGS</div>
       </div>
+      <div id="vast-nav" style="display:none">
+        <div class="s-label" style="margin-top:14px">Compute</div>
+        <div class="s-item" id="nav-vast" onclick="showView('vast')"><i class="fas fa-server"></i>VAST.AI</div>
+      </div>
       <div style="flex:1"></div>
       <div class="s-label">System</div>
       <div class="s-item" id="nav-noc" style="display:none" onclick="toggleNoc()"><i class="fas fa-satellite-dish"></i>NOC MONITOR</div>
@@ -217,55 +378,303 @@ select.fctl option{background:var(--bg1)}
 
       <!-- Dashboard view -->
       <div id="view-transfers" class="view-section active">
-        <div class="stat-grid">
-          <div class="stat-card sc-blue"><div class="stat-label">TOTAL ARTIFACTS</div><div class="stat-val sv-blue" id="s-total">—</div><div class="stat-sub">stored files</div><i class="fas fa-database stat-icon" style="color:var(--c)"></i></div>
-          <div class="stat-card sc-purple"><div class="stat-label">STORAGE USED</div><div class="stat-val sv-purple" id="s-storage">—</div><div class="stat-sub">encrypted at rest</div><i class="fas fa-hdd stat-icon" style="color:#a78bfa"></i></div>
-          <div class="stat-card sc-green"><div class="stat-label">COMPLETED</div><div class="stat-val sv-green" id="s-done">—</div><div class="stat-sub">successful transfers</div><i class="fas fa-check-circle stat-icon" style="color:var(--cg)"></i></div>
-          <div class="stat-card sc-amber"><div class="stat-label">IN PROGRESS</div><div class="stat-val sv-amber" id="s-active">—</div><div class="stat-sub">active transfers</div><i class="fas fa-sync stat-icon" style="color:var(--cy)"></i></div>
+        <div class="stat-grid" id="stat-grid">
+          <div class="stat-shell sc-blue" data-stat-card="total" draggable="true">
+            <div class="stat-card">
+              <div class="stat-face stat-front">
+                <div class="stat-top">
+                  <div>
+                    <div class="stat-label">TOTAL ARTIFACTS</div>
+                    <div class="stat-val sv-blue" id="s-total">-</div>
+                    <div class="stat-sub">stored files under active encryption policy</div>
+                  </div>
+                  <div class="stat-actions">
+                    <div class="stat-grip" title="Drag to reorder"><i class="fas fa-grip-lines"></i></div>
+                    <button class="stat-flip" type="button" onclick="flipStatCard('total')" title="More details"><i class="fas fa-repeat"></i></button>
+                  </div>
+                </div>
+                <i class="fas fa-database stat-icon" style="color:var(--c)"></i>
+              </div>
+              <div class="stat-face stat-back">
+                <div>
+                  <div class="stat-top" style="margin-bottom:12px">
+                    <div class="stat-back-title">Artifact Detail</div>
+                    <button class="stat-flip" type="button" onclick="flipStatCard('total')" title="Back to front"><i class="fas fa-undo-alt"></i></button>
+                  </div>
+                </div>
+                <div class="stat-detail-list" id="detail-total"></div>
+                <div class="stat-back-note">Front shows the headline count. Backside tracks file mix and recent intake so the card earns its space.</div>
+              </div>
+            </div>
+          </div>
+          <div class="stat-shell sc-purple" data-stat-card="storage" draggable="true">
+            <div class="stat-card">
+              <div class="stat-face stat-front">
+                <div class="stat-top">
+                  <div>
+                    <div class="stat-label">STORAGE USED</div>
+                    <div class="stat-val sv-purple" id="s-storage">-</div>
+                    <div class="stat-sub">encrypted payload footprint across the forge</div>
+                  </div>
+                  <div class="stat-actions">
+                    <div class="stat-grip" title="Drag to reorder"><i class="fas fa-grip-lines"></i></div>
+                    <button class="stat-flip" type="button" onclick="flipStatCard('storage')" title="More details"><i class="fas fa-repeat"></i></button>
+                  </div>
+                </div>
+                <i class="fas fa-hdd stat-icon" style="color:#a78bfa"></i>
+              </div>
+              <div class="stat-face stat-back">
+                <div>
+                  <div class="stat-top" style="margin-bottom:12px">
+                    <div class="stat-back-title">Storage Detail</div>
+                    <button class="stat-flip" type="button" onclick="flipStatCard('storage')" title="Back to front"><i class="fas fa-undo-alt"></i></button>
+                  </div>
+                </div>
+                <div class="stat-detail-list" id="detail-storage"></div>
+                <div class="stat-back-note">Useful for spotting whether storage growth comes from a few huge payloads or a swarm of smaller ones.</div>
+              </div>
+            </div>
+          </div>
+          <div class="stat-shell sc-green" data-stat-card="done" draggable="true">
+            <div class="stat-card">
+              <div class="stat-face stat-front">
+                <div class="stat-top">
+                  <div>
+                    <div class="stat-label">COMPLETED</div>
+                    <div class="stat-val sv-green" id="s-done">-</div>
+                    <div class="stat-sub">successful transfers ready for download</div>
+                  </div>
+                  <div class="stat-actions">
+                    <div class="stat-grip" title="Drag to reorder"><i class="fas fa-grip-lines"></i></div>
+                    <button class="stat-flip" type="button" onclick="flipStatCard('done')" title="More details"><i class="fas fa-repeat"></i></button>
+                  </div>
+                </div>
+                <i class="fas fa-check-circle stat-icon" style="color:var(--cg)"></i>
+              </div>
+              <div class="stat-face stat-back">
+                <div>
+                  <div class="stat-top" style="margin-bottom:12px">
+                    <div class="stat-back-title">Completion Detail</div>
+                    <button class="stat-flip" type="button" onclick="flipStatCard('done')" title="Back to front"><i class="fas fa-undo-alt"></i></button>
+                  </div>
+                </div>
+                <div class="stat-detail-list" id="detail-done"></div>
+                <div class="stat-back-note">This side is a quick read on throughput quality, not a ceremonial second opinion.</div>
+              </div>
+            </div>
+          </div>
+          <div class="stat-shell sc-amber" data-stat-card="active" draggable="true">
+            <div class="stat-card">
+              <div class="stat-face stat-front">
+                <div class="stat-top">
+                  <div>
+                    <div class="stat-label">IN PROGRESS</div>
+                    <div class="stat-val sv-amber" id="s-active">-</div>
+                    <div class="stat-sub">live transfers that still have work to do</div>
+                  </div>
+                  <div class="stat-actions">
+                    <div class="stat-grip" title="Drag to reorder"><i class="fas fa-grip-lines"></i></div>
+                    <button class="stat-flip" type="button" onclick="flipStatCard('active')" title="More details"><i class="fas fa-repeat"></i></button>
+                  </div>
+                </div>
+                <i class="fas fa-sync stat-icon" style="color:var(--cy)"></i>
+              </div>
+              <div class="stat-face stat-back">
+                <div>
+                  <div class="stat-top" style="margin-bottom:12px">
+                    <div class="stat-back-title">Activity Detail</div>
+                    <button class="stat-flip" type="button" onclick="flipStatCard('active')" title="Back to front"><i class="fas fa-undo-alt"></i></button>
+                  </div>
+                </div>
+                <div class="stat-detail-list" id="detail-active"></div>
+                <div class="stat-back-note">When this spikes, operators should know whether it is a healthy queue or a problem pretending to be busy.</div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="gcard p-4 mb-4">
           <div id="drop-zone" ondragover="event.preventDefault();this.classList.add('dg')" ondragleave="this.classList.remove('dg')" ondrop="event.preventDefault();this.classList.remove('dg');startUpload(event.dataTransfer.files[0])" onclick="document.getElementById('file-input').click()">
             <i class="fas fa-atom drop-ic"></i>
             <h4 style="font-family:'Orbitron';font-size:.95rem;letter-spacing:3px;margin-bottom:8px">DROP ARTIFACTS HERE</h4>
-            <p style="color:#334155;font-size:.82rem;margin:0">Encrypted parallel streaming &nbsp;·&nbsp; AES-256-GCM &nbsp;·&nbsp; Up to 5 GB</p>
+            <p class="drop-note">Encrypted parallel streaming | AES-256-GCM | Up to 5 GB. Drag in payloads or click to stage a manual upload.</p>
             <input type="file" id="file-input" style="display:none" onchange="startUpload(this.files[0])">
           </div>
         </div>
 
         <div class="gcard p-4">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-            <div class="sec-title" style="margin-bottom:0"><i class="fas fa-layer-group" style="color:var(--c)"></i>SECURED DATA VOLUMES</div>
+          <div class="panel-header">
+            <div class="panel-copy">
+              <div class="panel-kicker">Transfer Registry</div>
+              <div class="sec-title" style="margin-bottom:0"><i class="fas fa-layer-group" style="color:var(--c)"></i>SECURED DATA VOLUMES</div>
+              <div class="panel-meta">Compact search and triage for encrypted artifacts.</div>
+            </div>
             <button class="nbtn" onclick="refresh()" title="Refresh"><i class="fas fa-sync-alt"></i></button>
           </div>
-          <div style="overflow-x:auto">
+          <div class="toolbar">
+            <div class="toolbar-group">
+              <div class="bulk-actions">
+                <label class="bulk-chip"><input id="select-all-files" class="bulk-check" type="checkbox" onchange="toggleSelectAllVisible(this.checked)"> ALL</label>
+                <div id="bulk-count" class="bulk-chip">0 selected</div>
+                <button class="nbtn bulk-btn" type="button" onclick="bulkDownload()" id="bulk-download-btn" disabled><i class="fas fa-file-archive"></i>ZIP</button>
+                <button class="nbtn bulk-btn" type="button" onclick="bulkDelete()" id="bulk-delete-btn" disabled><i class="fas fa-trash"></i>DELETE</button>
+              </div>
+              <input id="file-search" class="fctl table-search form-control" placeholder="Search artifacts by name or id" oninput="updateFileFilters(true)">
+              <select id="file-status" class="fctl form-select" onchange="updateFileFilters(true)">
+                <option value="ALL">ALL STATUSES</option>
+                <option value="COMPLETED">COMPLETED</option>
+                <option value="IN_PROGRESS">IN PROGRESS</option>
+                <option value="INITIATED">INITIATED</option>
+                <option value="FAILED">FAILED</option>
+              </select>
+              <select id="file-page-size" class="fctl form-select" onchange="updateFileFilters(true)">
+                <option value="10">10 / PAGE</option>
+                <option value="25" selected>25 / PAGE</option>
+                <option value="50">50 / PAGE</option>
+                <option value="100">100 / PAGE</option>
+              </select>
+            </div>
+            <div id="file-summary" class="table-meta">0 visible</div>
+          </div>
+          <div class="table-wrap mobile-stack">
             <table class="ftable">
-              <thead><tr><th>ARTIFACT</th><th>STATUS</th><th>VOLUME</th><th>CIPHER</th><th>INGESTED</th><th>ACTIONS</th></tr></thead>
+              <thead><tr><th class="sel-col"></th><th><button class="sort-btn active" id="sort-name" onclick="setFileSort('name')">ARTIFACT <i class="fas fa-sort"></i></button></th><th><button class="sort-btn" id="sort-status" onclick="setFileSort('status')">STATUS <i class="fas fa-sort"></i></button></th><th><button class="sort-btn" id="sort-size" onclick="setFileSort('size')">VOLUME <i class="fas fa-sort"></i></button></th><th>CIPHER</th><th><button class="sort-btn" id="sort-createdAt" onclick="setFileSort('createdAt')">INGESTED <i class="fas fa-sort"></i></button></th><th>ACTIONS</th></tr></thead>
               <tbody id="file-list">
-                <tr><td colspan="6" style="text-align:center;padding:32px;color:#1e293b;font-family:'JetBrains Mono';font-size:.78rem">— NO ARTIFACTS LOADED —</td></tr>
+                <tr><td colspan="7" style="text-align:center;padding:32px;color:#1e293b;font-family:'JetBrains Mono';font-size:.78rem">- NO ARTIFACTS LOADED -</td></tr>
               </tbody>
             </table>
+          </div>
+          <div class="pager">
+            <div id="file-page-info" class="table-meta">Showing 0-0 of 0</div>
+            <div class="pager-controls">
+              <button id="page-prev" class="nbtn page-chip" onclick="changeFilePage(-1)" disabled><i class="fas fa-chevron-left"></i></button>
+              <span id="page-indicator" class="table-meta">PAGE 1 / 1</span>
+              <button id="page-next" class="nbtn page-chip" onclick="changeFilePage(1)" disabled><i class="fas fa-chevron-right"></i></button>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Users view -->
       <div id="view-users" class="view-section">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-          <div class="sec-title" style="margin-bottom:0"><i class="fas fa-id-card" style="color:#a78bfa"></i>IDENTITY MATRIX</div>
+        <div class="panel-header" style="margin-bottom:20px">
+          <div class="panel-copy">
+            <div class="panel-kicker">Access Control</div>
+            <div class="sec-title" style="margin-bottom:0"><i class="fas fa-id-card" style="color:#a78bfa"></i>IDENTITY MATRIX</div>
+            <div class="panel-meta">Provision operator accounts and review assigned clearance levels.</div>
+          </div>
           <button class="btn-forge btn px-4" style="font-size:.68rem;padding:9px 18px" data-bs-toggle="modal" data-bs-target="#userModal">+ NEW IDENTITY</button>
         </div>
         <div class="gcard p-4">
+          <div class="table-wrap mobile-stack">
           <table class="ftable">
-            <thead><tr><th>USERNAME</th><th>ROLES</th><th>STATUS</th><th>ACTION</th></tr></thead>
+            <thead><tr><th>USERNAME</th><th>ROLES</th><th>LAST LOGIN IP</th><th>LAST LOGIN</th><th>STATUS</th><th>VAST.AI</th><th>ACTION</th></tr></thead>
             <tbody id="user-list"></tbody>
           </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- VAST.AI Compute view -->
+      <div id="view-vast" class="view-section">
+        <div class="panel-header" style="margin-bottom:20px">
+          <div class="panel-copy">
+            <div class="panel-kicker">Compute Infrastructure</div>
+            <div class="sec-title" style="margin-bottom:0"><i class="fas fa-server" style="color:var(--c)"></i>VAST.AI</div>
+            <div class="panel-meta">GPU server marketplace — search, deploy, and manage cloud compute instances.</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span id="vast-api-status" style="font-size:.72rem;font-family:'JetBrains Mono';color:#64748b">—</span>
+            <button class="nbtn" onclick="initVastView()" style="font-size:.72rem"><i class="fas fa-sync-alt"></i> Refresh</button>
+          </div>
+        </div>
+
+        <!-- Active Instances -->
+        <div class="gcard p-4" style="margin-bottom:20px">
+          <div class="panel-kicker" style="margin-bottom:12px">ACTIVE INSTANCES</div>
+          <div id="vast-instances">
+            <div style="text-align:center;padding:20px;color:#475569;font-size:.82rem">Loading instances...</div>
+          </div>
+        </div>
+
+        <!-- Search Offers -->
+        <div class="gcard p-4" style="margin-bottom:20px">
+          <div class="panel-kicker" style="margin-bottom:14px">FIND GPU SERVERS</div>
+          <div class="vast-filters">
+            <div class="vast-filter-group">
+              <label>Max $/hr</label>
+              <input type="number" id="v-max-dph" placeholder="e.g. 2.00" step="0.1" min="0" class="vast-input" style="width:120px">
+            </div>
+            <div class="vast-filter-group">
+              <label>Min VRAM (GB)</label>
+              <input type="number" id="v-min-vram" placeholder="e.g. 16" step="1" min="0" class="vast-input" style="width:120px">
+            </div>
+            <div class="vast-filter-group">
+              <label>GPU Name</label>
+              <input type="text" id="v-gpu-name" placeholder="RTX_4090" class="vast-input" style="width:160px">
+            </div>
+            <div class="vast-filter-group" style="justify-content:flex-end">
+              <label>&nbsp;</label>
+              <button class="nbtn" id="vast-search-btn" onclick="searchVastOffers()" style="padding:7px 16px;font-size:.76rem"><i class="fas fa-search"></i> Search</button>
+            </div>
+          </div>
+          <div id="vast-offers-loading" style="display:none;text-align:center;padding:20px;color:#64748b;font-size:.82rem">Searching offers...</div>
+          <div id="vast-offers-empty" style="display:none;text-align:center;padding:20px;color:#475569;font-size:.82rem">No offers found.</div>
+          <div id="vast-offers-wrap" style="display:none;overflow-x:auto;margin-top:12px">
+            <table class="ftable">
+              <thead><tr><th>GPU</th><th>VRAM</th><th>COUNT</th><th>RAM</th><th>DISK</th><th>NET UP/DN</th><th>RELIABILITY</th><th>$/HR</th><th></th></tr></thead>
+              <tbody id="vast-offers-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Network Tools -->
+        <div class="gcard p-4" style="margin-bottom:20px">
+          <div class="panel-kicker" style="margin-bottom:14px">NETWORK TOOLS</div>
+          <div class="vast-ops-grid">
+            <div>
+              <label style="font-size:.68rem;color:#64748b;letter-spacing:1px;display:block;margin-bottom:8px;font-family:'Orbitron'">PING HOST</label>
+              <div style="display:flex;gap:8px">
+                <input type="text" id="v-ping-host" class="vast-input" placeholder="e.g. google.com or 1.1.1.1" style="flex:1">
+                <button class="nbtn" id="v-ping-btn" onclick="runVastPing()" style="padding:7px 14px;font-size:.76rem"><i class="fas fa-network-wired"></i> Ping</button>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
+                <button class="nbtn" onclick="document.getElementById('v-ping-host').value='1.1.1.1'" style="font-size:.68rem;padding:4px 10px;min-height:0">1.1.1.1</button>
+                <button class="nbtn" onclick="document.getElementById('v-ping-host').value='8.8.8.8'" style="font-size:.68rem;padding:4px 10px;min-height:0">8.8.8.8</button>
+                <button class="nbtn" onclick="document.getElementById('v-ping-host').value='console.vast.ai'" style="font-size:.68rem;padding:4px 10px;min-height:0">vast.ai</button>
+                <button class="nbtn" onclick="document.getElementById('v-ping-host').value='drayhub.org'" style="font-size:.68rem;padding:4px 10px;min-height:0">drayhub.org</button>
+              </div>
+            </div>
+            <div>
+              <label style="font-size:.68rem;color:#64748b;letter-spacing:1px;display:block;margin-bottom:8px;font-family:'Orbitron'">OUTPUT</label>
+              <pre id="v-ping-output" class="vast-output">No ping run yet.</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VAST Deploy Modal -->
+      <div id="vast-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:900;align-items:center;justify-content:center">
+        <div style="background:var(--bg1);border:1px solid var(--border);border-radius:18px;padding:28px;width:420px;max-width:95vw;backdrop-filter:blur(20px)">
+          <div style="font-family:'Orbitron';font-size:.82rem;letter-spacing:3px;color:var(--c);margin-bottom:16px">DEPLOY INSTANCE</div>
+          <div id="vast-modal-details" style="background:rgba(0,0,0,.35);border-radius:10px;padding:14px;font-size:.82rem;line-height:1.9;margin-bottom:16px;color:#cbd5e1;border:1px solid var(--border)"></div>
+          <label style="font-size:.68rem;color:#475569;letter-spacing:1px;display:block;margin-bottom:6px;font-family:'Orbitron'">DISK (GB)</label>
+          <input type="number" id="vast-modal-disk" value="40" min="16" max="500" class="vast-input" style="width:100%;margin-bottom:16px">
+          <div style="display:flex;gap:8px">
+            <button class="btn-forge btn" id="vast-modal-confirm" onclick="confirmVastDeploy()" style="font-size:.68rem;padding:9px 18px">DEPLOY</button>
+            <button class="nbtn" onclick="closeVastModal()">Cancel</button>
+          </div>
+          <div id="vast-modal-result" style="font-size:.8rem;margin-top:12px;font-family:'JetBrains Mono'"></div>
         </div>
       </div>
 
       <!-- Config view -->
       <div id="view-config" class="view-section">
-        <div class="sec-title"><i class="fas fa-sliders-h" style="color:var(--cy)"></i>CORE PARAMETERS</div>
+        <div class="panel-copy" style="margin-bottom:20px">
+          <div class="panel-kicker">Runtime Controls</div>
+          <div class="sec-title" style="margin-bottom:0"><i class="fas fa-sliders-h" style="color:var(--cy)"></i>CORE PARAMETERS</div>
+          <div class="panel-meta">Adjust system flags and operational settings from a single control surface.</div>
+        </div>
         <div class="gcard p-4" id="config-container"></div>
       </div>
 
@@ -288,7 +697,7 @@ select.fctl option{background:var(--bg1)}
       <div class="mbox"><div class="mlabel">ETA</div><div class="mval" id="up-eta" style="color:#64748b">--:--</div><div style="font-size:.62rem;color:#475569">remaining</div></div>
     </div>
     <div class="prog-track"><div id="up-bar" class="prog-bar" style="width:0%"></div></div>
-    <p style="font-size:.68rem;color:#1e293b;margin-top:8px;font-family:'JetBrains Mono'">AES-256-GCM &nbsp;·&nbsp; PARALLEL STREAM &nbsp;·&nbsp; <span id="up-chunks">0</span> CHUNKS</p>
+    <p style="font-size:.68rem;color:#1e293b;margin-top:8px;font-family:'JetBrains Mono'">AES-256-GCM | PARALLEL STREAM | <span id="up-chunks">0</span> CHUNKS</p>
   </div>
 </div>
 
@@ -317,11 +726,11 @@ select.fctl option{background:var(--bg1)}
       <div class="modal-body">
         <form id="nu-form" onsubmit="event.preventDefault();createUser()">
           <div class="mb-3"><label style="font-size:.68rem;color:#475569;letter-spacing:1px;display:block;margin-bottom:6px;font-family:'Orbitron'">USERNAME</label><input id="nu-name" class="fctl form-control" placeholder="identity_id" required></div>
-          <div class="mb-3"><label style="font-size:.68rem;color:#475569;letter-spacing:1px;display:block;margin-bottom:6px;font-family:'Orbitron'">PASSKEY</label><input type="password" id="nu-pass" class="fctl form-control" placeholder="••••••••" required></div>
+          <div class="mb-3"><label style="font-size:.68rem;color:#475569;letter-spacing:1px;display:block;margin-bottom:6px;font-family:'Orbitron'">PASSKEY</label><input type="password" id="nu-pass" class="fctl form-control" placeholder="........" required></div>
           <div class="mb-3"><label style="font-size:.68rem;color:#475569;letter-spacing:1px;display:block;margin-bottom:6px;font-family:'Orbitron'">CLEARANCE</label>
             <select id="nu-role" class="fctl form-control form-select">
-              <option value="USER">LEVEL_01 — Standard User</option>
-              <option value="ADMIN,USER">LEVEL_09 — NOC Administrator</option>
+              <option value="USER">LEVEL_01 - Standard User</option>
+              <option value="ADMIN,USER">LEVEL_09 - NOC Administrator</option>
             </select>
           </div>
           <button type="submit" style="display:none"></button>
@@ -375,7 +784,7 @@ select.fctl option{background:var(--bg1)}
 })();
 
 // App state
-let authHeader=sessionStorage.getItem('mft_auth'), currentUser=null, nocVisible=false, nocIsMin=false, rtimer=null;
+let authHeader=sessionStorage.getItem('mft_auth'), currentUser=null, nocVisible=false, nocIsMin=false, rtimer=null, ptimer=null, ntimer=null, filesCache=[], fileState={query:'',status:'ALL',sortKey:'name',sortDir:'asc',page:1,pageSize:25}, selectedFiles=new Set(), visibleFileIds=[], draggedStatCard=null;
 
 // Toast
 function toast(msg,type='info',ms=3500){
@@ -384,6 +793,117 @@ function toast(msg,type='info',ms=3500){
   el.innerHTML=`<i class="fas ${icons[type]}"></i><span>${msg}</span>`;
   c.appendChild(el);
   setTimeout(()=>{el.style.transition='.3s';el.style.opacity='0';el.style.transform='translateX(16px)';setTimeout(()=>el.remove(),300);},ms);
+}
+
+function fmtAgo(input){
+  if(!input)return'-';
+  const ms=Date.now()-new Date(input).getTime();
+  if(Number.isNaN(ms)||ms<0)return'just now';
+  const mins=Math.floor(ms/60000);
+  if(mins<1)return'just now';
+  if(mins<60)return`${mins}m ago`;
+  const hrs=Math.floor(mins/60);
+  if(hrs<24)return`${hrs}h ago`;
+  return `${Math.floor(hrs/24)}d ago`;
+}
+
+function setStatDetail(id,rows){
+  const host=document.getElementById(`detail-${id}`);
+  if(!host)return;
+  host.innerHTML=rows.map(([label,value])=>`<div class="stat-detail"><span>${label}</span><span>${value}</span></div>`).join('');
+}
+
+function renderStatDetails(files=filesCache){
+  const completed=files.filter(f=>f.status==='COMPLETED');
+  const active=files.filter(f=>f.status==='IN_PROGRESS');
+  const failed=files.filter(f=>f.status==='FAILED');
+  const initiated=files.filter(f=>f.status==='INITIATED');
+  const sortedByDate=[...files].sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0));
+  const recent=sortedByDate[0];
+  const largest=[...completed].sort((a,b)=>(b.totalSize||0)-(a.totalSize||0))[0];
+  const avgSize=completed.length?completed.reduce((sum,f)=>sum+(f.totalSize||0),0)/completed.length:0;
+  const mediaCount=files.filter(f=>['jpg','jpeg','png','gif','webp','svg','mp4','mov','avi','mkv','mp3','wav','flac'].includes(ext(f.originalFilename))).length;
+  setStatDetail('total',[
+    ['Recent ingest', recent?.originalFilename||'-'],
+    ['Media payloads', `${mediaCount}`],
+    ['Newest event', recent?fmtAgo(recent.createdAt):'-']
+  ]);
+  setStatDetail('storage',[
+    ['Largest file', largest?fmtSz(largest.totalSize):'-'],
+    ['Average complete', completed.length?fmtSz(avgSize):'-'],
+    ['Completed set', `${completed.length}`]
+  ]);
+  setStatDetail('done',[
+    ['Success ratio', files.length?`${Math.round((completed.length/files.length)*100)}%`:'0%'],
+    ['Failed jobs', `${failed.length}`],
+    ['Latest complete', completed[0]?fmtAgo(completed.sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0))[0].createdAt):'-']
+  ]);
+  setStatDetail('active',[
+    ['Queued active', `${active.length}`],
+    ['Initiated only', `${initiated.length}`],
+    ['Pending pressure', `${active.length+initiated.length}`]
+  ]);
+}
+
+function flipStatCard(id){
+  const card=document.querySelector(`.stat-shell[data-stat-card="${id}"]`);
+  if(card)card.classList.toggle('flipped');
+}
+
+function persistStatOrder(){
+  const grid=document.getElementById('stat-grid');
+  if(!grid)return;
+  const order=[...grid.querySelectorAll('.stat-shell')].map(el=>el.dataset.statCard);
+  localStorage.setItem('syncforge_stat_order',JSON.stringify(order));
+}
+
+function applyStatOrder(){
+  const grid=document.getElementById('stat-grid');
+  if(!grid)return;
+  const raw=localStorage.getItem('syncforge_stat_order');
+  if(!raw)return;
+  try{
+    const order=JSON.parse(raw);
+    order.forEach(id=>{
+      const card=grid.querySelector(`.stat-shell[data-stat-card="${id}"]`);
+      if(card)grid.appendChild(card);
+    });
+  }catch(_){}
+}
+
+function initStatCards(){
+  const grid=document.getElementById('stat-grid');
+  if(!grid||grid.dataset.ready==='true')return;
+  applyStatOrder();
+  const cards=[...grid.querySelectorAll('.stat-shell')];
+  cards.forEach(card=>{
+    card.addEventListener('dragstart',()=>{
+      draggedStatCard=card;
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend',()=>{
+      card.classList.remove('dragging');
+      grid.querySelectorAll('.stat-shell').forEach(el=>el.classList.remove('drag-over'));
+      draggedStatCard=null;
+      persistStatOrder();
+    });
+    card.addEventListener('dragover',e=>{
+      e.preventDefault();
+      if(!draggedStatCard||draggedStatCard===card)return;
+      card.classList.add('drag-over');
+    });
+    card.addEventListener('dragleave',()=>card.classList.remove('drag-over'));
+    card.addEventListener('drop',e=>{
+      e.preventDefault();
+      card.classList.remove('drag-over');
+      if(!draggedStatCard||draggedStatCard===card)return;
+      const rect=card.getBoundingClientRect();
+      const insertBefore=e.clientX<rect.left+rect.width/2||e.clientY<rect.top+rect.height/2;
+      grid.insertBefore(draggedStatCard,insertBefore?card:card.nextSibling);
+      persistStatOrder();
+    });
+  });
+  grid.dataset.ready='true';
 }
 
 // Auth
@@ -395,23 +915,54 @@ function login(){
     .then(user=>{sessionStorage.setItem('mft_auth',authHeader);startSession(user);})
     .catch(()=>{document.getElementById('login-err').style.display='block';authHeader=null;});
 }
-function logout(){sessionStorage.removeItem('mft_auth');clearInterval(rtimer);location.reload();}
+function logout(){
+  sessionStorage.removeItem('mft_auth');
+  authHeader=null;
+  currentUser=null;
+  clearInterval(rtimer);
+  clearInterval(ptimer);
+  clearInterval(ntimer);
+  rtimer=null;ptimer=null;ntimer=null;
+  nocClose();
+  document.getElementById('login-err').style.display='none';
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+  document.getElementById('dashboard').style.display='none';
+  document.getElementById('login-overlay').style.display='flex';
+}
 
 function startSession(user){
   currentUser=user;
+  initStatCards();
+  document.getElementById('login-err').style.display='none';
+  document.getElementById('login-pass').value='';
   document.getElementById('login-overlay').style.display='none';
   document.getElementById('dashboard').style.display='block';
   document.getElementById('user-tag').textContent=user.username;
+  document.getElementById('mnav-users').style.display='none';
+  document.getElementById('mnav-config').style.display='none';
+  document.getElementById('mnav-noc').style.display='none';
+  document.getElementById('mnav-vast').style.display='none';
+  document.getElementById('vast-nav').style.display='none';
   if(user.roles&&user.roles.includes('ROLE_ADMIN')){
     document.getElementById('admin-nav').style.display='block';
     document.getElementById('nav-noc').style.display='flex';
-    nocOpen();
+    document.getElementById('mnav-users').style.display='flex';
+    document.getElementById('mnav-config').style.display='flex';
+    document.getElementById('mnav-noc').style.display='flex';
     makeDraggable(document.getElementById('noc-monitor'));
   }
+  if(user.roles&&(user.roles.includes('ROLE_ADMIN')||user.roles.includes('ROLE_VAST'))){
+    document.getElementById('vast-nav').style.display='block';
+    document.getElementById('mnav-vast').style.display='flex';
+  }
   loadHealth();refresh();
+  clearInterval(rtimer);
+  clearInterval(ptimer);
+  clearInterval(ntimer);
   rtimer=setInterval(refresh,6000);
-  setInterval(ping,4000);
-  setInterval(()=>{if(currentUser?.roles?.includes('ROLE_ADMIN'))fetchNoc();},4500);
+  ptimer=setInterval(ping,4000);
+  ntimer=setInterval(()=>{if(currentUser?.roles?.includes('ROLE_ADMIN')&&nocVisible)fetchNoc();},4500);
 }
 
 let maintRedirecting=false;
@@ -429,6 +980,9 @@ function loadHealth(){
       const b=d.totalStorageBytes,gb=b/1073741824,mb=b/1048576;
       document.getElementById('s-storage').textContent=gb>=1?gb.toFixed(2)+' GB':mb.toFixed(1)+' MB';
     }
+    const maint=document.getElementById('maint-pill');
+    if(maint)maint.style.display=d.maintenance?'inline-flex':'none';
+    renderStatDetails();
   }).catch(()=>{});
 }
 
@@ -436,13 +990,143 @@ function loadHealth(){
 const FICONS={pdf:'fa-file-pdf',doc:'fa-file-word',docx:'fa-file-word',xls:'fa-file-excel',xlsx:'fa-file-excel',jpg:'fa-file-image',jpeg:'fa-file-image',png:'fa-file-image',gif:'fa-file-image',webp:'fa-file-image',svg:'fa-file-image',mp4:'fa-file-video',mov:'fa-file-video',avi:'fa-file-video',mkv:'fa-file-video',mp3:'fa-file-audio',wav:'fa-file-audio',flac:'fa-file-audio',zip:'fa-file-archive',gz:'fa-file-archive',tar:'fa-file-archive',rar:'fa-file-archive','7z':'fa-file-archive',py:'fa-file-code',java:'fa-file-code',js:'fa-file-code',ts:'fa-file-code',go:'fa-file-code',rs:'fa-file-code',sh:'fa-file-code',c:'fa-file-code',cpp:'fa-file-code',txt:'fa-file-alt',md:'fa-file-alt',json:'fa-file-code',xml:'fa-file-code',yaml:'fa-file-code',csv:'fa-file-csv',sql:'fa-database'};
 const FCOLORS={pdf:'#ef4444',doc:'#3b82f6',docx:'#3b82f6',xls:'#22c55e',xlsx:'#22c55e',jpg:'#f59e0b',jpeg:'#f59e0b',png:'#f59e0b',gif:'#f59e0b',webp:'#f59e0b',mp4:'#a855f7',mov:'#a855f7',mkv:'#a855f7',mp3:'#ec4899',wav:'#ec4899',flac:'#ec4899',zip:'#6b7280',gz:'#6b7280',tar:'#6b7280',rar:'#6b7280',py:'#facc15',java:'#fb923c',js:'#facc15',ts:'#60a5fa',go:'#34d399',rs:'#f97316',sh:'#a3e635',c:'#64748b',cpp:'#64748b'};
 const ext=n=>(n||'').split('.').pop().toLowerCase();
-const fmtSz=b=>{if(!b)return'—';const gb=b/1073741824,mb=b/1048576,kb=b/1024;return gb>=1?gb.toFixed(2)+' GB':mb>=1?mb.toFixed(1)+' MB':kb>=1?Math.round(kb)+' KB':b+' B';};
-const fmtDt=d=>{if(!d)return'—';const dt=new Date(d);return dt.toLocaleDateString()+' '+dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});};
+const fmtSz=b=>{if(!b)return'-';const gb=b/1073741824,mb=b/1048576,kb=b/1024;return gb>=1?gb.toFixed(2)+' GB':mb>=1?mb.toFixed(1)+' MB':kb>=1?Math.round(kb)+' KB':b+' B';};
+const fmtDt=d=>{if(!d)return'-';const dt=new Date(d);return dt.toLocaleDateString()+' '+dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});};
+const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const escJs=v=>String(v??'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+
+function renderFiles(){
+  const tbody=document.getElementById('file-list');
+  if(!tbody)return;
+  const query=(fileState.query||'').trim().toLowerCase();
+  const filtered=filesCache.filter(f=>{
+    const statusOk=fileState.status==='ALL'||(f.status||'')===fileState.status;
+    const haystack=`${f.originalFilename||''} ${f.id||''}`.toLowerCase();
+    return statusOk&&(!query||haystack.includes(query));
+  });
+  const sorter={
+    name:f=>String(f.originalFilename||'').toLowerCase(),
+    status:f=>String(f.status||''),
+    size:f=>Number(f.totalSize||0),
+    createdAt:f=>new Date(f.createdAt||0).getTime()
+  }[fileState.sortKey]||((f)=>String(f.originalFilename||'').toLowerCase());
+  filtered.sort((a,b)=>{
+    const av=sorter(a),bv=sorter(b);
+    if(av===bv)return 0;
+    const cmp=av>bv?1:-1;
+    return fileState.sortDir==='asc'?cmp:-cmp;
+  });
+  const pageCount=Math.max(1,Math.ceil(filtered.length/fileState.pageSize));
+  fileState.page=Math.min(fileState.page,pageCount);
+  const start=(fileState.page-1)*fileState.pageSize;
+  const pageItems=filtered.slice(start,start+fileState.pageSize);
+  visibleFileIds=pageItems.map(f=>String(f.id));
+  syncSelectedFiles();
+  document.getElementById('file-summary').textContent=`${filtered.length} visible`;
+  document.getElementById('file-page-info').textContent=`Showing ${filtered.length?start+1:0}-${Math.min(start+pageItems.length,filtered.length)} of ${filtered.length}`;
+  document.getElementById('page-indicator').textContent=`PAGE ${fileState.page} / ${pageCount}`;
+  document.getElementById('page-prev').disabled=fileState.page<=1;
+  document.getElementById('page-next').disabled=fileState.page>=pageCount;
+  document.querySelectorAll('.sort-btn').forEach(btn=>btn.classList.remove('active'));
+  const activeSort=document.getElementById(`sort-${fileState.sortKey}`);
+  if(activeSort)activeSort.classList.add('active');
+  if(!pageItems.length){
+    tbody.innerHTML=`<tr><td colspan="7" class="empty-state">- NO ARTIFACTS MATCH CURRENT FILTERS -</td></tr>`;
+    updateBulkUi();
+    return;
+  }
+  tbody.innerHTML=pageItems.map(f=>{
+    const e=ext(f.originalFilename),ic=FICONS[e]||'fa-file',cl=FCOLORS[e]||'#64748b';
+    const sc='bs-'+(f.status||'unknown').toLowerCase().replace(/_/g,'-');
+    const si=f.status==='COMPLETED'?'fa-check':f.status==='IN_PROGRESS'?'fa-circle-notch fa-spin':f.status==='FAILED'?'fa-times':'fa-clock';
+    const cipherTag=f.cipherMode==='AES_GCM'?`<span style="color:var(--cg);font-family:'JetBrains Mono';font-size:.65rem"><i class="fas fa-lock" style="font-size:.58rem"></i> GCM</span>`:`<span style="color:#334155;font-family:'JetBrains Mono';font-size:.65rem">ECB</span>`;
+    const canDl=f.status==='COMPLETED';
+    const selected=selectedFiles.has(String(f.id))?'checked':'';
+    const safeName=esc(f.originalFilename||'-');
+    const safeJs=escJs(f.originalFilename||'');
+    return `<tr>
+      <td class="sel-col" data-label=""><input class="bulk-check" type="checkbox" ${selected} onchange="toggleFileSelection('${f.id}',this.checked)"></td>
+      <td data-label="Artifact"><div style="display:flex;align-items:center">
+        <div class="ficon" style="background:${cl}18;color:${cl}"><i class="fas ${ic}"></i></div>
+        <div><div class="fname" title="${safeName}">${safeName}</div><div class="fid-small">${esc(String(f.id||'').substring(0,16))}...</div></div>
+      </div></td>
+      <td data-label="Status"><span class="bs ${sc}"><i class="fas ${si}"></i>${esc(f.status||'-')}</span></td>
+      <td data-label="Volume"><span class="fsize">${fmtSz(f.totalSize)}</span></td>
+      <td data-label="Cipher">${cipherTag}</td>
+      <td data-label="Ingested"><span class="ftime">${fmtDt(f.createdAt)}</span></td>
+      <td data-label="Actions"><div style="display:flex;gap:8px">
+        <button class="abtn abtn-dl" onclick="dlFile('${f.id}','${safeJs}','${f.cipherMode||'AES_ECB'}')" title="Download" ${canDl?'':'disabled'}><i class="fas fa-download"></i></button>
+        <button class="abtn abtn-del" onclick="delFile('${f.id}','${safeJs}')" title="Delete"><i class="fas fa-trash"></i></button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  updateBulkUi();
+}
+
+function syncSelectedFiles(){
+  const liveIds=new Set(filesCache.map(f=>String(f.id)));
+  [...selectedFiles].forEach(id=>{if(!liveIds.has(id))selectedFiles.delete(id);});
+}
+
+function updateBulkUi(){
+  const count=selectedFiles.size;
+  const countEl=document.getElementById('bulk-count');
+  if(countEl)countEl.textContent=`${count} selected`;
+  const allVisibleChecked=visibleFileIds.length>0&&visibleFileIds.every(id=>selectedFiles.has(id));
+  const selectAll=document.getElementById('select-all-files');
+  if(selectAll){
+    selectAll.checked=allVisibleChecked;
+    selectAll.indeterminate=!allVisibleChecked&&visibleFileIds.some(id=>selectedFiles.has(id));
+  }
+  const dlBtn=document.getElementById('bulk-download-btn');
+  const delBtn=document.getElementById('bulk-delete-btn');
+  if(dlBtn)dlBtn.disabled=count===0;
+  if(delBtn)delBtn.disabled=count===0;
+}
+
+function toggleFileSelection(id,checked){
+  if(checked)selectedFiles.add(String(id));
+  else selectedFiles.delete(String(id));
+  updateBulkUi();
+}
+
+function toggleSelectAllVisible(checked){
+  visibleFileIds.forEach(id=>checked?selectedFiles.add(id):selectedFiles.delete(id));
+  renderFiles();
+}
+
+function selectedArtifacts(){
+  return filesCache.filter(f=>selectedFiles.has(String(f.id)));
+}
+
+function updateFileFilters(resetPage=false){
+  const search=document.getElementById('file-search');
+  const status=document.getElementById('file-status');
+  const pageSize=document.getElementById('file-page-size');
+  if(search)fileState.query=search.value;
+  if(status)fileState.status=status.value;
+  if(pageSize)fileState.pageSize=Math.max(1,Number(pageSize.value||25));
+  if(resetPage)fileState.page=1;
+  renderFiles();
+}
+
+function setFileSort(key){
+  fileState.sortDir=fileState.sortKey===key&&fileState.sortDir==='asc'?'desc':'asc';
+  fileState.sortKey=key;
+  renderFiles();
+}
+
+function changeFilePage(delta){
+  fileState.page=Math.max(1,fileState.page+delta);
+  renderFiles();
+}
 
 function refresh(){
   fetch('/api/files',{headers:{'Authorization':authHeader}})
     .then(r=>r.json()).then(files=>{
       if(!Array.isArray(files))return;
+      filesCache=files;
+      syncSelectedFiles();
       const done=files.filter(f=>f.status==='COMPLETED');
       const active=files.filter(f=>f.status==='IN_PROGRESS');
       document.getElementById('s-total').textContent=files.length;
@@ -451,36 +1135,13 @@ function refresh(){
       const tb=done.reduce((s,f)=>s+(f.totalSize||0),0);
       const gb=tb/1073741824,mb=tb/1048576;
       document.getElementById('s-storage').textContent=gb>=1?gb.toFixed(2)+' GB':mb.toFixed(1)+' MB';
-      const tbody=document.getElementById('file-list');
-      if(!files.length){tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:32px;color:#1e293b;font-family:'JetBrains Mono';font-size:.76rem">— NO ARTIFACTS LOADED —</td></tr>`;return;}
-      tbody.innerHTML=files.map(f=>{
-        const e=ext(f.originalFilename),ic=FICONS[e]||'fa-file',cl=FCOLORS[e]||'#64748b';
-        const sc='bs-'+(f.status||'unknown').toLowerCase().replace(/_/,'-');
-        const si=f.status==='COMPLETED'?'fa-check':f.status==='IN_PROGRESS'?'fa-circle-notch fa-spin':f.status==='FAILED'?'fa-times':'fa-clock';
-        const cipherTag=f.cipherMode==='AES_GCM'?`<span style="color:var(--cg);font-family:'JetBrains Mono';font-size:.65rem"><i class="fas fa-lock" style="font-size:.58rem"></i> GCM</span>`:`<span style="color:#334155;font-family:'JetBrains Mono';font-size:.65rem">ECB</span>`;
-        const canDl=f.status==='COMPLETED';
-        const safen=f.originalFilename?.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')||'';
-        return `<tr>
-          <td><div style="display:flex;align-items:center">
-            <div class="ficon" style="background:${cl}18;color:${cl}"><i class="fas ${ic}"></i></div>
-            <div><div class="fname" title="${safen}">${f.originalFilename||'—'}</div><div class="fid-small">${(f.id||'').substring(0,16)}…</div></div>
-          </div></td>
-          <td><span class="bs ${sc}"><i class="fas ${si}"></i>${f.status||'—'}</span></td>
-          <td><span class="fsize">${fmtSz(f.totalSize)}</span></td>
-          <td>${cipherTag}</td>
-          <td><span class="ftime">${fmtDt(f.createdAt)}</span></td>
-          <td><div style="display:flex;gap:5px">
-            <button class="abtn abtn-dl" onclick="dlFile('${f.id}','${safen}','${f.cipherMode||'AES_ECB'}')" title="Download" ${canDl?'':'disabled'}><i class="fas fa-download"></i></button>
-            <button class="abtn abtn-del" onclick="delFile('${f.id}','${safen}')" title="Delete"><i class="fas fa-trash"></i></button>
-          </div></td>
-        </tr>`;
-      }).join('');
+      renderStatDetails(files);
+      renderFiles();
     }).catch(()=>{});
 }
-
 function dlFile(id,name,cm){
-  if(cm&&cm!=='AES_GCM'){toast('Legacy ECB artifact — download requires v2 re-upload','error');return;}
-  toast(`Decrypting "${name}"…`,'info',6000);
+  if(cm&&cm!=='AES_GCM'){toast('Legacy ECB artifact - download requires v2 re-upload','error');return;}
+  toast(`Decrypting "${name}"...`,'info',6000);
   fetch(`/api/files/${id}/download`,{headers:{'Authorization':authHeader}})
     .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.blob();})
     .then(blob=>{
@@ -490,12 +1151,46 @@ function dlFile(id,name,cm){
     }).catch(e=>toast('Download failed: '+e.message,'error'));
 }
 
+function bulkDownload(){
+  const selected=selectedArtifacts();
+  if(!selected.length)return;
+  const eligible=selected.filter(f=>f.status==='COMPLETED'&&f.cipherMode==='AES_GCM');
+  if(!eligible.length){toast('Selected artifacts are not downloadable as a zip','error');return;}
+  toast(`Packaging ${eligible.length} artifacts into zip...`,'info',7000);
+  fetch('/api/files/download-zip',{
+    method:'POST',
+    headers:{'Authorization':authHeader,'Content-Type':'application/json'},
+    body:JSON.stringify({fileIds:eligible.map(f=>f.id)})
+  }).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.blob();})
+    .then(blob=>{
+      const url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download='syncforge-artifacts.zip';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+      toast(`Downloaded ${eligible.length} artifacts as zip`,'success');
+    }).catch(e=>toast('Zip download failed: '+e.message,'error'));
+}
+
 function delFile(id,name){
   if(!confirm(`Securely delete "${name}"?\n\nThis will overwrite and remove the encrypted artifact from disk.`))return;
   fetch(`/api/files/${id}`,{method:'DELETE',headers:{'Authorization':authHeader}})
     .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);})
     .then(()=>{toast(`Deleted "${name}"`,'success');refresh();loadHealth();})
     .catch(e=>toast('Delete failed: '+e.message,'error'));
+}
+
+function bulkDelete(){
+  const selected=selectedArtifacts();
+  if(!selected.length)return;
+  if(!confirm(`Securely delete ${selected.length} selected artifacts?\n\nThis will overwrite and remove all selected encrypted artifacts from disk.`))return;
+  fetch('/api/files/bulk-delete',{
+    method:'POST',
+    headers:{'Authorization':authHeader,'Content-Type':'application/json'},
+    body:JSON.stringify({fileIds:selected.map(f=>f.id)})
+  }).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);})
+    .then(()=>{
+      selectedFiles.clear();
+      toast(`Deleted ${selected.length} artifacts`,'success');
+      refresh();loadHealth();
+    }).catch(e=>toast('Bulk delete failed: '+e.message,'error'));
 }
 
 // Upload
@@ -523,11 +1218,19 @@ async function startUpload(file){
   try{
     const ir=await fetch('/api/files/init',{method:'POST',headers:{'Authorization':authHeader,'Content-Type':'application/json'},body:JSON.stringify({originalFilename:file.name,totalSize:file.size})});
     if(!ir.ok)throw new Error('Init '+ir.status);
-    const{id:fid}=await ir.json();
+    const init=await ir.json();
+    const fid=init.id;
+    const completedChunks=new Set((init.completedChunks||[]).map(Number));
+    if(completedChunks.size){
+      uploaded=chunks.reduce((sum,c)=>sum+(completedChunks.has(c.i)?c.s:0),0);
+      ui();
+      toast(`Resuming ${file.name}: ${completedChunks.size} chunks already present`,'success');
+    }
     const pending=[...chunks];
     async function worker(){
       while(pending.length){
         const c=pending.shift();if(!c)break;
+        if(completedChunks.has(c.i)){continue;}
         await new Promise((res,rej)=>{
           const xhr=new XMLHttpRequest();xhr.open('POST',`/api/files/${fid}/chunk?chunkIndex=${c.i}`,true);xhr.setRequestHeader('Authorization',authHeader);
           let last=0;xhr.upload.onprogress=e=>{if(e.lengthComputable){uploaded+=e.loaded-last;last=e.loaded;ui();}};
@@ -537,8 +1240,21 @@ async function startUpload(file){
       }
     }
     await Promise.all(Array(WORKERS).fill(0).map(worker));
-    await fetch(`/api/files/${fid}/complete`,{method:'POST',headers:{'Authorization':authHeader}});
+    const cr=await fetch(`/api/files/${fid}/complete`,{method:'POST',headers:{'Authorization':authHeader}});
+    if(!cr.ok)throw new Error('Complete failed: '+cr.status);
+    // Assembly runs async on server — poll /status until COMPLETED or ERROR
     document.getElementById('up-bar').style.width='100%';
+    document.getElementById('up-pct').textContent='ASSEMBLING...';
+    document.getElementById('up-speed').textContent='--';
+    document.getElementById('up-eta').textContent='encrypting';
+    while(true){
+      await new Promise(r=>setTimeout(r,2500));
+      const sr=await fetch(`/api/files/${fid}/status`,{headers:{'Authorization':authHeader}});
+      if(!sr.ok)throw new Error('Status check failed: '+sr.status);
+      const ss=await sr.json();
+      if(ss.status==='COMPLETED')break;
+      if(ss.status==='ERROR')throw new Error('Server assembly failed — check server logs');
+    }
     document.getElementById('up-pct').textContent='100%';
     toast(`"${file.name}" ingested successfully`,'success');
     setTimeout(()=>{ov.style.display='none';refresh();loadHealth();document.getElementById('file-input').value='';},650);
@@ -550,11 +1266,14 @@ function fetchUsers(){
   fetch('/api/admin/users',{headers:{'Authorization':authHeader}}).then(r=>r.json()).then(users=>{
     document.getElementById('user-list').innerHTML=users.map(u=>`
       <tr>
-        <td><div style="display:flex;align-items:center;gap:9px"><div style="width:30px;height:30px;border-radius:50%;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.25);display:flex;align-items:center;justify-content:center;color:#a78bfa;font-size:.72rem"><i class="fas fa-user"></i></div><span style="font-family:'JetBrains Mono';font-size:.83rem">${u.username}</span></div></td>
-        <td>${(u.roles||[]).map(r=>`<span style="background:rgba(0,242,255,.07);border:1px solid var(--border);border-radius:6px;padding:2px 7px;font-size:.66rem;font-family:'JetBrains Mono';color:var(--c);margin-right:3px">${r}</span>`).join('')}</td>
-        <td><span style="color:var(--cg);font-size:.76rem"><i class="fas fa-circle" style="font-size:.45rem;margin-right:5px"></i>ACTIVE</span></td>
-        <td><button class="abtn abtn-del" onclick="delUser('${u.id}','${u.username}')" title="Delete"><i class="fas fa-trash"></i></button></td>
-      </tr>`).join('');
+        <td data-label="Username"><div style="display:flex;align-items:center;gap:9px"><div style="width:30px;height:30px;border-radius:50%;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.25);display:flex;align-items:center;justify-content:center;color:#a78bfa;font-size:.72rem"><i class="fas fa-user"></i></div><span style="font-family:'JetBrains Mono';font-size:.83rem">${u.username}</span></div></td>
+        <td data-label="Roles">${(u.roles||[]).map(r=>`<span style="background:rgba(0,242,255,.07);border:1px solid var(--border);border-radius:6px;padding:2px 7px;font-size:.66rem;font-family:'JetBrains Mono';color:var(--c);margin-right:3px">${r}</span>`).join(' ')}</td>
+        <td data-label="Last Login IP"><span style="font-family:'JetBrains Mono';font-size:.74rem;color:#94a3b8">${u.lastLoginIp||'-'}</span></td>
+        <td data-label="Last Login"><span style="font-family:'JetBrains Mono';font-size:.74rem;color:#cbd5e1">${fmtDt(u.lastLoginAt)}</span></td>
+        <td data-label="Status"><span style="color:var(--cg);font-size:.76rem"><i class="fas fa-circle" style="font-size:.45rem;margin-right:5px"></i>ACTIVE</span></td>
+        <td data-label="VAST.AI"><div class="vast-toggle-wrap"><label class="vast-toggle" title="${(u.roles||[]).includes('ROLE_VAST')?'VAST access enabled — uncheck to revoke':'Grant VAST.AI access'}"><input type="checkbox" ${(u.roles||[]).includes('ROLE_VAST')?'checked':''} onchange="toggleVastAccess('${u.id}',this.checked)"><span class="vast-slider"></span></label></div></td>
+        <td data-label="Action"><div style="display:flex;justify-content:flex-end"><button class="abtn abtn-del" onclick="delUser('${u.id}','${u.username}')" title="Delete"><i class="fas fa-trash"></i></button></div></td>
+      </tr>`).join(' ');
   });
 }
 function createUser(){
@@ -581,7 +1300,7 @@ function fetchConfig(){
         <div style="font-size:.67rem;color:#475569;letter-spacing:1.5px;margin-bottom:14px;font-family:'Orbitron'">SYSTEM PARAMETERS</div>
         ${cfgs.map(c=>`<div style="margin-bottom:16px"><label style="font-size:.67rem;color:#475569;letter-spacing:1px;display:block;margin-bottom:6px;font-family:'Orbitron'">${c.configKey}</label>
           <div style="display:flex;gap:7px"><input type="text" class="fctl form-control" value="${c.configValue}" id="cfg-${c.configKey}" style="font-family:'JetBrains Mono';font-size:.85rem"><button class="nbtn" onclick="saveConfig('${c.configKey}')"><i class="fas fa-save"></i></button></div>
-          ${c.description?`<div style="font-size:.7rem;color:#1e293b;margin-top:4px">${c.description}</div>`:''}</div>`).join('')}
+          ${c.description?`<div style="font-size:.7rem;color:#1e293b;margin-top:4px">${c.description}</div>`:''}</div>`).join(' ')}
       </div>`;
   });
 }
@@ -596,12 +1315,12 @@ function fetchNoc(){
     el.innerHTML=evts.length?evts.map(e=>{
       const t=e.timestamp?new Date(e.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'--:--:--';
       return `<div class="noc-entry ${e.type||''}"><span class="noc-t">${t}</span><span class="noc-type">${e.type||'EVENT'}</span><span class="noc-detail" title="${e.detail||''}">${e.detail||''}</span></div>`;
-    }).join(''):`<div style="text-align:center;color:#1e293b;padding:20px;font-size:.73rem">— NO ACTIVITY —</div>`;
+    }).join(' '):`<div style="text-align:center;color:#1e293b;padding:20px;font-size:.73rem">- NO ACTIVITY -</div>`;
   }).catch(()=>{});
   fetch('/api/admin/activity/active-users',{headers:{'Authorization':authHeader}}).then(r=>r.json()).then(us=>{
     if(!Array.isArray(us))return;
     document.getElementById('node-count').textContent=us.length;
-    document.getElementById('noc-users').innerHTML=us.length?us.map(u=>`<div class="noc-node"><div class="ndot"></div><span style="color:#94a3b8;font-size:.73rem;font-family:'JetBrains Mono'">${u}</span></div>`).join(''):`<div style="text-align:center;color:#1e293b;padding:20px;font-size:.73rem">— NO ACTIVE NODES —</div>`;
+    document.getElementById('noc-users').innerHTML=us.length?us.map(u=>`<div class="noc-node"><div class="ndot"></div><span style="color:#94a3b8;font-size:.73rem;font-family:'JetBrains Mono'">${u}</span></div>`).join(' '):`<div style="text-align:center;color:#1e293b;padding:20px;font-size:.73rem">- NO ACTIVE NODES -</div>`;
   }).catch(()=>{});
 }
 function nocTab(t){document.getElementById('noc-body').style.display=t==='feed'?'block':'none';document.getElementById('noc-users').style.display=t==='nodes'?'block':'none';document.getElementById('tab-feed').classList.toggle('active',t==='feed');document.getElementById('tab-nodes').classList.toggle('active',t==='nodes');}
@@ -614,11 +1333,15 @@ function toggleNoc(){nocVisible?nocClose():nocOpen();}
 function showView(v){
   document.querySelectorAll('.view-section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.s-item').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.mnav-btn').forEach(s=>s.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
   const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');
+  const mn=document.getElementById('mnav-'+v);if(mn)mn.classList.add('active');
   document.getElementById('view-title').textContent=v.toUpperCase();
   if(v==='users')fetchUsers();
   if(v==='config')fetchConfig();
+  if(v==='vast')initVastView();
+  if(window.innerWidth<900)window.scrollTo({top:0,behavior:'smooth'});
 }
 
 // Draggable
@@ -631,6 +1354,176 @@ function makeDraggable(el){
   };
 }
 
+// VAST.AI
+let vastPendingOffer=null;
+function vastEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function vastFmtGb(mb){return mb?`${(mb/1024).toFixed(0)} GB`:'-';}
+function vastFmtRel(r){if(r==null)return'-';const pct=(r*100).toFixed(1)+'%';const c=r>=0.99?'var(--cg)':r>=0.95?'var(--cy)':'var(--cr)';return`<span style="color:${c}">${pct}</span>`;}
+function vastStatusColor(s){s=String(s||'').toLowerCase();if(s==='running')return'var(--cg)';if(s==='exited'||s==='stopped')return'var(--cr)';return'var(--cy)';}
+function vastCanStart(i){return['stopped','exited'].includes(String(i.actual_status||i.cur_state||'').toLowerCase());}
+function vastCanStop(i){return String(i.actual_status||i.cur_state||'').toLowerCase()==='running';}
+
+async function initVastView(){
+  const el=document.getElementById('vast-api-status');
+  el.textContent='Checking...';el.style.color='#64748b';
+  await loadVastInstances();
+  try{
+    const r=await fetch('/api/vast/instances',{headers:{'Authorization':authHeader}});
+    el.textContent=r.ok?'VAST.AI CONNECTED':'API ERROR';
+    el.style.color=r.ok?'var(--cg)':'var(--cr)';
+  }catch(e){el.textContent='CONNECTION ERROR';el.style.color='var(--cr)';}
+}
+
+async function loadVastInstances(){
+  const el=document.getElementById('vast-instances');
+  el.innerHTML='<div style="text-align:center;padding:20px;color:#475569;font-size:.82rem">Loading...</div>';
+  try{
+    const r=await fetch('/api/vast/instances',{headers:{'Authorization':authHeader}});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||JSON.stringify(d));
+    const list=d.instances||[];
+    if(!list.length){el.innerHTML='<div style="text-align:center;padding:20px;color:#475569;font-size:.82rem">No active instances.</div>';return;}
+    el.innerHTML=list.map(inst=>{
+      const sc=String(inst.actual_status||inst.cur_state||'unknown');
+      const scCls=sc.toLowerCase()==='running'?'running':sc.toLowerCase()==='exited'||sc.toLowerCase()==='stopped'?'exited':'loading';
+      const gpu=inst.num_gpus>1?`${inst.gpu_name} × ${inst.num_gpus}`:(inst.gpu_name||'Unknown GPU');
+      const ssh=inst.ssh_host?`root@${vastEsc(inst.ssh_host)}:${inst.ssh_port}`:null;
+      return`<div class="vast-inst-card ${scCls}">
+        <div class="vast-inst-top">
+          <div>
+            <div style="font-size:.7rem;color:#475569;font-family:'JetBrains Mono'">#${inst.id}</div>
+            <div style="font-size:.95rem;font-weight:600;color:#e2e8f0;margin:3px 0">${vastEsc(gpu)} <span style="font-size:.72rem;color:#64748b">(${vastFmtGb(inst.gpu_totalram||inst.gpu_ram)} VRAM)</span></div>
+            <div style="font-size:.74rem;color:#64748b">${vastEsc(inst.cpu_name||'')} | ${inst.cpu_cores||'?'} cores | ${vastFmtGb(inst.cpu_ram)} RAM | ${inst.disk_space||'?'} GB disk</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="color:${vastStatusColor(sc)};font-size:.76rem;font-family:'JetBrains Mono';margin-bottom:4px"><i class="fas fa-circle" style="font-size:.45rem;margin-right:4px"></i>${vastEsc(sc)}</div>
+            <div style="color:var(--c);font-size:1rem;font-weight:700;font-family:'Orbitron'">$${(inst.dph_total||0).toFixed(3)}<span style="font-size:.6rem;color:#64748b">/hr</span></div>
+          </div>
+        </div>
+        ${ssh?`<div style="font-size:.72rem;color:#64748b;margin:6px 0;font-family:'JetBrains Mono'">SSH: <span style="color:var(--c)">${ssh}</span></div>`:''}
+        <div class="vast-inst-actions">
+          ${currentUser?.username==='draygen'&&vastCanStart(inst)?`<button class="nbtn" onclick="vastStart(${inst.id})" style="font-size:.72rem;min-height:0;padding:5px 12px;border-color:rgba(16,185,129,.3);color:var(--cg)"><i class="fas fa-play"></i> Start</button>`:''}
+          ${currentUser?.username==='draygen'&&vastCanStop(inst)?`<button class="nbtn" onclick="vastStop(${inst.id})" style="font-size:.72rem;min-height:0;padding:5px 12px;border-color:rgba(245,158,11,.3);color:var(--cy)"><i class="fas fa-stop"></i> Stop</button>`:''}
+          ${currentUser?.username==='draygen'?`<button class="nbtn" onclick="vastDestroy(${inst.id})" style="font-size:.72rem;min-height:0;padding:5px 12px;border-color:rgba(239,68,68,.3);color:var(--cr)"><i class="fas fa-trash"></i> Destroy</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){el.innerHTML=`<div style="text-align:center;padding:20px;color:var(--cr);font-size:.82rem">Error: ${vastEsc(e.message)}</div>`;}
+}
+
+async function searchVastOffers(){
+  const btn=document.getElementById('vast-search-btn');
+  const loading=document.getElementById('vast-offers-loading');
+  const empty=document.getElementById('vast-offers-empty');
+  const wrap=document.getElementById('vast-offers-wrap');
+  const body=document.getElementById('vast-offers-body');
+  btn.disabled=true;loading.style.display='block';empty.style.display='none';wrap.style.display='none';
+  const params=new URLSearchParams();
+  const maxDph=document.getElementById('v-max-dph').value;
+  const minVram=document.getElementById('v-min-vram').value;
+  const gpuName=document.getElementById('v-gpu-name').value;
+  if(maxDph)params.set('max_dph',maxDph);
+  if(minVram)params.set('min_gpu_ram',minVram);
+  if(gpuName)params.set('gpu_name',gpuName);
+  try{
+    const r=await fetch('/api/vast/offers?'+params,{headers:{'Authorization':authHeader}});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||JSON.stringify(d));
+    const offers=d.offers||[];
+    loading.style.display='none';
+    if(!offers.length){empty.style.display='block';btn.disabled=false;return;}
+    body.innerHTML=offers.map(o=>`<tr>
+      <td style="font-weight:600;color:#e2e8f0;font-family:'JetBrains Mono';font-size:.82rem">${vastEsc(o.gpu_name||'?')}</td>
+      <td>${vastFmtGb(o.gpu_ram)}</td>
+      <td style="text-align:center">${o.num_gpus||1}</td>
+      <td>${vastFmtGb(o.cpu_ram)}</td>
+      <td>${o.disk_space?o.disk_space+' GB':'-'}</td>
+      <td style="font-size:.74rem;color:#64748b">${o.inet_up?Math.round(o.inet_up):'?'} / ${o.inet_down?Math.round(o.inet_down):'?'}</td>
+      <td>${vastFmtRel(o.reliability||o.reliability2)}</td>
+      <td style="color:var(--c);font-weight:700;font-family:'Orbitron';font-size:.82rem">$${(o.dph_total||0).toFixed(3)}</td>
+      <td>${currentUser?.username==='draygen'?`<button class="nbtn" onclick="openVastDeploy(${o.id},${JSON.stringify(vastEsc(o.gpu_name||'?'))},${o.num_gpus||1},${(o.dph_total||0).toFixed(3)},'${vastFmtGb(o.gpu_ram)}')" style="font-size:.68rem;padding:4px 12px;min-height:0">Deploy</button>`:''}</td>
+    </tr>`).join('');
+    wrap.style.display='block';
+  }catch(e){loading.style.display='none';empty.style.display='block';empty.textContent='Error: '+e.message;}
+  btn.disabled=false;
+}
+
+function openVastDeploy(offerId,gpuName,numGpus,dph,vram){
+  vastPendingOffer=offerId;
+  document.getElementById('vast-modal-details').innerHTML=`
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#64748b">GPU</span><span>${gpuName} × ${numGpus}</span></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#64748b">VRAM</span><span>${vram}</span></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#64748b">Price</span><span style="color:var(--c)">$${parseFloat(dph).toFixed(3)}/hr</span></div>
+    <div style="display:flex;justify-content:space-between"><span style="color:#64748b">Image</span><span>ubuntu:22.04</span></div>`;
+  document.getElementById('vast-modal-result').textContent='';
+  document.getElementById('vast-modal-confirm').disabled=false;
+  document.getElementById('vast-modal').style.display='flex';
+}
+function closeVastModal(){document.getElementById('vast-modal').style.display='none';vastPendingOffer=null;}
+
+async function confirmVastDeploy(){
+  if(!vastPendingOffer)return;
+  const diskGb=parseInt(document.getElementById('vast-modal-disk').value,10)||40;
+  const btn=document.getElementById('vast-modal-confirm');
+  const result=document.getElementById('vast-modal-result');
+  btn.disabled=true;result.textContent='Deploying...';result.style.color='#94a3b8';
+  try{
+    const r=await fetch('/api/vast/deploy',{method:'POST',headers:{'Authorization':authHeader,'Content-Type':'application/json'},body:JSON.stringify({offer_id:vastPendingOffer,disk_gb:diskGb})});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||JSON.stringify(d));
+    result.textContent='Instance created! SSH access will be available in a few minutes.';result.style.color='var(--cg)';
+    toast('Instance deployed','success');
+    setTimeout(()=>{closeVastModal();loadVastInstances();},2500);
+  }catch(e){result.textContent='Error: '+e.message;result.style.color='var(--cr)';btn.disabled=false;}
+}
+
+async function vastDestroy(id){
+  if(!confirm(`Destroy instance #${id}? This is irreversible and cannot be undone.`))return;
+  try{
+    const r=await fetch('/api/vast/instances/'+id,{method:'DELETE',headers:{'Authorization':authHeader}});
+    const d=await r.json();if(!r.ok)throw new Error(d.error||JSON.stringify(d));
+    toast(`Instance #${id} destroyed`,'success');loadVastInstances();
+  }catch(e){toast('Destroy failed: '+e.message,'error');}
+}
+async function vastStart(id){
+  try{
+    const r=await fetch('/api/vast/instances/'+id+'/start',{method:'POST',headers:{'Authorization':authHeader}});
+    const d=await r.json();if(!r.ok)throw new Error(d.error||JSON.stringify(d));
+    toast(`Instance #${id} starting`,'success');loadVastInstances();
+  }catch(e){toast('Start failed: '+e.message,'error');}
+}
+async function vastStop(id){
+  if(!confirm(`Stop instance #${id}?`))return;
+  try{
+    const r=await fetch('/api/vast/instances/'+id+'/stop',{method:'POST',headers:{'Authorization':authHeader}});
+    const d=await r.json();if(!r.ok)throw new Error(d.error||JSON.stringify(d));
+    toast(`Instance #${id} stopped`,'success');loadVastInstances();
+  }catch(e){toast('Stop failed: '+e.message,'error');}
+}
+
+async function runVastPing(){
+  const host=document.getElementById('v-ping-host').value.trim();
+  if(!host){toast('Enter a host to ping','error');return;}
+  const btn=document.getElementById('v-ping-btn');
+  const out=document.getElementById('v-ping-output');
+  btn.disabled=true;out.textContent='Pinging '+host+'...';out.style.color='#94a3b8';
+  try{
+    const r=await fetch('/api/vast/network/ping',{method:'POST',headers:{'Authorization':authHeader,'Content-Type':'application/json'},body:JSON.stringify({host})});
+    const d=await r.json();
+    out.textContent=d.output||d.error||'No output';
+    out.style.color=d.ok?'var(--cg)':'var(--cr)';
+  }catch(e){out.textContent='Error: '+e.message;out.style.color='var(--cr)';}
+  btn.disabled=false;
+}
+
+function toggleVastAccess(id,enabled){
+  fetch('/api/admin/users/'+id+'/vast-access',{method:'PATCH',headers:{'Authorization':authHeader,'Content-Type':'application/json'},body:JSON.stringify({enabled})})
+    .then(r=>{if(r.ok)toast(enabled?'VAST.AI access granted':'VAST.AI access revoked','success');else{toast('Failed to update access','error');fetchUsers();}})
+    .catch(()=>{toast('Failed to update access','error');fetchUsers();});
+}
+
+document.getElementById('vast-modal').addEventListener('click',e=>{if(e.target===document.getElementById('vast-modal'))closeVastModal();});
+
 // Init
 if(authHeader){
   fetch('/api/me',{headers:{'Authorization':authHeader}}).then(r=>r.ok?r.json():Promise.reject()).then(u=>startSession(u)).catch(()=>{sessionStorage.removeItem('mft_auth');authHeader=null;});
@@ -638,3 +1531,5 @@ if(authHeader){
 </script>
 </body>
 </html>
+
+

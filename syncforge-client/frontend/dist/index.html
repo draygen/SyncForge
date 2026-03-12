@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SyncForge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/assets/index-BPvcTjNx.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-FkZbzNmO.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Title bar -->
+    <div class="titlebar" style="--wails-draggable:drag">
+      <span class="titlebar-logo">⬡ SYNCFORGE</span>
+      <div class="titlebar-actions" style="--wails-draggable:no-drag">
+        <button class="tb-btn" onclick="minimizeWindow()" title="Minimise to tray">—</button>
+      </div>
+    </div>
+
+    <!-- Status pill -->
+    <div class="status-bar">
+      <span id="status-dot" class="dot dot-idle"></span>
+      <span id="status-text" class="status-label">IDLE</span>
+      <span id="watch-dir" class="watch-dir-label"></span>
+      <div class="status-actions">
+        <button id="btn-toggle" class="pill-btn" onclick="toggleWatch()">START</button>
+      </div>
+    </div>
+
+    <!-- Current upload progress -->
+    <div id="progress-section" class="progress-section hidden">
+      <div class="prog-filename" id="prog-filename">—</div>
+      <div class="prog-bar-wrap">
+        <div class="prog-bar" id="prog-bar" style="width:0%"></div>
+      </div>
+      <div class="prog-meta">
+        <span id="prog-pct">0%</span>
+        <span id="prog-speed">— Mbps</span>
+        <span id="prog-chunks">0/0 chunks</span>
+      </div>
+    </div>
+
+    <!-- Tab nav -->
+    <div class="tab-nav">
+      <button class="tab active" id="tab-activity" onclick="showTab('activity')">ACTIVITY</button>
+      <button class="tab" id="tab-settings" onclick="showTab('settings')">SETTINGS</button>
+    </div>
+
+    <!-- Activity view -->
+    <div id="view-activity" class="view">
+      <div id="activity-list" class="activity-list">
+        <div class="empty-state">No activity yet — drop files into your watch folder to begin.</div>
+      </div>
+    </div>
+
+    <!-- Settings view -->
+    <div id="view-settings" class="view hidden">
+      <div class="settings-form">
+        <div class="field-group">
+          <label>SERVER URL</label>
+          <input id="cfg-url" type="text" placeholder="https://drayhub.org" />
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label>USERNAME</label>
+            <input id="cfg-user" type="text" placeholder="username" />
+          </div>
+          <div class="field-group">
+            <label>PASSWORD</label>
+            <input id="cfg-pass" type="password" placeholder="••••••••" />
+          </div>
+        </div>
+        <div class="field-group">
+          <label>WATCH FOLDER</label>
+          <div class="folder-row">
+            <input id="cfg-dir" type="text" placeholder="C:\Users\you\SyncFolder" readonly />
+            <button class="icon-btn" onclick="browseFolder()" title="Browse">📁</button>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <label>WORKERS</label>
+            <input id="cfg-workers" type="number" min="1" max="16" value="4" />
+          </div>
+          <div class="field-group">
+            <label>CHUNK SIZE (MB)</label>
+            <input id="cfg-chunk" type="number" min="1" max="64" value="1" />
+          </div>
+        </div>
+        <div class="field-group checkbox-group">
+          <label class="checkbox-label">
+            <input id="cfg-autostart" type="checkbox" checked />
+            <span>Start watching automatically on launch</span>
+          </label>
+        </div>
+        <div class="btn-row">
+          <button class="action-btn secondary" onclick="testConnection()">TEST CONNECTION</button>
+          <button class="action-btn primary" onclick="saveSettings()">SAVE</button>
+        </div>
+        <div id="conn-result" class="conn-result hidden"></div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

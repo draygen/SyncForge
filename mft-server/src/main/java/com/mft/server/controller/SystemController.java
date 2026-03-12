@@ -47,16 +47,34 @@ public class SystemController {
     public Map<String, Object> ping(org.springframework.security.core.Authentication auth, jakarta.servlet.http.HttpServletRequest request) {
         boolean isAdmin = false;
         if (auth != null) {
-            String clientIp = request.getHeader("X-Forwarded-For");
-            if (clientIp == null || clientIp.isEmpty()) {
-                clientIp = request.getRemoteAddr();
-            } else {
-                clientIp = clientIp.split(",")[0].trim();
-            }
+            String clientIp = resolveClientIp(request);
             activityService.pingUser(auth.getName(), clientIp);
             isAdmin = auth.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         }
         return Map.of("maintenance", maintenanceMode, "isAdmin", isAdmin);
+    }
+
+    private String resolveClientIp(jakarta.servlet.http.HttpServletRequest request) {
+        String clientIp = firstIp(
+                request.getHeader("CF-Connecting-IP"),
+                request.getHeader("True-Client-IP"),
+                request.getHeader("X-Forwarded-For"),
+                request.getHeader("X-Real-IP")
+        );
+        if (clientIp == null || clientIp.isEmpty()) {
+            return request.getRemoteAddr();
+        }
+        return clientIp;
+    }
+
+    private String firstIp(String... candidates) {
+        for (String candidate : candidates) {
+            if (candidate == null || candidate.isBlank()) {
+                continue;
+            }
+            return candidate.split(",")[0].trim();
+        }
+        return null;
     }
 }

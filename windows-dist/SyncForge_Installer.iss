@@ -59,7 +59,7 @@ Filename: "{app}\bin\SyncForgeServer.exe"; Parameters: "install"; Flags: runhidd
 Filename: "{app}\bin\SyncForgeServer.exe"; Parameters: "start"; Flags: runhidden
 
 Filename: "{app}\bin\SyncForgeProxy.exe"; Parameters: "install"; Flags: runhidden
-Filename: "{app}bin\SyncForgeProxy.exe"; Parameters: "start"; Flags: runhidden
+Filename: "{app}\bin\SyncForgeProxy.exe"; Parameters: "start"; Flags: runhidden
 
 [UninstallRun]
 Filename: "{app}\bin\SyncForgeProxy.exe"; Parameters: "stop"; Flags: runhidden
